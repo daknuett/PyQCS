@@ -24,8 +24,8 @@ have been measured. This information will be used by classical parts of an algor
 PyQCS gates
 -----------
 
-A PyQCS gate is essentially a function mapping a ``2**N`` dimensional ``cfloat`` array and an
-``N`` dimensional ``double`` array to a ``2**N`` dimensional ``cfloat`` array,
+A PyQCS gate is essentially a function mapping a ``2**N`` dimensional ``cdouble`` array and an
+``N`` dimensional ``double`` array to a ``2**N`` dimensional ``cdouble`` array,
 an ``N`` dimensional ``double`` array and a ``int64`` scalar. To save memory these functions
 can also be implemented in-place [2]_ for large states (i.e. more than 24 qbits, which will require 
 ``0.25GiB`` RAM).

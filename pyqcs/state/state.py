@@ -37,11 +37,19 @@ class BasicState(AbstractState):
             qm_state, cl_state, last_measured = gate(self._qm_state.copy(), self._cl_state.copy())
             return BasicState(qm_state, cl_state, self._nbits,  last_measured)
         if(gate.is_inplace()):
-            gate(self._qm_state, self._cl_state)
+            _, _, last_measured = gate(self._qm_state, self._cl_state)
+            self._last_measured = last_measured
             return self
         qm_state, cl_state, last_measured = gate(self._qm_state, self._cl_state)
         return BasicState(qm_state, cl_state, self._nbits,  last_measured)
 
 
+    def _easy_format_state_part(self, cf, i):
+        return "{}*|{}>".format(str(cf), bin(i))
 
+    def __str__(self):
+        eps = 1e-13
+
+        s = " + ".join(self._easy_format_cfloat(self._qm_state[i], i) if self._qm_state[i].abs() > eps for i in range(self._ndim))
+        return s
 
