@@ -51,9 +51,9 @@ ufunc_X( char ** args
     *measured_out = 0;
 }
 
-static char ufunc_types[] = 
+static char ufunc_types[5] = 
     { NPY_CFLOAT, NPY_FLOAT, NPY_CFLOAT, NPY_FLOAT, NPY_FLOAT };
-static PyUFuncGenericFunction ufunc_X_funcs[] = 
+static PyUFuncGenericFunction ufunc_X_funcs[1] = 
     { ufunc_X };
 
 
@@ -69,14 +69,12 @@ typedef struct
 static int
 BasicGate_init
 	( BasicGate * self
-	, PyObject * args
-	, PyObject * kwds)
+	, PyObject * args)
 {
 	char type;
 
-	char *kwords[] = { "type_", "coefficients", NULL};
-
-	if(!PyArg_ParseTupleAndKeywords(args, kwds, "Clld", kwords
+    //Py_INCREF(args);
+	if(!PyArg_ParseTuple(args, "Clld"
                 , &type
                 , &(self->argument.act)
                 , &(self->argument.control)
@@ -84,7 +82,7 @@ BasicGate_init
 	{
 		return -1;
 	}
-	self->data[0] = (void *)&(self->argument);
+	self->data[0] = (void *)(&(self->argument));
 
 	switch(type)
 	{
@@ -95,17 +93,28 @@ BasicGate_init
 				, self->data // data
 				, ufunc_types //types
 				, 1 // ntypes
-				, 1 // nin
-				, 1 // nout
+				, 2 // nin
+				, 3 // nout
 				, PyUFunc_None // identity
-				, "force_function" // name
+				, "X_function" // name
 				, "Computes the X (NOT) gate on a state." // doc
 				, 0 // unused
                 , "(n)(m)->(n)(m)()"); 
+            if(self->ufunc <= 0)
+            {
+                //I have no idea what is going on.
+                //PyErr_SetString(PyExc_ValueError, "failed to construct the ufunc for unknow reasons");
+                return -1;
+            }
 			break;
 		}
+        default:
+        {
+            PyErr_SetString(PyExc_ValueError, "Type must be one of X,H,R,C,M");
+            return -1;
+        }
     }
-	Py_INCREF(self->ufunc);
+    Py_INCREF(self->ufunc);
 	return 0;
 }
 
@@ -136,7 +145,9 @@ static PyTypeObject BasicGateType =
 {
 	PyVarObject_HEAD_INIT(NULL, 0)
 	.tp_name = "pyqcs.gates.implementations.basic_gates.BasicGate",
-	.tp_doc = "",
+	.tp_doc = "The wrapper for the basic gates X, H, R_phi, CNOT and Measurement." \
+              "The first argument is the type of the gate as a char: X,H,R,C,M." 
+               ,
 	.tp_basicsize = sizeof(BasicGate),
 	.tp_itemsize = 0,
 	.tp_flags = Py_TPFLAGS_DEFAULT,
@@ -167,7 +178,7 @@ static struct PyModuleDef moduledef = {
 };
 
 PyMODINIT_FUNC 
-PyInit_interaction(void)
+PyInit_basic_gates(void)
 {
 	PyObject * module;
 
