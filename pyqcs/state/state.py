@@ -50,6 +50,7 @@ class BasicState(AbstractState):
     def __str__(self):
         eps = 1e-13
 
-        s = " + ".join(self._easy_format_cfloat(self._qm_state[i], i) if self._qm_state[i].abs() > eps for i in range(self._ndim))
+        s = " + ".join((self._easy_format_cfloat(self._qm_state[i], i)
+                        for i in range(self._ndim) if (self._qm_state[i].abs() > eps)))
         return s
 
