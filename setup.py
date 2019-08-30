@@ -10,6 +10,10 @@ setup(name = "pyqcs",
 	ext_modules = [basic_gates],
 	packages = [
 		"pyqcs"
+		, "pyqcs.gates"
+		, "pyqcs.build"
+		, "pyqcs.state"
+		, "pyqcs.gates.implementations"
 	],
 	package_dir = {"pyqcs": "pyqcs"},
         install_requires=["numpy"],
