@@ -52,7 +52,7 @@ ufunc_X( char ** args
 }
 
 static char ufunc_types[5] = 
-    { NPY_CFLOAT, NPY_FLOAT, NPY_CFLOAT, NPY_FLOAT, NPY_FLOAT };
+    { NPY_CDOUBLE, NPY_DOUBLE, NPY_CDOUBLE, NPY_DOUBLE, NPY_DOUBLE };
 static PyUFuncGenericFunction ufunc_X_funcs[1] = 
     { ufunc_X };
 
@@ -82,6 +82,7 @@ BasicGate_init
 	{
 		return -1;
 	}
+    
 	self->data[0] = (void *)(&(self->argument));
 
 	switch(type)
@@ -99,7 +100,8 @@ BasicGate_init
 				, "X_function" // name
 				, "Computes the X (NOT) gate on a state." // doc
 				, 0 // unused
-                , "(n)(m)->(n)(m)()"); 
+                , "(n),(m)->(n),(m),()"); 
+
             if(self->ufunc <= 0)
             {
                 //I have no idea what is going on.
