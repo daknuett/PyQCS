@@ -110,26 +110,22 @@ ufunc_H( char ** args
 
     for(i = 0; i < ndim; i++)
     {
-        npy_intp not_index = i ^ ipow(2, argument.act);
+        npy_intp not_index = i ^ (1 << argument.act);
 
-        npy_intp sign;
-        if(!(i & (2 << argument.act))
-            && ipow(-1, not_index) == -1)
+
+        if(i & (1 << argument.act))
         {
-            sign = -1;
+            // This is the |1> state. Just add up.
+            qm_out[i].real = (qm_in[i].real + qm_in[not_index].real) * M_SQRT1_2;
+            qm_out[i].imag = (qm_in[i].imag + qm_in[not_index].imag) * M_SQRT1_2;
         }
         else
         {
-            sign = 1;
-        }
+            // This is the |0> state. Subtract the |0> amplitude from the |1> amplitude.
+            qm_out[i].real = (qm_in[not_index].real - qm_in[i].real) * M_SQRT1_2;
+            qm_out[i].imag = (qm_in[not_index].imag - qm_in[i].imag) * M_SQRT1_2;
 
-        
-        qm_out[i].real = (qm_in[i].real 
-                             + sign * qm_in[not_index].real) 
-                         * M_SQRT1_2;
-        qm_out[i].imag = (qm_in[i].imag 
-                             + sign * qm_in[not_index].imag) 
-                         * M_SQRT1_2;
+        }
     }
 
     *measured_out = 0;
