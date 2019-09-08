@@ -1,8 +1,9 @@
 from setuptools import setup,Extension
 
 
-basic_gates = Extension("pyqcs.gates.implementations.basic_gates",
-		sources = ["pyqcs/gates/implementations/basic_gates.c"])
+basic_gates = Extension("pyqcs.gates.implementations.basic_gates"
+		, sources = ["pyqcs/gates/implementations/basic_gates.c"]
+                , extra_compile_args = ["-g", "-fstack-protector"])
 
 setup(name = "pyqcs",
 	version = "0.0.1",
