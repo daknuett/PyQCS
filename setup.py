@@ -4,7 +4,7 @@ from setuptools import setup, Extension
 basic_gates = Extension(
                         "pyqcs.gates.implementations.basic_gates"
                         , sources=["src/pyqcs/gates/implementations/basic_gates.c"]
-                        , extra_compile_args=["-g", "-fstack-protector"]
+                        , extra_compile_args=["-g", "-fstack-protector", "-Wno-unused-variable"]
                     )
 
 setup(

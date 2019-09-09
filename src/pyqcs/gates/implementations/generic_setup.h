@@ -3,9 +3,9 @@
 
 #define PYQCS_GATE_GENERIC_SETUP \
     npy_cdouble * qm_in = (npy_cdouble *) (args[0]); \
-    npy_double * cl_in = (npy_double *) (args[1]); \
+    npy_uint8 * cl_in = (npy_uint8 *) (args[1]); \
     npy_cdouble * qm_out = (npy_cdouble *) (args[2]); \
-    npy_double * cl_out = (npy_double *) (args[3]); \
+    npy_uint8 * cl_out = (npy_uint8 *) (args[3]); \
     npy_uint64 * measured_out = (npy_uint64 *) (args[4]); \
     npy_intp qm_in_step = steps[0]; \
     npy_intp cl_in_step = steps[1]; \
