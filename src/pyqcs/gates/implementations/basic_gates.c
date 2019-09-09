@@ -129,6 +129,34 @@ ufunc_H( char ** args
     *measured_out = 0;
 }
 
+static void
+ufunc_C( char ** args
+       , npy_intp * dimensions
+       , npy_intp * steps
+       , void * data)
+{
+    basic_gate_argument_t argument = *((basic_gate_argument_t *) data);
+    PYQCS_GATE_GENERIC_SETUP;
+    npy_intp i;
+
+    for(i = 0; i < ndim; i++)
+    {
+
+        if((i & (1 << argument.control)))
+        {
+            qm_out[i].real = qm_in[i ^ (1 << argument.act)].real;
+            qm_out[i].imag = qm_in[i ^ (1 << argument.act)].imag;
+        }
+        else
+        {
+
+            qm_out[i].real = qm_in[i].real;
+            qm_out[i].imag = qm_in[i].imag;
+        }
+    }
+    *measured_out = 0;
+}
+
 static char ufunc_types[5] = 
     { NPY_CDOUBLE, NPY_DOUBLE, NPY_CDOUBLE, NPY_DOUBLE, NPY_DOUBLE };
 static PyUFuncGenericFunction ufunc_X_funcs[1] = 
@@ -137,6 +165,8 @@ static PyUFuncGenericFunction ufunc_H_funcs[1] =
     { ufunc_H };
 static PyUFuncGenericFunction ufunc_R_funcs[1] = 
     { ufunc_R };
+static PyUFuncGenericFunction ufunc_C_funcs[1] = 
+    { ufunc_C };
 
 
 typedef struct
@@ -227,6 +257,29 @@ BasicGate_init
 				, PyUFunc_None // identity
 				, "R_function" // name
 				, "Computes the R (rotation) gate on a state." // doc
+				, 0 // unused
+                , "(n),(m)->(n),(m),()"); 
+
+            if(self->ufunc <= 0)
+            {
+                //I have no idea what is going on.
+                //PyErr_SetString(PyExc_ValueError, "failed to construct the ufunc for unknow reasons");
+                return -1;
+            }
+			break;
+		}
+		case 'C':
+		{
+			self->ufunc = PyUFunc_FromFuncAndDataAndSignature(
+				ufunc_C_funcs // func
+				, self->data // data
+				, ufunc_types //types
+				, 1 // ntypes
+				, 2 // nin
+				, 3 // nout
+				, PyUFunc_None // identity
+				, "C_function" // name
+				, "Computes the C (CNOT) gate on a state." // doc
 				, 0 // unused
                 , "(n),(m)->(n),(m),()"); 
 

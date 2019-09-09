@@ -18,6 +18,7 @@ def test_raw_x1():
     assert qm_state_new[1] == 1
     assert qm_state_new[2] == 0 
     assert qm_state_new[3] == 0 
+    assert measured == 0
 
 def test_raw_x2():
     nbits = 2
@@ -34,6 +35,7 @@ def test_raw_x2():
     assert qm_state_new[1] == 0
     assert qm_state_new[2] == 1 
     assert qm_state_new[3] == 0
+    assert measured == 0
 
 def test_raw_h1():
     nbits = 2
@@ -48,6 +50,7 @@ def test_raw_h1():
 
 
     assert pytest.approx(qm_state_new) == [M_SQRT1_2, M_SQRT1_2, 0, 0]
+    assert measured == 0
 
 
 def test_raw_h2():
@@ -62,6 +65,7 @@ def test_raw_h2():
     qm_state_new, cl_state_new, measured = gate(qm_state, cl_state)
 
     assert pytest.approx(qm_state_new) == [M_SQRT1_2, 0, M_SQRT1_2, 0]
+    assert measured == 0
 
 def test_raw_h1_x1():
     nbits = 2
@@ -76,8 +80,8 @@ def test_raw_h1_x1():
 
     qm_state_new, cl_state_new, measured = gate(qm_state_new, cl_state_new)
 
-    print(qm_state_new)
     assert pytest.approx(qm_state_new) == [M_SQRT1_2, -M_SQRT1_2, 0, 0]
+    assert measured == 0
 
 def test_raw_h2_x1():
     nbits = 2
@@ -92,6 +96,54 @@ def test_raw_h2_x1():
 
     qm_state_new, cl_state_new, measured = gate(qm_state_new, cl_state_new)
 
-    print(qm_state_new)
     assert pytest.approx(qm_state_new) == [0, M_SQRT1_2, 0, M_SQRT1_2]
+    assert measured == 0
 
+
+def test_raw_cnot_00():
+    nbits = 2
+    ndim = 2**nbits
+    qm_state = np.zeros(ndim, dtype=np.cdouble)
+    qm_state[0] = 1
+    cl_state = np.zeros(nbits, dtype=np.double)
+    gate = BasicGate('C', 1, 0, 0.0)
+
+    qm_state_new, cl_state_new, measured = gate(qm_state, cl_state)
+
+    assert pytest.approx(qm_state_new) == [1, 0, 0, 0]
+
+def test_raw_cnot_01():
+    nbits = 2
+    ndim = 2**nbits
+    qm_state = np.zeros(ndim, dtype=np.cdouble)
+    qm_state[1] = 1
+    cl_state = np.zeros(nbits, dtype=np.double)
+    gate = BasicGate('C', 1, 0, 0.0)
+
+    qm_state_new, cl_state_new, measured = gate(qm_state, cl_state)
+
+    assert pytest.approx(qm_state_new) == [0, 0, 0, 1]
+
+def test_raw_cnot_10():
+    nbits = 2
+    ndim = 2**nbits
+    qm_state = np.zeros(ndim, dtype=np.cdouble)
+    qm_state[2] = 1
+    cl_state = np.zeros(nbits, dtype=np.double)
+    gate = BasicGate('C', 1, 0, 0.0)
+
+    qm_state_new, cl_state_new, measured = gate(qm_state, cl_state)
+
+    assert pytest.approx(qm_state_new) == [0, 0, 1, 0]
+
+def test_raw_cnot_11():
+    nbits = 2
+    ndim = 2**nbits
+    qm_state = np.zeros(ndim, dtype=np.cdouble)
+    qm_state[3] = 1
+    cl_state = np.zeros(nbits, dtype=np.double)
+    gate = BasicGate('C', 1, 0, 0.0)
+
+    qm_state_new, cl_state_new, measured = gate(qm_state, cl_state)
+
+    assert pytest.approx(qm_state_new) == [0, 1, 0, 0]

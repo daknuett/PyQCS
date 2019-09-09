@@ -108,3 +108,32 @@ def test_raw_hx11():
     qm_state_new, cl_state_new, measured = gate(qm_state_new, cl_state_new)
 
     assert state.v == pytest.approx(qm_state_new)
+
+def test_raw_cnot_0():
+    nbits = 2
+    ndim = 2**nbits
+    qm_state = np.zeros(ndim, dtype=np.cdouble)
+    qm_state[0] = 1
+    cl_state = np.zeros(nbits, dtype=np.double)
+    gate = BasicGate('C', 1, 0, 0.0)
+    state = sqc.operator(2).CNOT(1, 0) * sqc.state(2)
+
+    qm_state_new, cl_state_new, measured = gate(qm_state, cl_state)
+
+    assert state.v == pytest.approx(qm_state_new)
+
+def test_raw_cnot_1():
+    nbits = 2
+    ndim = 2**nbits
+    qm_state = np.zeros(ndim, dtype=np.cdouble)
+    qm_state[0] = 1
+    cl_state = np.zeros(nbits, dtype=np.double)
+    gate = BasicGate('X', 0, 0, 0.0)
+    qm_state_new, cl_state_new, measured = gate(qm_state, cl_state)
+    gate = BasicGate('C', 1, 0, 0.0)
+    state = sqc.operator(2).X(0).CNOT(0, 1) * sqc.state(2)
+
+    qm_state_new, cl_state_new, measured = gate(qm_state_new, cl_state)
+
+    assert state.v == pytest.approx(qm_state_new)
+
