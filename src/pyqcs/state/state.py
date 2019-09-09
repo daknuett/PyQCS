@@ -25,6 +25,7 @@ class BasicState(AbstractState):
 
     def get_last_measurement(self):
         return self._cl_state, self._last_measured
+
     def check_qbits(self, gate_circuit):
         if(gate_circuit._uses_qbits < (1 << self._nbits + 1)):
             return True
@@ -32,6 +33,7 @@ class BasicState(AbstractState):
 
     def deepcopy(self):
         return BasicState(self._qm_state.copy(), self._cl_state.copy(), self._nbits, self._last_measured)
+
     def apply_gate(self, gate, force_new_state=False):
         if(gate.is_inplace() and force_new_state):
             qm_state, cl_state, last_measured = gate(self._qm_state.copy(), self._cl_state.copy())
@@ -42,7 +44,6 @@ class BasicState(AbstractState):
             return self
         qm_state, cl_state, last_measured = gate(self._qm_state, self._cl_state)
         return BasicState(qm_state, cl_state, self._nbits,  last_measured)
-
 
     def _easy_format_state_part(self, cf, i):
         return "{}*|{}>".format(str(cf), bin(i))
