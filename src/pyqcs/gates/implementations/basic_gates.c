@@ -111,7 +111,7 @@ ufunc_H( char ** args
         npy_intp not_index = i ^ (1 << argument.act);
 
 
-        if(i & (1 << argument.act))
+        if(!(i & (1 << argument.act)))
         {
             // This is the |1> state. Just add up.
             qm_out[i].real = (qm_in[i].real + qm_in[not_index].real) * M_SQRT1_2;
