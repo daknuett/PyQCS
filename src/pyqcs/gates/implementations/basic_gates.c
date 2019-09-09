@@ -2,7 +2,6 @@
 #include <structmember.h>
 #include <numpy/ndarraytypes.h>
 #include <numpy/ufuncobject.h>
-#include <numpy/random.h>
 #include <stddef.h>
 #include <math.h>
 
@@ -12,7 +11,8 @@ typedef struct
 {
     npy_intp act;
     npy_intp control;
-    npy_float r;
+    npy_double r;
+    PyObject * rng;
 } basic_gate_argument_t;
 
 long int ipow(int base
@@ -143,28 +143,96 @@ ufunc_M( char ** args
 
     npy_double amplitude_1 = 0;
 
+    // TODO: this can be optimized.
     for(i = 0; i < ndim; i++)
     {
         if(i & (1 << argument.act))
         {
+            // XXX: do we get big errors here?
             amplitude_1 += qm_in[i].real * qm_in[i].real;
             amplitude_1 += qm_in[i].imag * qm_in[i].imag;
         }
     }
     
-    npy_double rand = random_uniform(0, 1);
+
+    npy_double randr;
+    //==================================================//
+    // Get some random value. I do not like the way this
+    // is done but it seems like there is no better way.
+    PyObject * random_result = PyObject_CallFunctionObjArgs(argument.rng, NULL);
+
+    if(!PyFloat_Check(random_result))
+    {
+        randr = 0;
+    }
+    else
+    {
+        randr = PyFloat_AsDouble(random_result);
+    }
+    Py_DECREF(random_result);
+    //==================================================//
+
+    // XXX: copy over old measured values.
+    for(i = 0; i < nqbits; i++)
+    {
+        cl_out[i] = cl_in[i];
+    }
+
+    npy_double partial_amplitude;
+    if(amplitude_1 > randr)
+    {
+        cl_out[argument.act] = 1;
+        // Measured 1; now collaps this qbit.
+        partial_amplitude = 1 / sqrt(amplitude_1);
+        for(i = 0; i < ndim; i++)
+        {
+            if(i & (1 << argument.act))
+            {
+                qm_out[i].real = partial_amplitude * qm_in[i].real;
+                qm_out[i].imag = partial_amplitude * qm_in[i].imag;
+            }
+            else
+            {
+                qm_out[i].real = 0;
+                qm_out[i].imag = 0;
+            }
+        }
+    }
+    else
+    {
+        cl_out[argument.act] = 0;
+        // Measured 0; now collaps this qbit.
+        // XXX: this might include large errors as 
+        // 1 - amplitude_1 is badly conditioned.
+        partial_amplitude = 1 / sqrt(1 - amplitude_1);
+        for(i = 0; i < ndim; i++)
+        {
+            if(i & (1 << argument.act))
+            {
+                qm_out[i].real = 0;
+                qm_out[i].imag = 0;
+            }
+            else
+            {
+                qm_out[i].real = partial_amplitude * qm_in[i].real;
+                qm_out[i].imag = partial_amplitude * qm_in[i].imag;
+            }
+        }
+    }
 
     *measured_out = 1 << argument.act;
 }
 
 static char ufunc_types[5] = 
-    { NPY_CDOUBLE, NPY_DOUBLE, NPY_CDOUBLE, NPY_DOUBLE, NPY_DOUBLE };
+    { NPY_CDOUBLE, NPY_UINT8, NPY_CDOUBLE, NPY_UINT8, NPY_UINT64 };
 static PyUFuncGenericFunction ufunc_X_funcs[1] = 
     { ufunc_X };
 static PyUFuncGenericFunction ufunc_H_funcs[1] = 
     { ufunc_H };
 static PyUFuncGenericFunction ufunc_R_funcs[1] = 
     { ufunc_R };
+static PyUFuncGenericFunction ufunc_M_funcs[1] = 
+    { ufunc_M };
 
 
 typedef struct
@@ -184,14 +252,22 @@ BasicGate_init
 	char type;
 
     //Py_INCREF(args);
-	if(!PyArg_ParseTuple(args, "Clld"
+	if(!PyArg_ParseTuple(args, "ClldO"
                 , &type
                 , &(self->argument.act)
                 , &(self->argument.control)
-                , &(self->argument.r)))
+                , &(self->argument.r)
+                , &(self->argument.rng))
+            )
 	{
 		return -1;
 	}
+
+    if(!PyCallable_Check(self->argument.rng))
+    {
+        PyErr_SetString(PyExc_TypeError, "random (5th argument) must be a callable (returning float)");
+        return -1;
+    }
     
 	self->data[0] = (void *)(&(self->argument));
 
@@ -266,6 +342,29 @@ BasicGate_init
             }
 			break;
 		}
+		case 'M':
+		{
+			self->ufunc = PyUFunc_FromFuncAndDataAndSignature(
+				ufunc_M_funcs // func
+				, self->data // data
+				, ufunc_types //types
+				, 1 // ntypes
+				, 2 // nin
+				, 3 // nout
+				, PyUFunc_None // identity
+				, "M_function" // name
+				, "Computes the M (Measurement) gate on a state." // doc
+				, 0 // unused
+                , "(n),(m)->(n),(m),()"); 
+
+            if(self->ufunc <= 0)
+            {
+                //I have no idea what is going on.
+                //PyErr_SetString(PyExc_ValueError, "failed to construct the ufunc for unknow reasons");
+                return -1;
+            }
+			break;
+		}
         default:
         {
             PyErr_SetString(PyExc_ValueError, "Type must be one of X,H,R,C,M");
@@ -273,6 +372,7 @@ BasicGate_init
         }
     }
     Py_INCREF(self->ufunc);
+    Py_INCREF(self->argument.rng);
 	return 0;
 }
 
@@ -288,6 +388,7 @@ BasicGate_call
 static void BasicGate_dealloc(BasicGate * self)
 {
     Py_XDECREF(self->ufunc);
+    Py_XDECREF(self->argument.rng);
     Py_TYPE(self)->tp_free((PyObject *) self);
 }
 
@@ -352,7 +453,6 @@ PyInit_basic_gates(void)
 	}
 	import_array();
 	import_ufunc();
-    import_random();
 
 	Py_INCREF(&BasicGateType);
 	PyModule_AddObject(module, "BasicGate", (PyObject *) &BasicGateType);
