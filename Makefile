@@ -1,13 +1,13 @@
-py_files= pyqcs/__init__.py \
-		  pyqcs/gates/abc.py pyqcs/gates/circuits.py \
-		  pyqcs/gates/executor.py pyqcs/gates/__init__.py \
-		  pyqcs/build/abc.py pyqcs/build/__init__.py \
-		  pyqcs/state/abc.py pyqcs/state/state.py pyqcs/state/__init__.py \
+py_files= src/pyqcs/__init__.py \
+		  src/pyqcs/gates/abc.py src/pyqcs/gates/circuits.py \
+		  src/pyqcs/gates/executor.py src/pyqcs/gates/__init__.py \
+		  src/pyqcs/build/abc.py src/pyqcs/build/__init__.py \
+		  src/pyqcs/state/abc.py src/pyqcs/state/state.py src/pyqcs/state/__init__.py \
 		  setup.py
 
 
-c_files= pyqcs/gates/implementations/basic_gates.c \
-		 pyqcs/gates/implementations/generic_setup.h
+c_files= src/pyqcs/gates/implementations/basic_gates.c \
+		 src/pyqcs/gates/implementations/generic_setup.h
 
 all: test
 

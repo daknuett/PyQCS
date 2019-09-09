@@ -2,7 +2,7 @@ from setuptools import setup,Extension
 
 
 basic_gates = Extension("pyqcs.gates.implementations.basic_gates"
-		, sources = ["pyqcs/gates/implementations/basic_gates.c"]
+		, sources = ["src/pyqcs/gates/implementations/basic_gates.c"]
                 , extra_compile_args = ["-g", "-fstack-protector"])
 
 setup(name = "pyqcs",
@@ -16,7 +16,7 @@ setup(name = "pyqcs",
 		, "pyqcs.state"
 		, "pyqcs.gates.implementations"
 	],
-	package_dir = {"pyqcs": "pyqcs"},
+	package_dir = {"pyqcs": "src/pyqcs"},
         install_requires=["numpy"],
 	#url="https://github.com/daknuett/python3-nf",
 	author = "Daniel Knüttel",
