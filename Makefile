@@ -24,4 +24,4 @@ Build: $(py_files) $(c_files)
 	python3 setup.py build
 
 test: clean install
-	((cd test && python3 -m pytest test/ -vv))
+	python3 -m pytest test/ -vv
