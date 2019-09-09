@@ -60,13 +60,12 @@ ufunc_X( char ** args
 {
 
     basic_gate_argument_t argument = *((basic_gate_argument_t *) data);
-    npy_intp l = argument.act;
     npy_intp i;
     PYQCS_GATE_GENERIC_SETUP;
 
     for(i = 0; i < ndim; i++)
     {
-        qm_out[i] = qm_in[i ^ ipow(2, l)];
+        qm_out[i] = qm_in[i ^ (1 << argument.act)];
     }
     *measured_out = 0;
 }
@@ -79,13 +78,12 @@ ufunc_R( char ** args
 {
 
     basic_gate_argument_t argument = *((basic_gate_argument_t *) data);
-    npy_intp l = argument.act;
     npy_intp i;
     PYQCS_GATE_GENERIC_SETUP;
 
     for(i = 0; i < ndim; i++)
     {
-        if(i & argument.act)
+        if(i & (1 << argument.act))
         {
             qm_out[i].real = cos(argument.r) * qm_in[i].real;
             qm_out[i].imag = sin(argument.r) * qm_in[i].imag;
