@@ -6,7 +6,7 @@ from pyqcs.gates.implementations.basic_gates import BasicGate
 try:
     import sqc
 except:
-    pytest.skip("sqc is not present; install it to run these tests.")
+    pytestmark = pytest.mark.skip("sqc is not present; install it to run these tests.")
 
 def test_raw_x1():
     nbits = 2
