@@ -2,6 +2,7 @@
 #include <structmember.h>
 #include <numpy/ndarraytypes.h>
 #include <numpy/ufuncobject.h>
+#include <numpy/random.h>
 #include <stddef.h>
 #include <math.h>
 
@@ -127,6 +128,33 @@ ufunc_H( char ** args
     }
 
     *measured_out = 0;
+}
+
+static void
+ufunc_M( char ** args
+       , npy_intp * dimensions
+       , npy_intp * steps
+       , void * data)
+{
+    basic_gate_argument_t argument = *((basic_gate_argument_t *) data);
+    PYQCS_GATE_GENERIC_SETUP;
+    npy_intp i;
+
+
+    npy_double amplitude_1 = 0;
+
+    for(i = 0; i < ndim; i++)
+    {
+        if(i & (1 << argument.act))
+        {
+            amplitude_1 += qm_in[i].real * qm_in[i].real;
+            amplitude_1 += qm_in[i].imag * qm_in[i].imag;
+        }
+    }
+    
+    npy_double rand = random_uniform(0, 1);
+
+    *measured_out = 1 << argument.act;
 }
 
 static char ufunc_types[5] = 
@@ -324,6 +352,7 @@ PyInit_basic_gates(void)
 	}
 	import_array();
 	import_ufunc();
+    import_random();
 
 	Py_INCREF(&BasicGateType);
 	PyModule_AddObject(module, "BasicGate", (PyObject *) &BasicGateType);
