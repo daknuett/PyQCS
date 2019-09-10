@@ -66,6 +66,14 @@ PyQCS currently has the following gates built-in:
 	and storing the result in the classical part of the state.
 
 
+TODOs
+=====
+
+- Add a subclass of ``pyqcs.state.state.BasicState`` that has an improved ``__str__`` method.
+- Write lot's of documentation.
+- Add more tests.
+
+
 
 
 .. [1] Real quantum computers have an intrinsic time evolution. This is omitted
