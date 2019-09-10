@@ -9,7 +9,7 @@ basic_gates = Extension(
 
 setup(
         name="pyqcs"
-        , version="0.0.1"
+        , version="0.0.2"
         , description="A quantum computing simulator."
         , ext_modules=[basic_gates]
         , packages=find_packages(where="src")
