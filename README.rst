@@ -3,6 +3,13 @@ PyQCS -- A quantum computing simulator
 
 .. contents::
 
+Links
+=====
+
+- `the github repository <https://github.com/daknuett/pyqcs>`_
+- `the pypi repository <https://pypi.org/project/pyqcs/>`_
+- `some examples on github <https://github.com/daknuett/PyQCS/tree/master/examples>`_
+
 Basic Design Layout
 ===================
 
