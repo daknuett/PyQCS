@@ -26,12 +26,9 @@ PyQCS gates
 
 A PyQCS gate is essentially a function mapping a ``2**N`` dimensional ``cdouble`` array and an
 ``N`` dimensional ``double`` array to a ``2**N`` dimensional ``cdouble`` array,
-an ``N`` dimensional ``double`` array and a ``int64`` scalar. To save memory these functions
-can also be implemented in-place [2]_ for large states (i.e. more than 24 qbits, which will require 
-``0.25GiB`` RAM).
+an ``N`` dimensional ``double`` array and a ``int64`` scalar.
 
-PyQCS gates usually are implemented as objects with a numpy ufunc backend, some data and a function
-``is_inplace()`` to check whether the computation is done in-place. 
+PyQCS gates usually are implemented as objects with a numpy ufunc backend and some data. 
 
 A normal user will never access the gates directly but use either `PyQCS gate circuits`_ or
 `PyQCS gate circuit builders`_
@@ -51,6 +48,22 @@ the effort to construct a circuit. When called a circuit builder returns a new c
 given parameters. Typical cases are circuits that can be applied to different qbits.
  
 
+Built-in Gates
+==============
+
+PyQCS currently has the following gates built-in:
+
+``X``
+	Pauli-X or NOT gate. Flips the respective qbit.
+``H``
+	Hadamard gate. 
+``C``
+	CNOT (controlled NOT) gate. Flips the act-qbit, if the control-qbit is set.
+``R``
+	R, Rz or R_phi, the rotation gate. Rotates the respective qbit around a given angle.
+``M``
+	Measurement gate: this gate measures the respective gate, collapsing the wave function
+	and storing the result in the classical part of the state.
 
 
 
@@ -60,4 +73,3 @@ given parameters. Typical cases are circuits that can be applied to different qb
        on a discrete quasi-time with every time-site being before or after a gate
        application.
 
-.. [2] This feature is experimental and should not be used in production.
