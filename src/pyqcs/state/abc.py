@@ -3,7 +3,7 @@ from abc import ( ABCMeta
         , abstractmethod
         , abstractstaticmethod)
 
-def AbstractState(metaclass=ABCMeta):
+class AbstractState(metaclass=ABCMeta):
     @abstractmethod
     def get_last_measurement(self):
         pass

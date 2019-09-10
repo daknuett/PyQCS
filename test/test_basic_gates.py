@@ -41,6 +41,26 @@ def test_raw_x2():
     assert qm_state_new[3] == 0
     assert measured == 0
 
+def test_raw_x12():
+    nbits = 2
+    ndim = 2**nbits
+    qm_state = np.zeros(ndim, dtype=np.cdouble)
+    qm_state[0] = 1
+    cl_state = np.zeros(nbits, dtype=np.uint8)
+    gate = BasicGate('X', 0, 0, 0.0, nop)
+    qm_state, cl_state, measured = gate(qm_state, cl_state)
+
+    gate = BasicGate('X', 1, 0, 0.0, nop)
+
+
+    qm_state_new, cl_state_new, measured = gate(qm_state, cl_state)
+
+    assert qm_state_new[0] == 0 
+    assert qm_state_new[1] == 0
+    assert qm_state_new[2] == 0 
+    assert qm_state_new[3] == 1
+    assert measured == 0
+
 def test_raw_h1():
     nbits = 2
     ndim = 2**nbits

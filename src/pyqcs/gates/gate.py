@@ -14,6 +14,6 @@ class BaseGate(AbstractGate):
         return False
 
 class BuiltinGate(BaseGate):
-    def __init__(self, act, control, r):
-        BaseGate.__init__(self, BasicGate(act, control, r, numpy.random.uniform))
+    def __init__(self, type_, act, control, r):
+        BaseGate.__init__(self, BasicGate(type_, act, control, r, numpy.random.uniform))
 

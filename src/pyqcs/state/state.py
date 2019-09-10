@@ -17,9 +17,10 @@ class BasicState(AbstractState):
             raise Warning("State will require more than 8GiB RAM. " 
                         "Using such big states can lead to random crashes.")
         ndim = 2**nbits
-        qm_state = np.array([1] + ([0] * ndim - 1), dtype=np.cfloat)
+        qm_state = np.zeros(ndim, dtype=np.cfloat)
+        qm_state[0] = 1
         last_measured = 0
-        cl_state = np.zeros(nbits)
+        cl_state = np.zeros(nbits, dtype=np.uint8)
 
         return cls(qm_state, cl_state, nbits, last_measured, **kwargs)
 
@@ -35,20 +36,10 @@ class BasicState(AbstractState):
         return BasicState(self._qm_state.copy(), self._cl_state.copy(), self._nbits, self._last_measured)
 
     def apply_gate(self, gate, force_new_state=False):
-        if(gate.is_inplace() and force_new_state):
-            qm_state, cl_state, last_measured = gate(self._qm_state.copy(), self._cl_state.copy())
-            # Note that non-measuring gates do not copy the classical state.
-            if(not last_measured):
-                cl_state = self._cl_state.copy()
-            return BasicState(qm_state, cl_state, self._nbits,  last_measured)
-        if(gate.is_inplace()):
-            _, _, last_measured = gate(self._qm_state, self._cl_state)
-            self._last_measured = last_measured
-            return self
+        qm_state, cl_state, last_measured = gate(self._qm_state, self._cl_state)
         # Note that non-measuring gates do not copy the classical state.
         if(not last_measured):
             cl_state = self._cl_state.copy()
-        qm_state, cl_state, last_measured = gate(self._qm_state, self._cl_state)
         return BasicState(qm_state, cl_state, self._nbits,  last_measured)
 
     def _easy_format_state_part(self, cf, i):

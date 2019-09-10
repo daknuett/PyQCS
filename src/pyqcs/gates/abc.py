@@ -5,6 +5,7 @@ from abc import ( ABCMeta
 
 
 from .executor import GateListExecutor
+from ..state.abc import AbstractState
 
 class AbstractGateCircuit(metaclass=ABCMeta):
     def __init__(self, qbits, identities):
@@ -51,9 +52,6 @@ class AbstractCompoundGateCircuit(AbstractGateCircuit):
         self._subcircuits = subcircuits
 
 class AbstractGate(metaclass=ABCMeta):
-    @abstractmethod
-    def is_inplace(self):
-        pass
     @abstractmethod
     def __call__(self, qm_state, cl_state):
         pass
