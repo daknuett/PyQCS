@@ -1,4 +1,4 @@
-from setuptools import setup, Extension
+from setuptools import setup, Extension, find_packages
 
 
 basic_gates = Extension(
@@ -12,13 +12,7 @@ setup(
         , version="0.0.1"
         , description="A quantum computing simulator."
         , ext_modules=[basic_gates]
-        , packages=[ 
-            "pyqcs"
-            , "pyqcs.gates"
-            , "pyqcs.build"
-            , "pyqcs.state"
-            , "pyqcs.gates.implementations"
-        ]
+        , packages=find_packages(where="src")
         , package_dir={"pyqcs": "src/pyqcs"}
         , install_requires=["numpy"]
         , project_urls={
