@@ -15,7 +15,7 @@ class BuiltinGateBuilder(AbstractSingleGateCircuitBuilder):
             self._registry[(act, *args)] = circuit
         return self._registry[(act, *args)]
 
-_H = BuiltinGateBuilder('X')
+_H = BuiltinGateBuilder('H')
 def H(act):
     return _H(act, 0, 0)
 
