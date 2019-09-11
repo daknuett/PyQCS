@@ -79,6 +79,7 @@ TODOs
 - Add a subclass of ``pyqcs.state.state.BasicState`` that has an improved ``__str__`` method.
 - Write lot's of documentation.
 - Add more tests.
+- Add a ``NoisyGateListExecutor`` that allows to implement a noise model.
 
 
 
