@@ -23,6 +23,12 @@ class AbstractGateCircuit(metaclass=ABCMeta):
             return self._executor(self.get_child_executors())(other)
         if(isinstance(other, int)):
             return self.new_from_circuit_with_executor(RepeatingGateListExecutorSpawner(other))
+        raise TypeError()
+
+    def __rmul__(self, other):
+        if(isinstance(other, int)):
+            return self.new_from_circuit_with_executor(RepeatingGateListExecutorSpawner(other))
+        raise TypeError()
 
             
     def add_identity(self, identity):
