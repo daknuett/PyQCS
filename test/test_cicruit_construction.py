@@ -13,3 +13,9 @@ def test_repeating_gates():
 
     assert multiplied.to_executor().to_gate_list() == (5 * base.to_executor().to_gate_list())
 
+def test_repeating_gates_inverted():
+    base = X(0) | H(0)
+
+    multiplied = 5 * base
+
+    assert multiplied.to_executor().to_gate_list() == (5 * base.to_executor().to_gate_list())
