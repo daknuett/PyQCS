@@ -18,8 +18,8 @@ def test_or_preserves_order():
 
     circuit = gc1 | gc2
 
-    assert circuit.to_gate_list() == (gc1.to_gate_list() + gc2.to_gate_list())
-    assert gc1.to_gate_list() != gc2.to_gate_list()
+    assert circuit.to_executor().to_gate_list() == (gc1.to_executor().to_gate_list() + gc2.to_executor().to_gate_list())
+    assert gc1.to_executor().to_gate_list() != gc2.to_executor().to_gate_list()
 
 def test_XH():
     M_SQRT1_2 = 0.70710678118654752440

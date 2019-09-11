@@ -1,15 +1,14 @@
 from .abc import AbstractGateCircuit, AbstractNamedGateCircuit, AbstractCompoundGateCircuit
+from .executor import GateListExecutor
 
 class SingleGateCircuit(AbstractNamedGateCircuit):
     def __init__(self, qbits, identities, name, gate):
         AbstractNamedGateCircuit.__init__(self, qbits, identities, name)
         self._gate = gate
 
-    #def to_dot(self):
-    #    return self.stock_to_dot()
 
-    def to_gate_list(self):
-        return [self._gate]
+    def get_child_executors(self):
+        return [GateListExecutor([self._gate])]
 
     def gate_list_generator(self):
         yield self._gate
@@ -24,6 +23,12 @@ class SingleGateCircuit(AbstractNamedGateCircuit):
         return AnonymousCompoundGateCircuit([other, self])
 
 
+    def new_from_circuit_with_executor(self, executor):
+        new_circuit = AnonymousCompoundGateCircuit([self], self._uses_qbits)
+        new_circuit._executor = executor
+        return new_circuit
+
+
 class AnonymousCompoundGateCircuit(AbstractCompoundGateCircuit):
     def __init__(self, subcircuit_list, qbits=None):
         if(qbits is None):
@@ -32,11 +37,6 @@ class AnonymousCompoundGateCircuit(AbstractCompoundGateCircuit):
                 qbits |= subcircuit._uses_qbits
         AbstractCompoundGateCircuit.__init__(self, qbits, [], subcircuit_list)
 
-    def to_gate_list(self):
-        return list(self.gate_list_generator())
-    def gate_list_generator(self):
-        for subcircuit in self._subcircuits:
-            yield from subcircuit.gate_list_generator()
     def __or__(self, other):
         if(not isinstance(other, AbstractGateCircuit)):
             raise TypeError()
@@ -46,7 +46,15 @@ class AnonymousCompoundGateCircuit(AbstractCompoundGateCircuit):
         if(not isinstance(other, AbstractGateCircuit)):
             raise TypeError()
         return AnonymousCompoundGateCircuit([other, self])
+
+    def new_from_circuit_with_executor(self, executor):
+        new_circuit = AnonymousCompoundGateCircuit(self._subcircuits, self._uses_qbits)
+        new_circuit._executor = executor
+        return new_circuit
         
+    def get_child_executors(self):
+        return [c.to_executor() for c in self._subcircuits]
+
 class NamedCompoundGateCircuit(AnonymousCompoundGateCircuit, AbstractNamedGateCircuit):
     def __init__(self, subcircuit_list, name, identities=[]):
         qbits = 0
@@ -61,4 +69,12 @@ class NamedCompoundGateCircuit(AnonymousCompoundGateCircuit, AbstractNamedGateCi
             raise TypeError("anonymous must be of type AnonymousCompoundGateCircuit")
         subcircuit_list = anonymous._subcircuits
         return cls(subcircuit_list, name, identities)
+
+
+    def new_from_circuit_with_executor(self, executor):
+        # Don't give that new circuit a name. It is a new 
+        # circuit.
+        new_circuit = AnonymousCompoundGateCircuit([self], self._uses_qbits)
+        new_circuit._executor = executor
+        return new_circuit
 

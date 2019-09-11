@@ -4,33 +4,32 @@ from abc import ( ABCMeta
                 , abstractstaticmethod)
 
 
-from .executor import GateListExecutor
+from .executor import GateListExecutor, RepeatingGateListExecutorSpawner
 from ..state.abc import AbstractState
 
 class AbstractGateCircuit(metaclass=ABCMeta):
     def __init__(self, qbits, identities):
         self._uses_qbits = qbits
         self._identities = identities
+        self._executor = GateListExecutor
 
     def __mul__(self, other):
-        if(not isinstance(other, AbstractState)):
-            raise TypeError()
-        if(not other.check_qbits(self)):
-            raise ValueError(
-                    "Gate circuit requires qbits {}, but given state has less.".format(
-                        self._uses_qbits
-                        ))
-        return GateListExecutor(self.to_gate_list())(other)
-    @abstractmethod
-    def to_gate_list(self):
-        pass
+        if(isinstance(other, AbstractState)):
+            if(not other.check_qbits(self)):
+                raise ValueError(
+                        "Gate circuit requires qbits {}, but given state has less.".format(
+                            self._uses_qbits
+                            ))
+            return self._executor(self.get_child_executors())(other)
+        if(isinstance(other, int)):
+            return self.new_from_circuit_with_executor(RepeatingGateListExecutorSpawner(other))
 
-    @abstractmethod
-    def gate_list_generator(self):
-        pass
-
+            
     def add_identity(self, identity):
         self._identities.append(identity)
+
+    def to_executor(self):
+        return self._executor(self.get_child_executors())
 
     @abstractmethod
     def __or__(self, other):
@@ -38,6 +37,14 @@ class AbstractGateCircuit(metaclass=ABCMeta):
 
     @abstractmethod
     def __ror__(self, other):
+        pass
+    
+    @abstractmethod
+    def get_child_executors(self):
+        pass
+
+    @abstractmethod
+    def new_from_circuit_with_executor(self, executor):
         pass
 
 class AbstractNamedGateCircuit(AbstractGateCircuit):
