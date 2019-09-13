@@ -16,7 +16,7 @@ def test_raw_x1():
     ndim = 2**nbits
     qm_state = np.zeros(ndim, dtype=np.cdouble)
     qm_state[0] = 1
-    cl_state = np.zeros(nbits, dtype=np.uint8)
+    cl_state = -1 * np.ones(nbits, dtype=np.int8)
     gate = BasicGate('X', 0, 0, 0.0, nop)
     state = sqc.operator(2).X(0) * sqc.state(2)
 
@@ -30,7 +30,7 @@ def test_raw_x2():
     ndim = 2**nbits
     qm_state = np.zeros(ndim, dtype=np.cdouble)
     qm_state[0] = 1
-    cl_state = np.zeros(nbits, dtype=np.uint8)
+    cl_state = -1 * np.ones(nbits, dtype=np.int8)
     gate = BasicGate('X', 1, 0, 0.0, nop)
     state = sqc.operator(2).X(1) * sqc.state(2)
 
@@ -43,7 +43,7 @@ def test_raw_h1():
     ndim = 2**nbits
     qm_state = np.zeros(ndim, dtype=np.cdouble)
     qm_state[0] = 1
-    cl_state = np.zeros(nbits, dtype=np.uint8)
+    cl_state = -1 * np.ones(nbits, dtype=np.int8)
     gate = BasicGate('H', 0, 0, 0.0, nop)
     state = sqc.operator(2).H(0) * sqc.state(2)
 
@@ -56,7 +56,7 @@ def test_raw_h2():
     ndim = 2**nbits
     qm_state = np.zeros(ndim, dtype=np.cdouble)
     qm_state[0] = 1
-    cl_state = np.zeros(nbits, dtype=np.uint8)
+    cl_state = -1 * np.ones(nbits, dtype=np.int8)
     gate = BasicGate('H', 1, 0, 0.0, nop)
     state = sqc.operator(2).H(1) * sqc.state(2)
 
@@ -70,7 +70,7 @@ def test_raw_r1():
     ndim = 2**nbits
     qm_state = np.zeros(ndim, dtype=np.cdouble)
     qm_state[0] = 1
-    cl_state = np.zeros(nbits, dtype=np.uint8)
+    cl_state = -1 * np.ones(nbits, dtype=np.int8)
     state = sqc.state(2)
 
     tests = [(
@@ -86,7 +86,7 @@ def test_raw_r2():
     ndim = 2**nbits
     qm_state = np.zeros(ndim, dtype=np.cdouble)
     qm_state[0] = 1
-    cl_state = np.zeros(nbits, dtype=np.uint8)
+    cl_state = -1 * np.ones(nbits, dtype=np.int8)
     state = sqc.state(2)
 
     tests = [(
@@ -102,7 +102,7 @@ def test_raw_hx11():
     ndim = 2**nbits
     qm_state = np.zeros(ndim, dtype=np.cdouble)
     qm_state[0] = 1
-    cl_state = np.zeros(nbits, dtype=np.uint8)
+    cl_state = -1 * np.ones(nbits, dtype=np.int8)
     state = sqc.operator(2).X(0).H(0) * sqc.state(2)
     gate = BasicGate('X', 0, 0, 0.0, nop)
     qm_state_new, cl_state_new, measured = gate(qm_state, cl_state)
@@ -117,7 +117,7 @@ def test_raw_cnot_0():
     ndim = 2**nbits
     qm_state = np.zeros(ndim, dtype=np.cdouble)
     qm_state[0] = 1
-    cl_state = np.zeros(nbits, dtype=np.uint8)
+    cl_state = -1 * np.ones(nbits, dtype=np.int8)
     gate = BasicGate('C', 1, 0, 0.0, nop)
     state = sqc.operator(2).CNOT(1, 0) * sqc.state(2)
 
@@ -130,7 +130,7 @@ def test_raw_cnot_1():
     ndim = 2**nbits
     qm_state = np.zeros(ndim, dtype=np.cdouble)
     qm_state[0] = 1
-    cl_state = np.zeros(nbits, dtype=np.uint8)
+    cl_state = -1 * np.ones(nbits, dtype=np.int8)
     gate = BasicGate('X', 0, 0, 0.0, nop)
     qm_state_new, cl_state_new, measured = gate(qm_state, cl_state)
     gate = BasicGate('C', 1, 0, 0.0, nop)

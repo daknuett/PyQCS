@@ -8,6 +8,16 @@
 
 #include "generic_setup.h"
 
+void
+copy_cl_state(npy_int8 * new, npy_int8 * old, npy_intp nbits)
+{
+    npy_intp i;
+    for(i = 0; i < nbits; i++)
+    {
+        new[i] = old[i];
+    }
+}
+
 typedef struct
 {
     npy_intp act;
@@ -65,6 +75,8 @@ ufunc_X( char ** args
     npy_intp i;
     PYQCS_GATE_GENERIC_SETUP;
 
+    copy_cl_state(cl_out, cl_in, nqbits);
+
     for(i = 0; i < ndim; i++)
     {
         qm_out[i] = qm_in[i ^ (1 << argument.act)];
@@ -82,6 +94,8 @@ ufunc_R( char ** args
     basic_gate_argument_t argument = *((basic_gate_argument_t *) data);
     npy_intp i;
     PYQCS_GATE_GENERIC_SETUP;
+
+    copy_cl_state(cl_out, cl_in, nqbits);
 
     for(i = 0; i < ndim; i++)
     {
@@ -107,6 +121,8 @@ ufunc_H( char ** args
     basic_gate_argument_t argument = *((basic_gate_argument_t *) data);
     PYQCS_GATE_GENERIC_SETUP;
     npy_intp i;
+
+    copy_cl_state(cl_out, cl_in, nqbits);
 
     for(i = 0; i < ndim; i++)
     {
@@ -140,6 +156,9 @@ ufunc_C( char ** args
     basic_gate_argument_t argument = *((basic_gate_argument_t *) data);
     PYQCS_GATE_GENERIC_SETUP;
     npy_intp i;
+
+    copy_cl_state(cl_out, cl_in, nqbits);
+
     for(i = 0; i < ndim; i++)
     {
 
@@ -200,11 +219,8 @@ ufunc_M( char ** args
     Py_DECREF(random_result);
     //==================================================//
 
-    // XXX: copy over old measured values.
-    for(i = 0; i < nqbits; i++)
-    {
-        cl_out[i] = cl_in[i];
-    }
+    copy_cl_state(cl_out, cl_in, nqbits);
+
 
     npy_double partial_amplitude;
     if(amplitude_1 > randr)
@@ -252,7 +268,7 @@ ufunc_M( char ** args
 }
 
 static char ufunc_types[5] = 
-    { NPY_CDOUBLE, NPY_UINT8, NPY_CDOUBLE, NPY_UINT8, NPY_UINT64 };
+    { NPY_CDOUBLE, NPY_INT8, NPY_CDOUBLE, NPY_INT8, NPY_UINT64 };
 static PyUFuncGenericFunction ufunc_X_funcs[1] = 
     { ufunc_X };
 static PyUFuncGenericFunction ufunc_H_funcs[1] = 
