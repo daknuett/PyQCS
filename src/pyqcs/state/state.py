@@ -28,7 +28,7 @@ class BasicState(AbstractState):
         return self._cl_state, self._last_measured
 
     def check_qbits(self, gate_circuit):
-        if(gate_circuit._uses_qbits < (1 << self._nbits + 1)):
+        if(gate_circuit._uses_qbits < (1 << self._nbits)):
             return True
         return False
 

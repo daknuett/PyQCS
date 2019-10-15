@@ -18,7 +18,7 @@ class AbstractGateCircuit(metaclass=ABCMeta):
             if(not other.check_qbits(self)):
                 raise ValueError(
                         "Gate circuit requires qbits {}, but given state has less.".format(
-                            self._uses_qbits
+                            bin(self._uses_qbits)
                             ))
             return self._executor(self.get_child_executors())(other)
         if(isinstance(other, int)):
