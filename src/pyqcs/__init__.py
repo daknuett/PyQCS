@@ -26,6 +26,7 @@ import numpy as np
 
 from .gates.builtins import C, H, X, R, M
 from .state.state import BasicState as State
+from .gates.circuits import AnonymousCompoundGateCircuit, NamedCompoundGateCircuit
 
 def measure(state, bit_mask):
     c_list = [M(i) for i in range(bit_mask.bit_length()) if bit_mask & (1 << i)]
@@ -56,4 +57,7 @@ def sample(state, bit_mask, nsamples, keep_states=False):
     
     return Counter((i[1] for i in _do_sample(state, circuit, nsamples)))
 
-
+def list_to_circuit(list_of_circuits, name=None):
+    if(not name):
+        return AnonymousCompoundGateCircuit(list_of_circuits)
+    return NamedCompoundGateCircuit(list_of_circuits, name)
