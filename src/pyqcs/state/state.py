@@ -51,3 +51,12 @@ class BasicState(AbstractState):
 
     def __repr__(self):
         return str(self)
+
+    def __hash__(self):
+        return hash((tuple(self._qm_state), tuple(self._cl_state)))
+
+    def __eq__(self, other):
+        if(isinstance(other, BasicState)):
+            return (np.allclose(self._qm_state, other._qm_state) 
+                    and np.allclose(self._cl_state, other._cl_state))
+        raise TypeError()
