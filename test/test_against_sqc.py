@@ -140,3 +140,29 @@ def test_raw_cnot_1():
 
     assert state.v == pytest.approx(qm_state_new)
 
+def test_raw_z1():
+    nbits = 2
+    ndim = 2**nbits
+    qm_state = np.zeros(ndim, dtype=np.cdouble)
+    qm_state[0] = 1
+    cl_state = -1 * np.ones(nbits, dtype=np.int8)
+    gate = BasicGate('Z', 0, 0, 0.0, nop)
+    state = sqc.operator(2).Rz(0, np.pi) * sqc.state(2)
+
+    qm_state_new, cl_state_new, measured = gate(qm_state, cl_state)
+
+    assert state.v == pytest.approx(qm_state_new)
+
+
+def test_raw_z2():
+    nbits = 2
+    ndim = 2**nbits
+    qm_state = np.zeros(ndim, dtype=np.cdouble)
+    qm_state[0] = 1
+    cl_state = -1 * np.ones(nbits, dtype=np.int8)
+    gate = BasicGate('Z', 1, 0, 0.0, nop)
+    state = sqc.operator(2).Rz(1, np.pi) * sqc.state(2)
+
+    qm_state_new, cl_state_new, measured = gate(qm_state, cl_state)
+
+    assert state.v == pytest.approx(qm_state_new)
