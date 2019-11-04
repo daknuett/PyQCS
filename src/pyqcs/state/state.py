@@ -20,7 +20,7 @@ class BasicState(AbstractState):
         qm_state = np.zeros(ndim, dtype=np.cfloat)
         qm_state[0] = 1
         last_measured = 0
-        cl_state = np.zeros(nbits, dtype=np.uint8)
+        cl_state = -1 * np.ones(nbits, dtype=np.int8)
 
         return cls(qm_state, cl_state, nbits, last_measured, **kwargs)
 
@@ -28,7 +28,7 @@ class BasicState(AbstractState):
         return self._cl_state, self._last_measured
 
     def check_qbits(self, gate_circuit):
-        if(gate_circuit._uses_qbits < (1 << self._nbits + 1)):
+        if(gate_circuit._uses_qbits < (1 << self._nbits)):
             return True
         return False
 
@@ -37,9 +37,6 @@ class BasicState(AbstractState):
 
     def apply_gate(self, gate, force_new_state=False):
         qm_state, cl_state, last_measured = gate(self._qm_state, self._cl_state)
-        # Note that non-measuring gates do not copy the classical state.
-        if(not last_measured):
-            cl_state = self._cl_state.copy()
         return BasicState(qm_state, cl_state, self._nbits,  last_measured)
 
     def _easy_format_state_part(self, cf, i):
@@ -54,3 +51,12 @@ class BasicState(AbstractState):
 
     def __repr__(self):
         return str(self)
+
+    def __hash__(self):
+        return hash((tuple(self._qm_state), tuple(self._cl_state)))
+
+    def __eq__(self, other):
+        if(isinstance(other, BasicState)):
+            return (np.allclose(self._qm_state, other._qm_state) 
+                    and np.allclose(self._cl_state, other._cl_state))
+        raise TypeError()

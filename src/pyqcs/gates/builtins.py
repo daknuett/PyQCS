@@ -34,3 +34,7 @@ def C(act, control):
 _R = BuiltinGateBuilder('R')
 def R(act, r):
     return _R(act, 0, r)
+
+_Z = BuiltinGateBuilder('Z')
+def Z(act):
+    return _Z(act, 0, 0)
