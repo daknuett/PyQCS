@@ -6,13 +6,16 @@ basic_gates = Extension(
                         , sources=["src/pyqcs/gates/implementations/basic_gates.c"]
                         , extra_compile_args=["-fstack-protector", "-Wno-unused-variable"]
                     )
+graph_backend = Extension("pyqcs.graph.backend.raw_state"
+                        , sources=["src/pyqcs/graph/backend/raw_state.c"]
+                    )
 
 setup(
         name="pyqcs"
         , version="0.0.9"
         , description="A quantum computing simulator."
         , long_description = open("README.rst").read()
-        , ext_modules=[basic_gates]
+        , ext_modules=[basic_gates, graph_backend]
         , packages=find_packages(where="src")
         , package_dir={"pyqcs": "src/pyqcs"}
         , install_requires=["numpy"]

@@ -1,9 +1,12 @@
 #include <Python.h>
+#include <structmember.h>
 #include <numpy/ndarraytypes.h>
-//#include <numpy/ufuncobject.h>
+#include <numpy/ufuncobject.h>
 #include <structmember.h>
 #include <stdlib.h>
 #include "vops.h"
+
+#include "../../gates/implementations/basic_gates.h"
 
 typedef struct ll_node_s
 {
@@ -171,13 +174,13 @@ RawGraphState_init(RawGraphState * self
     }
     if(!self->vops)
     {
-        free(self->lists)
+        free(self->lists);
         PyErr_SetString(PyExc_MemoryError, "out of memory");
         return -1;
     }
     for(i = 0; i < length; i++)
     {
-        vops[i] = VOP_H;
+        self->vops[i] = VOP_H;
     }
     return 0;
 }
@@ -320,6 +323,59 @@ RawGraphState_apply_C_L(RawGraphState * self
 
 }
 
+static PyObject * 
+RawGraphState_to_lists(RawGraphState * self)
+{
+    PyObject * vop_list;
+    PyObject * adjacency_list;
+    PyObject * this_edges;
+
+    npy_intp i;
+
+    vop_list = PyList_New(self->length);
+    if(!vop_list)
+    {
+        return NULL;
+    }
+    adjacency_list = PyList_New(self->length);
+    if(!adjacency_list)
+    {
+        Py_DECREF(vop_list);
+        return NULL;
+    }
+
+    for(i = 0; i < self->length; i++)
+    {
+        PyList_SET_ITEM(vop_list, i, PyLong_FromLong(self->vops[i]));
+        // XXX: This is crap. But it will do the trick for now.
+        this_edges = PyList_New(0);
+        ll_node_t * node = self->lists[i];
+        while(node)
+        {
+            if(PyList_Append(this_edges, PyLong_FromLong(1)) < 0)
+            {
+                goto cleanup_error;
+            }
+            node = node->next;
+        }
+        PyList_SET_ITEM(adjacency_list, i, this_edges);
+    }
+    return PyTuple_Pack(2, vop_list, adjacency_list);
+
+cleanup_error:
+    Py_DECREF(this_edges);
+    npy_intp j;
+    for(j = 0; j < i; j++)
+    {
+        Py_DECREF(PyList_GET_ITEM(vop_list, j));
+        Py_DECREF(PyList_GET_ITEM(adjacency_list, j));
+    }
+    Py_DECREF(PyList_GET_ITEM(vop_list, j));
+    Py_DECREF(vop_list);
+    Py_DECREF(adjacency_list);
+    return NULL;
+}
+
 static void
 RawGraphState_dealloc(RawGraphState * self)
 {
@@ -338,6 +394,7 @@ static PyMethodDef RawGraphState_methods[] = {
     //{"setitem", (PyCFunction) RawGraphState_setitem, METH_VARARGS, "sets an item"}
     //, {"getitem", (PyCFunction) RawGraphState_getitem, METH_VARARGS, "gets an item"}
     {"apply_C_L", (PyCFunction) RawGraphState_apply_C_L, METH_VARARGS, "applies a C_L operator"}
+    , {"to_lists", (PyCFunction) RawGraphState_to_lists, METH_NOARGS, "converts the graph state to a python representation using lists"}
     , {NULL}
 };
 
@@ -365,6 +422,14 @@ static PyModuleDef raw_statemodule = {
 PyMODINIT_FUNC
 PyInit_raw_state(void)
 {
+    if(import_basic_gates() < 0)
+    {
+        return NULL;
+    }
+    //if(import_array() < 0)
+    //{
+    //    return NULL;
+    //}
     PyObject * m;
     if(PyType_Ready(&RawGraphStateType) < 0)
     {
@@ -386,4 +451,3 @@ PyInit_raw_state(void)
     }
     return m;
 }
-#endif
