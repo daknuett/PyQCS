@@ -8,6 +8,9 @@
 
 #include "generic_setup.h"
 
+#define basic_gates_module
+#include "basic_gates.h"
+
 void
 copy_cl_state(npy_int8 * new, npy_int8 * old, npy_intp nbits)
 {
@@ -523,7 +526,7 @@ static PyMemberDef BasicGate_members[] =
 };
 
 
-static PyTypeObject BasicGateType = 
+static PyTypeObject BasicGateType =
 {
 	PyVarObject_HEAD_INIT(NULL, 0)
 	.tp_name = "pyqcs.gates.implementations.basic_gates.BasicGate",
@@ -563,6 +566,8 @@ PyMODINIT_FUNC
 PyInit_basic_gates(void)
 {
 	PyObject * module;
+    static void * basic_gates_API[basic_gates_API_pointers];
+    PyObject * api_obj;
 
 	if(PyType_Ready(&BasicGateType) < 0)
 	{
@@ -578,7 +583,23 @@ PyInit_basic_gates(void)
 	import_ufunc();
 
 	Py_INCREF(&BasicGateType);
-	PyModule_AddObject(module, "BasicGate", (PyObject *) &BasicGateType);
+	if(PyModule_AddObject(module, "BasicGate", (PyObject *) &BasicGateType) < 0)
+    {
+        Py_XDECREF(&BasicGateType);
+        Py_DECREF(module);
+        return NULL;
+    }
+
+    basic_gates_API[0] = (void *)&BasicGateType;
+    api_obj = PyCapsule_New((void *) basic_gates_API, "pyqcs.gates.implementations.basic_gates._C_API", NULL);
+    
+    if(PyModule_AddObject(module, "_C_API", api_obj) < 0)
+    {
+        Py_DECREF(module);
+        Py_XDECREF(api_obj);
+        return NULL;
+    }
+
 
 	return module;
 }
