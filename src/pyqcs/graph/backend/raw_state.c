@@ -343,7 +343,7 @@ static PyMethodDef RawGraphState_methods[] = {
 
 static PyTypeObject RawGraphStateType = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "raw_state.RawGraphState",
+    .tp_name = "pyqcs.graph.backed.raw_state.RawGraphState",
     .tp_doc = "special type for graph representation",
     .tp_basicsize = sizeof(RawGraphState),
     .tp_itemsize = 0,
