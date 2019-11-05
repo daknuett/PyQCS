@@ -2,6 +2,7 @@ import numpy
 
 from .abc import AbstractGate
 from .implementations.basic_gates import BasicGate
+from .implementations.generic_gate import GenericGate as _GenericGate
 
 
 class BaseGate(AbstractGate):
@@ -16,4 +17,29 @@ class BaseGate(AbstractGate):
 class BuiltinGate(BaseGate):
     def __init__(self, type_, act, control, r):
         BaseGate.__init__(self, BasicGate(type_, act, control, r, numpy.random.uniform))
+
+class GenericGate(BaseGate):
+    def __init__(self, act, arr):
+        if(not isinstance(arr, numpy.ndarray)):
+            raise TypeError("matrices must be numpy ndarrays")
+        if(len(arr.shape) != 2):
+            raise ValueError("matrices must be of dimension NxN")
+        if(arr.shape[0] != arr.shape[1]):
+            raise ValueError("matrices must be of dimension NxN")
+
+        test = arr.dot(arr.conj().T)
+        if(not numpy.isclose(test, numpy.identity(arr.shape[0])).all()):
+            raise ValueError("matrices must be unitary")
+
+        #if(not numpy.isclose(numpy.linalg.det(arr), 1).all()):
+        #    print(numpy.linalg.det(arr))
+        #    print(numpy.isclose(numpy.linalg.det(arr), 1))
+        #    raise ValueError("matrices must be in SU(N)")
+
+        if(arr.shape[0] != 2):
+            raise ValueError("matrices must be in SU(2)")
+
+        arr = arr.astype(numpy.cdouble)
+
+        BaseGate.__init__(self, _GenericGate(act, arr[0,0], arr[1,1], arr[0,1], arr[1,0]))
 

@@ -104,8 +104,8 @@ ufunc_R( char ** args
     {
         if(i & (1 << argument.act))
         {
-            qm_out[i].real = cos(argument.r) * qm_in[i].real;
-            qm_out[i].imag = sin(argument.r) * qm_in[i].imag;
+            qm_out[i].real = cos(argument.r)*qm_in[i].real - sin(argument.r)*qm_in[i].imag;
+            qm_out[i].imag = sin(argument.r)*qm_in[i].real + cos(argument.r)*qm_in[i].imag;
         }
         else
         {
