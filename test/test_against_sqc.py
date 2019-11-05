@@ -65,7 +65,7 @@ def test_raw_h2():
     assert state.v == pytest.approx(qm_state_new)
 
 
-def test_raw_r1():
+def test_raw_r1_0():
     nbits = 2
     ndim = 2**nbits
     qm_state = np.zeros(ndim, dtype=np.cdouble)
@@ -81,7 +81,7 @@ def test_raw_r1():
     for expect, got in tests:
         assert expect == pytest.approx(got)
 
-def test_raw_r2():
+def test_raw_r2_0():
     nbits = 2
     ndim = 2**nbits
     qm_state = np.zeros(ndim, dtype=np.cdouble)
@@ -91,6 +91,42 @@ def test_raw_r2():
 
     tests = [(
                 (sqc.operator(2).Rz(1, r) * state).v
+                , BasicGate('R', 1, 0, r, nop)(qm_state, cl_state)[0]) 
+                    for r in np.arange(0, 2 * np.pi, 0.1)]
+
+    for expect, got in tests:
+        assert expect == pytest.approx(got)
+def test_raw_r1_1():
+    nbits = 2
+    ndim = 2**nbits
+    qm_state = np.zeros(ndim, dtype=np.cdouble)
+    qm_state[1] = 1
+    cl_state = -1 * np.ones(nbits, dtype=np.int8)
+    state = sqc.state(2)
+
+
+    tests = [(
+                (sqc.operator(2).X(0).Rz(0, r) * state).v
+                , BasicGate('R', 0, 0, r, nop)(qm_state, cl_state)[0]) 
+                    for r in np.arange(0, 2 * np.pi, 0.1)]
+
+    for expect, got in tests:
+        print("expect", expect)
+        print("got", got)
+        assert expect == pytest.approx(got)
+
+def test_raw_r2_1():
+    nbits = 2
+    ndim = 2**nbits
+    qm_state = np.zeros(ndim, dtype=np.cdouble)
+    qm_state[0] = 1
+    cl_state = -1 * np.ones(nbits, dtype=np.int8)
+    state = sqc.state(2)
+
+    qm_state, cl_state, measured = BasicGate('X', 1, 0, 0.0, nop)(qm_state, cl_state)
+
+    tests = [(
+                (sqc.operator(2).X(1).Rz(1, r) * state).v
                 , BasicGate('R', 1, 0, r, nop)(qm_state, cl_state)[0]) 
                     for r in np.arange(0, 2 * np.pi, 0.1)]
 
