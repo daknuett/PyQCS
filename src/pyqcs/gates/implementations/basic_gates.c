@@ -207,6 +207,35 @@ ufunc_C( char ** args
     }
     *measured_out = 0;
 }
+static void
+ufunc_CZ( char ** args
+       , npy_intp * dimensions
+       , npy_intp * steps
+       , void * data)
+{
+    basic_gate_argument_t argument = *((basic_gate_argument_t *) data);
+    PYQCS_GATE_GENERIC_SETUP;
+    npy_intp i;
+
+    copy_cl_state(cl_out, cl_in, nqbits);
+
+    for(i = 0; i < ndim; i++)
+    {
+
+        if((i & (1 << argument.control)) && (i & (1 << argument.act)))
+        {
+            qm_out[i].real = qm_in[i].real * -1;
+            qm_out[i].imag = qm_in[i].imag * -1;
+        }
+        else
+        {
+
+            qm_out[i].real = qm_in[i].real;
+            qm_out[i].imag = qm_in[i].imag;
+        }
+    }
+    *measured_out = 0;
+}
 
 
 static void
@@ -310,6 +339,8 @@ static PyUFuncGenericFunction ufunc_R_funcs[1] =
     { ufunc_R };
 static PyUFuncGenericFunction ufunc_C_funcs[1] = 
     { ufunc_C };
+static PyUFuncGenericFunction ufunc_CZ_funcs[1] = 
+    { ufunc_CZ };
 static PyUFuncGenericFunction ufunc_M_funcs[1] = 
     { ufunc_M };
 
@@ -489,9 +520,32 @@ BasicGate_init
             }
 			break;
 		}
+		case 'B':
+		{
+			self->ufunc = PyUFunc_FromFuncAndDataAndSignature(
+				ufunc_CZ_funcs // func
+				, self->data // data
+				, ufunc_types //types
+				, 1 // ntypes
+				, 2 // nin
+				, 3 // nout
+				, PyUFunc_None // identity
+				, "CZ_function" // name
+				, "Computes the CZ (Controlled-Z) gate on a state." // doc
+				, 0 // unused
+                , "(n),(m)->(n),(m),()"); 
+
+            if(self->ufunc <= 0)
+            {
+                //I have no idea what is going on.
+                //PyErr_SetString(PyExc_ValueError, "failed to construct the ufunc for unknow reasons");
+                return -1;
+            }
+			break;
+        }
         default:
         {
-            PyErr_SetString(PyExc_ValueError, "Type must be one of X,H,R,C,M,Z");
+            PyErr_SetString(PyExc_ValueError, "Type must be one of X,H,R,C,M,Z,B");
             return -1;
         }
     }
@@ -530,8 +584,8 @@ static PyTypeObject BasicGateType =
 {
 	PyVarObject_HEAD_INIT(NULL, 0)
 	.tp_name = "pyqcs.gates.implementations.basic_gates.BasicGate",
-	.tp_doc = "The wrapper for the basic gates X, H, Z, R_phi, CNOT and Measurement." \
-              "The first argument is the type of the gate as a char: X,H,R,C,M,Z." 
+	.tp_doc = "The wrapper for the basic gates X, H, Z, R_phi, CNOT, CZ and Measurement." \
+              "The first argument is the type of the gate as a char: X,H,R,C,M,Z,B." 
                ,
 	.tp_basicsize = sizeof(BasicGate),
 	.tp_itemsize = 0,

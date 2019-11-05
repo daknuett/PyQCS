@@ -31,6 +31,9 @@ _C = BuiltinGateBuilder('C')
 def C(act, control):
     return _C(act, control, 0)
 
+CX = C
+CNOT = C
+
 _R = BuiltinGateBuilder('R')
 def R(act, r):
     return _R(act, 0, r)
@@ -38,3 +41,8 @@ def R(act, r):
 _Z = BuiltinGateBuilder('Z')
 def Z(act):
     return _Z(act, 0, 0)
+
+_B = BuiltinGateBuilder('B')
+def CZ(act, control):
+    return _B(act, control, 0)
+
