@@ -1,4 +1,4 @@
-from .gate import BuiltinGate
+from .gate import BuiltinGate, GenericGate as _GenericGate
 from .circuits import SingleGateCircuit
 from ..build.abc import AbstractSingleGateCircuitBuilder
 
@@ -46,3 +46,7 @@ _B = BuiltinGateBuilder('B')
 def CZ(act, control):
     return _B(act, control, 0)
 
+def GenericGate(act, array):
+    gate = _GenericGate(act, array)
+
+    return SingleGateCircuit(1 << act, [], str(array), gate)
