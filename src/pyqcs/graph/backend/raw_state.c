@@ -306,7 +306,7 @@ RawGraphState_apply_C_L(RawGraphState * self
     npy_uint8 vop = VOP_I;
     npy_intp i = 0;
 
-    if(!PyArg_ParseTuple(args, "II", &vop, &i))
+    if(!PyArg_ParseTuple(args, "II", &i, &vop))
     {
         return NULL;
     }
@@ -314,6 +314,12 @@ RawGraphState_apply_C_L(RawGraphState * self
     if(vop >= 24)
     {
         PyErr_SetString(PyExc_ValueError, "vop index must be in [0, 23]");
+        return NULL;
+    }
+
+    if(i >= self->length)
+    {
+        PyErr_SetString(PyExc_ValueError, "qbit index out of range");
         return NULL;
     }
 
