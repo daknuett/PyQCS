@@ -301,15 +301,15 @@ static PyObject *
 RawGraphState_apply_C_L(RawGraphState * self
                         , PyObject * args)
 {
-	// Somehow uninitialized values can make bad stuff.
-    // So initialize this value with the least harmful operator.	
-    npy_uint8 vop = VOP_I;
-    npy_intp i = 0;
+    npy_uint8 vop = 0xdeadbeef;
+    npy_intp i;// = 0xdeadbeef;
 
     if(!PyArg_ParseTuple(args, "II", &i, &vop))
     {
         return NULL;
     }
+
+    printf("i = %ld\n", i);
 
     if(vop >= 24)
     {
@@ -323,6 +323,7 @@ RawGraphState_apply_C_L(RawGraphState * self
         return NULL;
     }
 
+    printf("mapping vop[%ld] %d,%d -> %d\n", i, vop, self->vops[i], vop_lookup_table[vop][self->vops[i]]);
     self->vops[i] = vop_lookup_table[vop][self->vops[i]];
 
     Py_RETURN_NONE;
@@ -382,6 +383,80 @@ cleanup_error:
     return NULL;
 }
 
+npy_intp
+graph_toggle_edge_from_to(RawGraphState * self, npy_intp i, npy_intp j)
+{
+    ll_node_t * list = self->lists[i];
+    ll_node_t * last = self->lists[i];
+
+    while(list && list->value < j)
+    {
+        last = list;
+        list = list->next;
+    }
+    if(!list)
+    {
+        return ll_insert_value(&last, j);
+    }
+
+    if(list->value == j)
+    {
+        last->next = list->next;
+        free(list);
+        return 0;
+    }
+    ll_node_t * new_node = ll_node_t_new(list, j);
+    last->next = new_node;
+    return 0;
+}
+
+npy_intp
+graph_toggle_edge(RawGraphState * self, npy_intp i, npy_intp j)
+{
+    if(i < 0 || j < 0 || i >= self->length || j >= self->length || i == j)
+    {
+        return -2;
+    }
+
+    return (graph_toggle_edge_from_to(self, i, j)
+            | graph_toggle_edge_from_to(self, j, i));
+
+}
+
+static PyObject *
+RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
+{
+    npy_intp result;
+    npy_intp i = 0, j = 0;
+    if(!PyArg_ParseTuple(args, "II", &i, &j))
+    {
+        return NULL;
+    }
+
+    if(vop_commutes_with_CZ(self->vops[i]) && vop_commutes_with_CZ(self->vops[j]))
+    {
+        result = graph_toggle_edge(self, i, j);
+    }
+    else
+    {
+        PyErr_SetString(PyExc_NotImplementedError, "To be done");
+        return NULL;
+    }
+
+    if(result == -2)
+    {
+        PyErr_SetString(PyExc_ValueError, "qbit indices out of rage");
+        return NULL;
+    }
+    if(result < 0)
+    {
+        PyErr_SetString(PyExc_MemoryError, "failed to insert edge");
+        return NULL;
+    }
+    Py_RETURN_NONE;
+}
+
+
 static void
 RawGraphState_dealloc(RawGraphState * self)
 {
@@ -400,6 +475,7 @@ static PyMethodDef RawGraphState_methods[] = {
     //{"setitem", (PyCFunction) RawGraphState_setitem, METH_VARARGS, "sets an item"}
     //, {"getitem", (PyCFunction) RawGraphState_getitem, METH_VARARGS, "gets an item"}
     {"apply_C_L", (PyCFunction) RawGraphState_apply_C_L, METH_VARARGS, "applies a C_L operator"}
+    , {"apply_CZ", (PyCFunction) RawGraphState_apply_CZ, METH_VARARGS, "applies a CZ operator"}
     , {"to_lists", (PyCFunction) RawGraphState_to_lists, METH_NOARGS, "converts the graph state to a python representation using lists"}
     , {NULL}
 };
