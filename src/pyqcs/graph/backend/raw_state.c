@@ -48,7 +48,7 @@ ll_insert_value(ll_node_t ** list, npy_intp value)
 
     if(!*list)
     {
-        *list = ll_node_t_new(NULL, value);
+       *list = ll_node_t_new(NULL, value);
         if(*list)
         {
             return 0;
@@ -129,6 +129,18 @@ ll_has_value(ll_node_t * list, npy_intp value)
         return 1;
     }
     return 0;
+}
+
+npy_intp
+ll_length(ll_node_t * list)
+{
+    npy_intp result = 0;
+    while(list)
+    {
+        result ++;
+        list = list->next;
+    }
+    return result;
 }
 
 
@@ -301,10 +313,10 @@ static PyObject *
 RawGraphState_apply_C_L(RawGraphState * self
                         , PyObject * args)
 {
-    npy_uint8 vop = 0xdeadbeef;
-    npy_intp i;// = 0xdeadbeef;
+    npy_uint8 vop;
+    npy_intp i;
 
-    if(!PyArg_ParseTuple(args, "II", &i, &vop))
+    if(!PyArg_ParseTuple(args, "lb", &i, &vop))
     {
         return NULL;
     }
@@ -435,12 +447,28 @@ RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
 
     if(vop_commutes_with_CZ(self->vops[i]) && vop_commutes_with_CZ(self->vops[j]))
     {
+        // Case 1
         result = graph_toggle_edge(self, i, j);
     }
     else
     {
-        PyErr_SetString(PyExc_NotImplementedError, "To be done");
-        return NULL;
+        // Case 2
+        if(ll_length(self->lists[i]) > 1 
+            && ll_length(self->lists[j]) > 1)
+        {
+            // Sub-Case 2.1
+            ll_node_t * ngbhd_i = self->lists[i];
+            ll_node_t * ngbhd_j = self->lists[j];
+
+            PyErr_SetString(PyExc_NotImplementedError, "Work in progress");
+            return NULL;
+
+        }
+        else
+        {
+            PyErr_SetString(PyExc_NotImplementedError, "To be done");
+            return NULL;
+        }
     }
 
     if(result == -2)
