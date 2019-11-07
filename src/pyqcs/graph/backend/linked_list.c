@@ -130,4 +130,30 @@ ll_length(ll_node_t * list)
 }
 
 
+ll_iter_t * 
+ll_iter_t_new(ll_node_t * list)
+{
+    ll_iter_t * result = malloc(sizeof(ll_iter_t));
+    result->start = list;
+    result->current = list;
+    return result;
+}
 
+int
+ll_iter_next(ll_iter_t * iter, npy_intp * result)
+{
+    if(!iter->current)
+    {
+        return 0;
+    }
+    *result = iter->current->value;
+    iter->current = iter->current->next;
+    return 1;
+}
+
+int
+ll_iter_reset(ll_iter_t * iter)
+{
+    iter->current = iter->start;
+    return 0;
+}

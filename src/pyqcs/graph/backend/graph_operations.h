@@ -17,9 +17,20 @@ typedef struct
     
 } RawGraphState;
 
-npy_intp
+// Used in graph_toggle_edge.
+int
 graph_toggle_edge_from_to(RawGraphState * self, npy_intp i, npy_intp j);
 
-npy_intp
+// Toggles the edge between i and j.
+int
 graph_toggle_edge(RawGraphState * self, npy_intp i, npy_intp j);
+
+// Used in graph_clear_vops.
+int
+graph_La_transform(RawGraphState * self, npy_intp i);
+
+// Used to clear the vops of two qbits if both qbits have non-operand
+// neighbours.
+int
+graph_clear_vops(RawGraphState * self, npy_intp a, npy_intp b);
 #endif

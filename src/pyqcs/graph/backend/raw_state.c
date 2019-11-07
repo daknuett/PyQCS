@@ -276,18 +276,9 @@ RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
         if(ll_length(self->lists[i]) > 1 
             && ll_length(self->lists[j]) > 1)
         {
-            //// Sub-Case 2.1
-            //ll_node_t * ngbhd_i = self->lists[i];
-            //ll_node_t * ngbhd_j = self->lists[j];
-
-            //if(!vop_commutes_with_CZ(self->vops[i]))
-            //{
-            //    graph_La_transform_to_CZ_commuting(self, i
-            //}
-
-            PyErr_SetString(PyExc_NotImplementedError, "Work in progress");
-            return NULL;
-
+            // Sub-Case 2.1
+            graph_clear_vops(self, i, j);
+            result = graph_toggle_edge(self, i, j);
         }
         else
         {
