@@ -38,5 +38,71 @@ static npy_uint8 vop_lookup_table[24][24] =
 // S, I, Z, S^\dagger
 #define vop_commutes_with_CZ(v) (v == 1 || v == 2 || v == 5 || v == 8)
 
+static npy_uint8 C_L_as_products_lengths[24] = 
+{
+    5, 3, 4, 4, 4, 2, 5, 5, 1, 4, 4, 3, 5, 5, 4, 4, 5, 4, 5, 5, 3, 4, 2, 2
+};
+
+static npy_uint8 C_L_as_products[24][5] = 
+{
+    {8, 12, 12, 12, 8}
+    , {8, 8, 8, 0, 0}
+    , {8, 8, 8, 8, 0}
+    , {12, 12, 12, 8, 0}
+    , {8, 12, 12, 12, 0}
+    , {8, 8, 0, 0, 0}
+    , {8, 8, 12, 8, 8}
+    , {8, 8, 8, 12, 8}
+    , {8, 0, 0, 0, 0}
+    , {8, 8, 12, 8, 0}
+    , {8, 8, 8, 12, 0}
+    , {8, 8, 12, 0, 0}
+    , {8, 8, 8, 8, 12}
+    , {8, 12, 8, 8, 8}
+    , {8, 12, 12, 8, 0}
+    , {12, 8, 8, 8, 0}
+    , {8, 8, 8, 12, 12}
+    , {8, 12, 8, 8, 0}
+    , {8, 8, 12, 12, 8}
+    , {8, 8, 12, 12, 12}
+    , {8, 12, 8, 0, 0}
+    , {8, 8, 12, 12, 0}
+    , {12, 8, 0, 0, 0}
+    , {8, 12, 0, 0, 0}
+};
+
+// This is just the readable version of the lookup table above.
+/*
+static char C_L_as_products[24][5] = 
+{
+	"sxxxs"
+	, "sss"
+	, "ssss"
+	, "xxxs"
+	, "sxxx"
+	, "ss"
+	, "ssxss"
+	, "sssxs"
+	, "s"
+	, "ssxs"
+	, "sssx"
+	, "ssx"
+	, "ssssx"
+	, "sxsss"
+	, "sxxs"
+	, "xsss"
+	, "sssxx"
+	, "sxss"
+	, "ssxxs"
+	, "ssxxx"
+	, "sxs"
+	, "ssxx"
+	, "xs"
+	, "sx"
+};
+*/
+
+#define VOP_siZ 8
+#define VOP_smiX 12
 
 #endif
