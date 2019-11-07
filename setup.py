@@ -7,7 +7,11 @@ basic_gates = Extension(
                         , extra_compile_args=["-fstack-protector", "-Wno-unused-variable"]
                     )
 graph_backend = Extension("pyqcs.graph.backend.raw_state"
-                        , sources=["src/pyqcs/graph/backend/raw_state.c"]
+                        , sources=["src/pyqcs/graph/backend/raw_state.c"
+                                , "src/pyqcs/graph/backend/linked_list.c"
+                                , "src/pyqcs/graph/backend/graph_operations.c"
+                        ]
+                        , extra_compile_args=["-fstack-protector", "-Wno-unused-variable"]
                     )
 generic_gate = Extension(
                         "pyqcs.gates.implementations.generic_gate"

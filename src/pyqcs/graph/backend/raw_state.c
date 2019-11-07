@@ -4,154 +4,15 @@
 #include <numpy/ufuncobject.h>
 #include <structmember.h>
 #include <stdlib.h>
+
+
 #include "vops.h"
+#include "linked_list.h"
+#include "graph_operations.h"
+
 
 #include "../../gates/implementations/basic_gates.h"
 
-typedef struct ll_node_s
-{
-    struct ll_node_s * next;
-    npy_intp value;
-} ll_node_t;
-
-void
-ll_recursively_delete_list(ll_node_t * list)
-{
-    ll_node_t * next_node;
-    while(list)
-    {
-        next_node = list->next;
-        free(list);
-        list = next_node;
-    }
-}
-
-ll_node_t *
-ll_node_t_new(ll_node_t * next, npy_intp value)
-{
-    ll_node_t * node = malloc(sizeof(ll_node_t));
-    if(!node)
-    {
-        return NULL;
-    }
-    node->next = next;
-    node->value = value;
-    return node;
-}
-
-int
-ll_insert_value(ll_node_t ** list, npy_intp value)
-{
-    ll_node_t * current_node;
-    ll_node_t * last_node;
-    ll_node_t * new_node;
-
-    if(!*list)
-    {
-       *list = ll_node_t_new(NULL, value);
-        if(*list)
-        {
-            return 0;
-        }
-        return 1;
-    }
-
-    current_node = *list;
-    last_node = *list;
-    while(current_node && current_node->value < value)
-    {
-        last_node = current_node;
-        current_node = current_node->next;
-        
-    }
-
-    if(current_node && current_node->value == value)
-    {
-        return 2;
-    }
-
-    
-    new_node = ll_node_t_new(current_node, value);
-    if(!new_node)
-    {
-        return 1;
-    }
-    // This is the case, when we set the first element.
-    if(current_node == last_node)
-    {   
-        *list = new_node;
-        return 0;
-    }
-    last_node->next = new_node;
-    return 0;
-}
-
-int
-ll_delete_value(ll_node_t ** list, npy_intp value)
-{
-    ll_node_t * current_node;
-    ll_node_t * last_node;
-
-    current_node = *list;
-    last_node = *list;
-
-    while(current_node && current_node->value < value)
-    {
-        last_node = current_node;
-        current_node = current_node->next;
-    }
-
-    if(!current_node || current_node->value != value)
-    {
-        return 2;
-    }
-
-    if(current_node == last_node)
-    {
-        *list = current_node->next;
-    }
-
-    last_node->next = current_node->next;
-    free(current_node);
-    return 0;
-}
-
-int
-ll_has_value(ll_node_t * list, npy_intp value)
-{
-    while(list && list->value < value)
-    {
-        list = list->next;
-    }
-
-    if(list && list->value == value)
-    {
-        return 1;
-    }
-    return 0;
-}
-
-npy_intp
-ll_length(ll_node_t * list)
-{
-    npy_intp result = 0;
-    while(list)
-    {
-        result ++;
-        list = list->next;
-    }
-    return result;
-}
-
-
-typedef struct 
-{
-    PyObject_HEAD
-    npy_intp length;
-    ll_node_t ** lists;
-    npy_uint8 * vops;
-    
-} RawGraphState;
 
 static int
 RawGraphState_init(RawGraphState * self
@@ -393,45 +254,6 @@ cleanup_error:
     return NULL;
 }
 
-npy_intp
-graph_toggle_edge_from_to(RawGraphState * self, npy_intp i, npy_intp j)
-{
-    ll_node_t * list = self->lists[i];
-    ll_node_t * last = self->lists[i];
-
-    while(list && list->value < j)
-    {
-        last = list;
-        list = list->next;
-    }
-    if(!list)
-    {
-        return ll_insert_value(&last, j);
-    }
-
-    if(list->value == j)
-    {
-        last->next = list->next;
-        free(list);
-        return 0;
-    }
-    ll_node_t * new_node = ll_node_t_new(list, j);
-    last->next = new_node;
-    return 0;
-}
-
-npy_intp
-graph_toggle_edge(RawGraphState * self, npy_intp i, npy_intp j)
-{
-    if(i < 0 || j < 0 || i >= self->length || j >= self->length || i == j)
-    {
-        return -2;
-    }
-
-    return (graph_toggle_edge_from_to(self, i, j)
-            | graph_toggle_edge_from_to(self, j, i));
-
-}
 
 static PyObject *
 RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
