@@ -230,7 +230,7 @@ RawGraphState_to_lists(RawGraphState * self)
         ll_node_t * node = self->lists[i];
         while(node)
         {
-            if(PyList_Append(this_edges, PyLong_FromLong(1)) < 0)
+            if(PyList_Append(this_edges, PyLong_FromLong(node->value)) < 0)
             {
                 goto cleanup_error;
             }
@@ -260,7 +260,7 @@ RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
 {
     npy_intp result;
     npy_intp i = 0, j = 0;
-    if(!PyArg_ParseTuple(args, "II", &i, &j))
+    if(!PyArg_ParseTuple(args, "ll", &i, &j))
     {
         return NULL;
     }
