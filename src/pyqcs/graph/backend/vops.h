@@ -34,7 +34,7 @@ static npy_uint8 vop_lookup_table[24][24] =
 #define VOP_S 1
 #define VOP_I 2
 #define VOP_Z 5
-#define VOP_X 13
+#define VOP_X 14
 
 // S, I, Z, S^\dagger
 #define vop_commutes_with_CZ(v) (v == 1 || v == 2 || v == 5 || v == 8)
