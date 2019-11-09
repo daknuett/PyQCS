@@ -166,7 +166,6 @@ graph_La_transform(RawGraphState * self, npy_intp i)
         self->vops[b] = vop_lookup_table[self->vops[b]][VOP_siZ];
         while(ll_iter_next(iter_c, &c))
         {
-            printf("c = %ld\n", c);
             // Do not re-toggle the edge.
             if(b == c)
             {
