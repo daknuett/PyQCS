@@ -1,5 +1,6 @@
 #ifndef linked_list_h_
 #define linked_list_h_
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <numpy/ndarraytypes.h>
 #include <numpy/ufuncobject.h>
 
@@ -11,8 +12,8 @@ typedef struct ll_node_s
 
 typedef struct ll_iter_s
 {
-    struct ll_node_t * start;
-    struct ll_node_t * current;
+    ll_node_t * start;
+    ll_node_t * current;
 } ll_iter_t;
 
 ll_iter_t * 
