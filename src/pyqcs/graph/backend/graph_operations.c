@@ -6,15 +6,13 @@
 int
 graph_toggle_edge_from_to(RawGraphState * self, npy_intp i, npy_intp j)
 {
+#ifdef G_USE_OPTIMIZED_TOGGLE_EDGE_FROM_TO
+#warning "G_USE_OPTIMIZED_TOGGLE_EDGE_FROM_TO is untested and might yield unexpected bugs"
+#error "there is a known bug in G_USE_OPTIMIZED_TOGGLE_EDGE_FROM_TO"
     ll_node_t * list = self->lists[i];
     ll_node_t * last = self->lists[i];
     ll_node_t * new_node;
-    //printf("toggling edge %ld -> %ld\n", i, j);
-    //if(!ll_has_value(list, j))
-    //{
-    //    return ll_insert_value(&(self->lists[i]), j);
-    //}
-    //return ll_delete_value(&(self->lists[i]), j);
+    printf("toggling edge %ld -> %ld\n", i, j);
 
     if(!list)
     {
@@ -22,11 +20,13 @@ graph_toggle_edge_from_to(RawGraphState * self, npy_intp i, npy_intp j)
     }
     while(list && list->value < j)
     {
+        printf("searching node (current: %ld) ... \n", list->value);
         last = list;
         list = list->next;
     }
     if(!list)
     {
+        printf("appending node %ld\n", j);
         new_node = ll_node_t_new(NULL, j);
         if(!new_node)
         {
@@ -54,6 +54,14 @@ graph_toggle_edge_from_to(RawGraphState * self, npy_intp i, npy_intp j)
 
     last->next = new_node;
     return 0;
+#else
+    if(ll_has_value(self->lists[i], j))
+    {
+        return ll_delete_value(&(self->lists[i]), j);
+    }
+    return ll_insert_value(&(self->lists[i]), j);
+
+#endif
 }
 
 int
@@ -88,7 +96,7 @@ graph_clear_vops(RawGraphState * self, npy_intp a, npy_intp b)
         vop = self->vops[a];
         product_length = C_L_as_products_lengths[vop];
 
-        for(i = product_length - 1; i >= 0; i++)
+        for(i = product_length - 1; i >= 0; i--)
         {
             if(C_L_as_products[vop][i] == VOP_smiX)
             {
@@ -117,7 +125,7 @@ graph_clear_vops(RawGraphState * self, npy_intp a, npy_intp b)
         vop = self->vops[b];
         product_length = C_L_as_products_lengths[vop];
 
-        for(i = product_length - 1; i >= 0; i++)
+        for(i = product_length - 1; i >= 0; i--)
         {
             if(C_L_as_products[vop][i] == VOP_smiX)
             {
@@ -158,6 +166,7 @@ graph_La_transform(RawGraphState * self, npy_intp i)
         self->vops[b] = vop_lookup_table[self->vops[b]][VOP_siZ];
         while(ll_iter_next(iter_c, &c))
         {
+            printf("c = %ld\n", c);
             // Do not re-toggle the edge.
             if(b == c)
             {
