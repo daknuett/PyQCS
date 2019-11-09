@@ -8,7 +8,18 @@ graph_toggle_edge_from_to(RawGraphState * self, npy_intp i, npy_intp j)
 {
     ll_node_t * list = self->lists[i];
     ll_node_t * last = self->lists[i];
+    ll_node_t * new_node;
+    //printf("toggling edge %ld -> %ld\n", i, j);
+    //if(!ll_has_value(list, j))
+    //{
+    //    return ll_insert_value(&(self->lists[i]), j);
+    //}
+    //return ll_delete_value(&(self->lists[i]), j);
 
+    if(!list)
+    {
+        return ll_insert_value(&(self->lists[i]), j);
+    }
     while(list && list->value < j)
     {
         last = list;
@@ -16,7 +27,13 @@ graph_toggle_edge_from_to(RawGraphState * self, npy_intp i, npy_intp j)
     }
     if(!list)
     {
-        return ll_insert_value(&last, j);
+        new_node = ll_node_t_new(NULL, j);
+        if(!new_node)
+        {
+            return -1;
+        }
+        last->next = new_node;
+        return 0;
     }
 
     if(list->value == j)
@@ -25,7 +42,16 @@ graph_toggle_edge_from_to(RawGraphState * self, npy_intp i, npy_intp j)
         free(list);
         return 0;
     }
-    ll_node_t * new_node = ll_node_t_new(list, j);
+    if(last == list)
+    {
+        return ll_insert_value(&(self->lists[i]), j);
+    }
+    new_node = ll_node_t_new(list, j);
+    if(!new_node)
+    {
+        return -1;
+    }
+
     last->next = new_node;
     return 0;
 }
@@ -33,14 +59,20 @@ graph_toggle_edge_from_to(RawGraphState * self, npy_intp i, npy_intp j)
 int
 graph_toggle_edge(RawGraphState * self, npy_intp i, npy_intp j)
 {
+    int result;
     if(i < 0 || j < 0 || i >= self->length || j >= self->length || i == j)
     {
         return -2;
     }
 
-    return (graph_toggle_edge_from_to(self, i, j)
-            | graph_toggle_edge_from_to(self, j, i));
-
+    result = graph_toggle_edge_from_to(self, i, j);
+    if(result != 0)
+    {
+        return result;
+    }
+    result = graph_toggle_edge_from_to(self, j, i);
+    // XXX: no rollback can be done here. State is now corrupted!
+    return result;
 }
 
 int
@@ -131,7 +163,7 @@ graph_La_transform(RawGraphState * self, npy_intp i)
             {
                 break;
             }
-            graph_toggle_edge(b, c);
+            graph_toggle_edge(self, b, c);
         }
         ll_iter_reset(iter_c);
     }
