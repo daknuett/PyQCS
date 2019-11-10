@@ -31,8 +31,8 @@ def naive_plus_state_10():
 
     return circuit * state
 
-def test_CZ_zero_state(graph_zero_state_10):
-    g = graph_zero_state_10
+def test_CZ_plus_state(graph_plus_state_10):
+    g = graph_plus_state_10
     g.apply_CZ(0, 1)
 
     lists = g.to_lists()
@@ -41,16 +41,16 @@ def test_CZ_zero_state(graph_zero_state_10):
     assert lists == ([2] * 10, [[1], [0]] + [[]]*8)
 
 
-def test_many_CZ_zero_state(graph_zero_state_10, naive_zero_state_10):
+def test_many_CZ_plus_state(graph_plus_state_10, naive_plus_state_10):
     edges = [(1, 2), (2, 0), (5, 9), (8, 4), (7, 0), (5, 7), (8, 9)]
     circuit = list_to_circuit([CZ(*e) for e in edges])
-    g = graph_zero_state_10
+    g = graph_plus_state_10
     for e in edges:
         g.apply_CZ(*e)
 
     converted = graph_lists_to_naive_state(g.to_lists())
 
-    assert converted == circuit * naive_zero_state_10
+    assert converted == circuit * naive_plus_state_10
 
 @pytest.mark.skip(reason="not yet implemented")
 def test_many_CZ_plus_state(graph_plus_state_10, naive_plus_state_10):
@@ -96,9 +96,8 @@ def test_many_CZ_clear_vops(graph_zero_state_10, naive_zero_state_10):
 
 def test_many_CZ_clear_vops_precomputed():
     g = RawGraphState(3)
-    for i in range(3):
-        g.apply_C_L(i, VOP_H)
     s = State.new_zero_state(3)
+    s = (H(0) | H(1) | H(2)) * s
 
     s = (CZ(1, 0) | CZ(2, 0) | CZ(1, 2)) * s
     g.apply_CZ(1, 0)

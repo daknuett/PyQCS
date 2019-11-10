@@ -53,7 +53,7 @@ RawGraphState_init(RawGraphState * self
     }
     for(i = 0; i < length; i++)
     {
-        self->vops[i] = VOP_H;
+        self->vops[i] = VOP_I;
     }
     return 0;
 }

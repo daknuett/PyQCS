@@ -56,10 +56,8 @@ def test_z1(plus_state):
 
 def test_cz01_id(plus_state):
     g = RawGraphState(2)
-    g.apply_C_L(0, 0)
-    g.apply_C_L(1, 0)
     g.apply_CZ(0, 1)
-    test_state = (H(0) | H(1) | CZ(0, 1)) * plus_state
+    test_state = (CZ(0, 1)) * plus_state
 
     converted = graph_lists_to_naive_state(g.to_lists())
 
@@ -71,17 +69,17 @@ def test_cz01_id(plus_state):
 
 def test_graph_lists2naive_state():
     g = RawGraphState(3)
-    for i in range(3):
-        g.apply_C_L(i, 0)
     g.apply_CZ(1, 0)
     g.apply_CZ(2, 0)
     g.apply_CZ(1, 2)
 
-    state = (CZ(1, 0) | CZ(2, 0) | CZ(1, 2)) * State.new_zero_state(3)
+    state = (H(0) | H(1) | H(2) | CZ(1, 0) | CZ(2, 0) | CZ(1, 2)) * State.new_zero_state(3)
     g.apply_C_L(0, 0)
     g.apply_C_L(1, 14)
     g.apply_CZ(1, 0)
     state = (H(0) | X(1) | CZ(1, 0)) * state
 
+    print("converted", graph_lists_to_naive_state(g.to_lists()))
+    print("naive", state)
     assert graph_lists_to_naive_state(g.to_lists()) == state
 

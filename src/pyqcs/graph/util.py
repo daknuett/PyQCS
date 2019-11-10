@@ -1,6 +1,6 @@
 from numpy import array
 
-from ..gates.builtins import CZ, GenericGate
+from ..gates.builtins import CZ, H, GenericGate
 from ..state.state import BasicState
 
 C_L = [array([[ 0.70710678+0.j,  0.70710678+0.j], [ 0.70710678+0.j, -0.70710678+0.j]]) 
@@ -35,17 +35,22 @@ def graph_lists_to_naive_state(lists):
 
     state = BasicState.new_zero_state(len(vops))
 
-    for i, vop in enumerate(vops):
-        gate = GenericGate(i, C_L[vop])
-        state = gate * state
+    for i in range(len(vops)):
+        state = H(i) * state
+
 
     handled_enganglements = set()
 
     for i, neighbors in enumerate(entanglements):
         for j in neighbors:
-            if((i,j) not in handled_enganglements):
-                state = CZ(i, j) * state
-                handled_enganglements |= {(i,j)}
+            edge = tuple(sorted((i, j)))
+            if(edge not in handled_enganglements):
+                state = CZ(*edge) * state
+                handled_enganglements |= {edge}
+
+    for i, vop in enumerate(vops):
+        gate = GenericGate(i, C_L[vop])
+        state = gate * state
 
     return state
 
