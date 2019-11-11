@@ -57,6 +57,8 @@ class BasicState(AbstractState):
 
     def __eq__(self, other):
         if(isinstance(other, BasicState)):
+            if(self._nbits != other._nbits):
+                return False
             if(not np.allclose(self._cl_state, other._cl_state)):
                 return False
             if(np.allclose(self._qm_state, other._qm_state)):
@@ -64,19 +66,13 @@ class BasicState(AbstractState):
 
             # Note that states are still considered to be the same
             # if they have a different global phase.
-            my_phase = np.average(np.angle(self._qm_state))
-            other_phase = np.average(np.angle(other._qm_state))
-            print("my_phase", my_phase)
-            print("other_phase", other_phase)
-            print(repr(self._qm_state))
-            print(repr(other._qm_state))
+            if(not np.allclose(self._qm_state == 0, other._qm_state == 0)):
+                return False
 
-            my_phaseless = np.exp(-1j * my_phase) * self._qm_state
-            other_phaseless = np.exp(-1j * other_phase) * other._qm_state
-            print("my_phaseless", my_phaseless)
-            print("other_phaseless", other_phaseless)
-            print("close", my_phaseless == other_phaseless)
-
-            return np.allclose(my_phaseless, other_phaseless)
+            nonzeros = self._qm_state != 0
+            phases = self._qm_state[nonzeros] / other._qm_state[nonzeros]
+            angles = np.angle(phases)
+            phaseless = np.exp(-1j * angles) * phases
+            return np.allclose(phaseless, np.ones(len([n for n in nonzeros if n])))
 
         raise TypeError()
