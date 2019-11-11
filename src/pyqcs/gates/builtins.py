@@ -9,7 +9,7 @@ class BuiltinGateBuilder(AbstractSingleGateCircuitBuilder):
         self._type = type_
 
     def __call__(self, act, *args):
-        if(args not in self._registry):
+        if((act, *args) not in self._registry):
             gate = BuiltinGate(self._type, act,*args)
             circuit = SingleGateCircuit((1 << act), [], self._type + "(" + ",".join((str(a) for a in args)) + ")", gate)
             self._registry[(act, *args)] = circuit
