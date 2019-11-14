@@ -33,4 +33,10 @@ graph_La_transform(RawGraphState * self, npy_intp i);
 // neighbours.
 int
 graph_clear_vops(RawGraphState * self, npy_intp a, npy_intp b);
+
+int
+graph_isolated_two_qbit_CZ(RawGraphState * self, npy_intp i, npy_intp j);
+
+int
+graph_qbits_are_isolated(RawGraphState * self, npy_intp i, npy_intp j);
 #endif

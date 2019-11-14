@@ -171,8 +171,15 @@ RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
         }
         else
         {
-            PyErr_SetString(PyExc_NotImplementedError, "To be done");
-            return NULL;
+            if(graph_qbits_are_isolated(self, i, j))
+            {
+                result = graph_isolated_two_qbit_CZ(self, i, j);
+            }
+            else
+            {
+                PyErr_SetString(PyExc_NotImplementedError, "To be done");
+                return NULL;
+            }
         }
     }
 

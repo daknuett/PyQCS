@@ -179,3 +179,50 @@ graph_La_transform(RawGraphState * self, npy_intp i)
     free(iter_c);
     return 0;
 }
+
+int
+graph_isolated_two_qbit_CZ(RawGraphState * self, npy_intp i, npy_intp j)
+{
+    npy_intp is_CZ = ll_has_value(self->lists[i], j);
+    npy_intp lookup_table_index = two_qbit_config_to_number[self->vops[i]][self->vops[j]][is_CZ];
+    
+    self->vops[i] = two_qbit_vops_after_CZ[lookup_table_index][0];
+    self->vops[j] = two_qbit_vops_after_CZ[lookup_table_index][1];
+
+    npy_intp is_entangled = two_qbit_vops_after_CZ[lookup_table_index][2];
+
+    if(is_entangled)
+    {
+        if(is_CZ)
+        {
+            return 0;
+        }
+        return graph_toggle_edge(self, i, j);
+    }
+    if(is_CZ)
+    {
+        return graph_toggle_edge(self, i, j);
+    }
+    return 0;
+}
+
+int
+graph_qbits_are_isolated(RawGraphState * self, npy_intp i, npy_intp j)
+{
+    npy_intp length_i = ll_length(self->lists[i]);
+    npy_intp length_j = ll_length(self->lists[j]);
+    if(length_i > 1 || length_j > 1)
+    {
+        return 0;
+    }
+
+    if(ll_has_value(self->lists[i], j))
+    {
+        return 1;
+    }
+    if(length_i == 0 && length_j == 0)
+    {
+        return 1;
+    }
+    return 0;
+}
