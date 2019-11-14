@@ -53,7 +53,7 @@ ufunc( char ** args
                             - qm_in[i].imag * argument.u2u.imag 
                             - qm_in[not_index].imag * argument.d2u.imag;
             qm_out[i].imag =  qm_in[i].imag * argument.u2u.real 
-                            + qm_in[not_index].imag * argument.u2u.real 
+                            + qm_in[not_index].imag * argument.d2u.real 
                             + qm_in[i].real * argument.u2u.imag 
                             + qm_in[not_index].real * argument.d2u.imag;
         }
@@ -64,7 +64,7 @@ ufunc( char ** args
                             - qm_in[i].imag * argument.d2d.imag 
                             - qm_in[not_index].imag * argument.u2d.imag;
             qm_out[i].imag =  qm_in[i].imag * argument.d2d.real 
-                            + qm_in[not_index].imag * argument.d2d.real 
+                            + qm_in[not_index].imag * argument.u2d.real 
                             + qm_in[i].real * argument.d2d.imag 
                             + qm_in[not_index].real * argument.u2d.imag;
         }
