@@ -26,11 +26,9 @@ together using the ``|`` operator::
 The usage of the ``|`` is in analogy to the UNIX pipe: gates are applied from left to
 right. This is in agreement with the Feynman quantum circuit diagrams.
 
-**Note**: the circuit above would have the following matrix representation:
+**Note**: the circuit above would have the following matrix representation::
 
-.. math::
-
-	X_1 CZ_{1,0} H_0
+	X(1) CZ(1,0) H(0)
 
 Applying a circuit to a state is done using multiplication::
 
