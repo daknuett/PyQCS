@@ -45,4 +45,8 @@ def test_two_qbits_isolated_CZ():
         g.apply_CZ(0, 1)
         s = CZ(0, 1) * s
 
+        print(c0, c1, e)
+        print(g.to_lists())
+        print("converted", graph_lists_to_naive_state(g.to_lists()))
+        print("naive", s)
         assert graph_lists_to_naive_state(g.to_lists()) == s
