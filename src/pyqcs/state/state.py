@@ -72,7 +72,6 @@ class BasicState(AbstractState):
             nonzeros = self._qm_state != 0
             phases = self._qm_state[nonzeros] / other._qm_state[nonzeros]
             angles = np.angle(phases)
-            print(angles)
             phaseless = np.exp(-1j * np.max(angles)) * phases
             return np.allclose(phaseless, np.ones(len([n for n in nonzeros if n])))
 
