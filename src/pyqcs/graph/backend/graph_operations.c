@@ -226,3 +226,31 @@ graph_qbits_are_isolated(RawGraphState * self, npy_intp i, npy_intp j)
     }
     return 0;
 }
+
+int
+graph_clear_vop(RawGraphState * self, npy_intp a)
+{
+    npy_uint8 product_length, vop;
+    npy_intp i;
+
+    // Start clearing with a:
+    // Note that there is no need to clear the identity.
+    if(self->vops[a] != VOP_I)
+    {
+        vop = self->vops[a];
+        product_length = C_L_as_products_lengths[vop];
+
+        for(i = product_length - 1; i >= 0; i--)
+        {
+            if(C_L_as_products[vop][i] == VOP_smiX)
+            {
+                graph_La_transform(self, a);
+            }
+            else
+            {
+                graph_La_transform(self, self->lists[a]->value);
+            }
+        }
+    }
+    return 0;
+}

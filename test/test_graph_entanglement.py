@@ -52,7 +52,6 @@ def test_many_CZ_plus_state(graph_plus_state_10, naive_plus_state_10):
 
     assert converted == circuit * naive_plus_state_10
 
-@pytest.mark.skip(reason="not yet implemented")
 def test_many_CZ_plus_state(graph_plus_state_10, naive_plus_state_10):
     edges = [(1, 2), (2, 0), (5, 9), (8, 4), (7, 0), (5, 7), (8, 9)]
     circuit = list_to_circuit([CZ(*e) for e in edges])
@@ -62,9 +61,8 @@ def test_many_CZ_plus_state(graph_plus_state_10, naive_plus_state_10):
 
     converted = graph_lists_to_naive_state(g.to_lists())
 
-    assert converted == circuit * naive_zero_state_10
+    assert converted == circuit * naive_plus_state_10
 
-@pytest.mark.skip(reason="graph_lists_to_naive_state fails in some cases")
 def test_many_CZ_clear_vops(graph_zero_state_10, naive_zero_state_10):
     edges = [(1, 2)
             , (2, 0)

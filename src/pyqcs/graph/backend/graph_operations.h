@@ -39,4 +39,7 @@ graph_isolated_two_qbit_CZ(RawGraphState * self, npy_intp i, npy_intp j);
 
 int
 graph_qbits_are_isolated(RawGraphState * self, npy_intp i, npy_intp j);
+
+int
+graph_clear_vop(RawGraphState * self, npy_intp a);
 #endif
