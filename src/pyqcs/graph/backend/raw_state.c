@@ -149,7 +149,6 @@ RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
 {
     npy_intp result;
     npy_intp i = 0, j = 0;
-    npy_intp clear_vop;
     if(!PyArg_ParseTuple(args, "ll", &i, &j))
     {
         return NULL;
@@ -182,18 +181,23 @@ RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
                 }
                 else
                 {
-                    clear_vop = i;
+                    // Sub-Sub-Case 2.2.2
                     if(ll_length(self->lists[j] > 1))
                     {
-                        clear_vop = j;
+                        result = graph_clear_vop(self, j, i);
+                        if(!result)
+                        {
+                            result = graph_isolated_two_qbit_CZ(self, i, j);
+                        }
                     }
-
-                    result = graph_clear_vop(self, clear_vop);
-                    if(!result)
+                    else
                     {
-                        result = graph_isolated_two_qbit_CZ(self, i, j);
+                        result = graph_clear_vop(self, i, j);
+                        if(!result)
+                        {
+                            result = graph_isolated_two_qbit_CZ(self, i, j);
+                        }
                     }
-
                 }
             }
         }
@@ -216,15 +220,22 @@ RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
                 }
                 else
                 {
-                    clear_vop = i;
-                    if(ll_length(self->lists[j] > 0))
+                    // Sub-Sub-Case 2.2.2
+                    if(ll_length(self->lists[j] > 1))
                     {
-                        clear_vop = j;
+                        result = graph_clear_vop(self, j, i);
+                        if(!result)
+                        {
+                            result = graph_isolated_two_qbit_CZ(self, i, j);
+                        }
                     }
-                    result = graph_clear_vop(self, clear_vop);
-                    if(!result)
+                    else
                     {
-                        result = graph_isolated_two_qbit_CZ(self, i, j);
+                        result = graph_clear_vop(self, i, j);
+                        if(!result)
+                        {
+                            result = graph_isolated_two_qbit_CZ(self, i, j);
+                        }
                     }
                 }
             }

@@ -104,7 +104,7 @@ graph_clear_vops(RawGraphState * self, npy_intp a, npy_intp b)
             }
             else
             {
-                // self->lists[a]->value is guarranteed to exist
+                // self->lists[a]->value is guaranteed to exist
                 // because we checked that both a and b have non-operand neighbours. 
                 if(self->lists[a]->value != b)
                 {
@@ -133,7 +133,7 @@ graph_clear_vops(RawGraphState * self, npy_intp a, npy_intp b)
             }
             else
             {
-                // self->lists[b]->value is guarranteed to exist
+                // self->lists[b]->value is guaranteed to exist
                 // because we checked that both a and b have non-operand neighbours. 
                 if(self->lists[b]->value != a)
                 {
@@ -228,7 +228,7 @@ graph_qbits_are_isolated(RawGraphState * self, npy_intp i, npy_intp j)
 }
 
 int
-graph_clear_vop(RawGraphState * self, npy_intp a)
+graph_clear_vop(RawGraphState * self, npy_intp a, npy_intp b)
 {
     npy_uint8 product_length, vop;
     npy_intp i;
@@ -248,7 +248,16 @@ graph_clear_vop(RawGraphState * self, npy_intp a)
             }
             else
             {
-                graph_La_transform(self, self->lists[a]->value);
+                // self->lists[a]->value is guaranteed to exist
+                // because we checked that both a and b have non-operand neighbours. 
+                if(self->lists[a]->value != b)
+                {
+                    graph_La_transform(self, self->lists[a]->value);
+                }
+                else
+                {
+                    graph_La_transform(self, self->lists[a]->next->value);
+                }
             }
         }
     }
