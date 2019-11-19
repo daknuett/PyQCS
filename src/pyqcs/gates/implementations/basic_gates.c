@@ -266,7 +266,11 @@ ufunc_M( char ** args
     //==================================================//
     // Get some random value. I do not like the way this
     // is done but it seems like there is no better way.
+    PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+
     PyObject * random_result = PyObject_CallFunctionObjArgs(argument.rng, NULL);
+    PyGILState_Release(gstate);
 
     if(!PyFloat_Check(random_result))
     {

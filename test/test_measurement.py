@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from pyqcs import measure, sample, State, X, H
+from pyqcs import measure, sample, State, X, H, list_to_circuit
 
 def test_measurement_deterministic00():
     state = State.new_zero_state(4)
@@ -40,3 +40,14 @@ def test_sample_hadamard():
     result = sample(state, 0b11, 50)
 
     assert result == {1: 26, 0: 24}
+
+
+def test_sample_hadamard_10qbit():
+    np.random.seed(0xdeadbeef)
+    state = H(0) * State.new_zero_state(10)
+
+    result = sample(state, 0b1111111111, 50)
+
+    assert result == {0: 26, 1: 24}
+
+
