@@ -63,6 +63,68 @@ def test_many_CZ_plus_state(graph_plus_state_10, naive_plus_state_10):
 
     assert converted == circuit * naive_plus_state_10
 
+
+def test_few_CZ_clear_vop1(graph_zero_state_10, naive_zero_state_10):
+    edges = [(1, 2)
+            , (2, 0)]
+    circuit1 = list_to_circuit([CZ(*e) for e in edges])
+    state1 = circuit1 * naive_zero_state_10
+    g = graph_zero_state_10
+    for e in edges:
+        g.apply_CZ(*e)
+
+    assert graph_lists_to_naive_state(g.to_lists()) == state1
+
+def test_few_CZ_clear_vop2(graph_zero_state_10, naive_zero_state_10):
+    edges = [(1, 2)
+            ]
+    circuit1 = list_to_circuit([CZ(*e) for e in edges])
+    state1 = circuit1 * naive_zero_state_10
+    g = graph_zero_state_10
+    for e in edges:
+        g.apply_CZ(*e)
+
+    g.apply_C_L(2, VOP_X)
+    g.apply_CZ(2, 0)
+
+    state2 = (X(2) | CZ(2, 0)) * state1
+
+    assert graph_lists_to_naive_state(g.to_lists()) == state2
+
+def test_few_CZ_clear_vop3(graph_zero_state_10, naive_zero_state_10):
+    edges = [(1, 2)
+            ]
+    circuit1 = list_to_circuit([CZ(*e) for e in edges])
+    state1 = circuit1 * naive_zero_state_10
+    g = graph_zero_state_10
+    for e in edges:
+        g.apply_CZ(*e)
+
+    g.apply_C_L(2, VOP_X)
+    g.apply_C_L(0, VOP_X)
+    g.apply_CZ(2, 0)
+
+    state2 = (X(2) | X(0) | CZ(2, 0)) * state1
+
+    assert graph_lists_to_naive_state(g.to_lists()) == state2
+
+def test_few_CZ_clear_vops(graph_zero_state_10, naive_zero_state_10):
+    edges = [(1, 2)
+            , (2, 0)
+           ]
+    circuit1 = list_to_circuit([CZ(*e) for e in edges])
+    state1 = circuit1 * naive_zero_state_10
+    g = graph_zero_state_10
+    for e in edges:
+        g.apply_CZ(*e)
+
+    g.apply_C_L(2, VOP_X)
+    g.apply_CZ(2, 4)
+    
+    state2 = (X(2) | CZ(2, 4)) * state1
+
+    assert graph_lists_to_naive_state(g.to_lists()) == state2
+
 def test_many_CZ_clear_vops(graph_zero_state_10, naive_zero_state_10):
     edges = [(1, 2)
             , (2, 0)
@@ -82,7 +144,7 @@ def test_many_CZ_clear_vops(graph_zero_state_10, naive_zero_state_10):
 
     g.apply_C_L(2, VOP_X)
     g.apply_C_L(4, VOP_H)
-    state2 = (H(2) | H(4)) * state1
+    state2 = (X(2) | H(4)) * state1
     g.apply_CZ(2, 4)
     state3 = CZ(2, 4) * state2
 
@@ -90,6 +152,7 @@ def test_many_CZ_clear_vops(graph_zero_state_10, naive_zero_state_10):
     print("converted", graph_lists_to_naive_state(g.to_lists()))
     print("state", state3)
     assert graph_lists_to_naive_state(g.to_lists()) == state3
+
 
 
 def test_many_CZ_clear_vops_precomputed():
@@ -114,8 +177,7 @@ def test_many_CZ_clear_vops_precomputed():
     g.apply_CZ(1, 0)
 
     assert g.to_lists() == ([2, 2, 20], [[2], [2], [0, 1]])
-    # FIXME: graph_lists_to_naive_state fails here.
-    #assert graph_lists_to_naive_state(g.to_lists()) == s
+    assert graph_lists_to_naive_state(g.to_lists()) == s
 
 
 if __name__ == "__main__":
