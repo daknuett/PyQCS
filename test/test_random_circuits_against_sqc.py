@@ -67,7 +67,8 @@ def test_random_q4_l10():
     for _ in range(1000):
         do_test_q4_l10()
 
+@pytest.mark.slow
 def test_random_q10_l100():
-    for _ in range(10000):
+    for _ in range(4000):
         do_test_q10_l100()
 
