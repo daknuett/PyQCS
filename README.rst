@@ -10,6 +10,35 @@ Links
 - `the pypi repository <https://pypi.org/project/pyqcs/>`_
 - `some examples on github <https://github.com/daknuett/PyQCS/tree/master/examples>`_
 
+Using PyQCS
+===========
+
+To do some computation one has to build a quantum circuit and apply it to a state.
+States are created using ``pyqcs.State.new_zero_state(<number of qbits>)``.
+
+Circuits are built from the fundamental gates (see `Built-in Gates`_) by joining them 
+together using the ``|`` operator::
+
+	from pyqcs import H, CX, X
+
+	circuit = H(0) | CX(1, 0) | X(1)
+
+The usage of the ``|`` is in analogy to the UNIX pipe: gates are applied from left to
+right. This is in agreement with the Feynman quantum circuit diagrams.
+
+**Note**: the circuit above would have the following matrix representation::
+
+	X(1) CZ(1,0) H(0)
+
+Applying a circuit to a state is done using multiplication::
+
+	from pyqcs import State
+
+	state = State.new_zero_state(2)
+	resulting_state = circuit * state
+
+	
+
 Basic Design Layout
 ===================
 
@@ -64,13 +93,17 @@ PyQCS currently has the following gates built-in:
 	Pauli-X or NOT gate. Flips the respective qbit.
 ``H``
 	Hadamard gate. 
-``C``
+``C = CX``
 	CNOT (controlled NOT) gate. Flips the act-qbit, if the control-qbit is set.
 ``R``
 	R, Rz or R_phi, the rotation gate. Rotates the respective qbit around a given angle.
 ``M``
 	Measurement gate: this gate measures the respective gate, collapsing the wave function
 	and storing the result in the classical part of the state.
+``Z``
+	Pauli-Z gate.
+``B = CZ``
+	Controlled Z gate.
 
 
 TODOs
@@ -80,6 +113,7 @@ TODOs
 - Write lot's of documentation.
 - Add more tests.
 - Add a ``NoisyGateListExecutor`` that allows to implement a noise model.
+- Allow states to be multiplied with each other to compute the overlap.
 
 
 
