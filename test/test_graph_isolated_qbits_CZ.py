@@ -15,6 +15,7 @@ def possible_input_configurations():
         yield(g0, g1, c0, c1, e)
 
 
+@pytest.mark.slow
 def test_two_qbits_isolated():
     for g0, g1, c0, c1 ,e in possible_input_configurations():
         g = RawGraphState(2)
@@ -30,6 +31,7 @@ def test_two_qbits_isolated():
 
         assert graph_lists_to_naive_state(g.to_lists()) == s
 
+@pytest.mark.slow
 def test_two_qbits_isolated_CZ():
     for g0, g1, c0, c1 ,e in possible_input_configurations():
         g = RawGraphState(2)
