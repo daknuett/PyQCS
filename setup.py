@@ -4,19 +4,19 @@ from setuptools import setup, Extension, find_packages
 basic_gates = Extension(
                         "pyqcs.gates.implementations.basic_gates"
                         , sources=["src/pyqcs/gates/implementations/basic_gates.c"]
-                        , extra_compile_args=["-fstack-protector", "-Wno-unused-variable"]
+                        , extra_compile_args=["-fstack-protector", "-Wno-unused-variable", "-g"]
                     )
 graph_backend = Extension("pyqcs.graph.backend.raw_state"
                         , sources=["src/pyqcs/graph/backend/raw_state.c"
                                 , "src/pyqcs/graph/backend/linked_list.c"
                                 , "src/pyqcs/graph/backend/graph_operations.c"
                         ]
-                        , extra_compile_args=["-fstack-protector", "-Wno-unused-variable"]
+                        , extra_compile_args=["-fstack-protector", "-Wno-unused-variable", "-g"]
                     )
 generic_gate = Extension(
                         "pyqcs.gates.implementations.generic_gate"
                         , sources=["src/pyqcs/gates/implementations/generic_gate.c"]
-                        , extra_compile_args=["-fstack-protector", "-Wno-unused-variable"])
+                        , extra_compile_args=["-fstack-protector", "-Wno-unused-variable", "-g"])
 
 setup(
         name="pyqcs"
