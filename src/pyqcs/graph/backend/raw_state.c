@@ -1,5 +1,6 @@
 #include <Python.h>
 #include <structmember.h>
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <numpy/ndarraytypes.h>
 #include <numpy/ufuncobject.h>
 #include <structmember.h>
@@ -9,9 +10,17 @@
 #include "vops.h"
 #include "linked_list.h"
 #include "graph_operations.h"
+#include "raw_state.h"
 
+static PyTypeObject RawGraphStateType = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "pyqcs.graph.backed.raw_state.RawGraphState",
+    .tp_doc = "special type for graph representation",
+    .tp_itemsize = 0,
+    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
+    .tp_new = PyType_GenericNew,
+};
 
-#include "../../gates/implementations/basic_gates.h"
 
 
 static int
@@ -25,7 +34,7 @@ RawGraphState_init(RawGraphState * self
     npy_intp length;
     npy_intp i;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "I", kwrds, &length))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "l", kwrds, &length))
     {
         return -1;
     }
@@ -56,6 +65,55 @@ RawGraphState_init(RawGraphState * self
         self->vops[i] = VOP_I;
     }
     return 0;
+}
+
+static PyObject *
+RawGraphState_deepcopy(RawGraphState * self)
+{
+    PyObject * args;
+    RawGraphState * new_graph;
+    npy_intp i;
+
+    args = Py_BuildValue("(I)", self->length);
+    if(!args)
+    {
+        return NULL;
+    }
+
+    // CALL PYTHON CODE
+    PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+
+    new_graph = (RawGraphState *) PyObject_CallObject((PyObject *) &RawGraphStateType, args);
+
+    PyGILState_Release(gstate);
+    // END CALL PYTHON CODE
+    if(!new_graph)
+    {
+        return NULL;
+    }
+
+    for(i = 0; i < self->length; i++)
+    {
+        new_graph->vops[i] = self->vops[i];
+    }
+    for(i = 0; i < self->length; i++)
+    {
+        if(ll_deepcopy(&(new_graph->lists[i]), &(self->lists[i])))
+        {
+            //ll_recursively_delete_list(new_graph->lists[i]);
+            //new_graph->lists[i] = NULL;
+            goto return_after_error;
+        }
+    }
+
+    return (PyObject *) new_graph;
+
+return_after_error:
+    PyErr_SetString(PyExc_MemoryError, "failed to allocate new graph state: out of memory");
+    Py_DECREF(new_graph);
+    return NULL;
+
 }
 
 
@@ -182,7 +240,7 @@ RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
                 else
                 {
                     // Sub-Sub-Case 2.2.2
-                    if(ll_length(self->lists[j] > 1))
+                    if(ll_length(self->lists[j]) > 1)
                     {
                         result = graph_clear_vop(self, j, i);
                         if(!result)
@@ -221,7 +279,7 @@ RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
                 else
                 {
                     // Sub-Sub-Case 2.2.2
-                    if(ll_length(self->lists[j] > 1))
+                    if(ll_length(self->lists[j]) > 1)
                     {
                         result = graph_clear_vop(self, j, i);
                         if(!result)
@@ -272,27 +330,13 @@ RawGraphState_dealloc(RawGraphState * self)
 
 static PyMemberDef RawGraphState_members[] = {{NULL}};
 static PyMethodDef RawGraphState_methods[] = {
-    //{"setitem", (PyCFunction) RawGraphState_setitem, METH_VARARGS, "sets an item"}
-    //, {"getitem", (PyCFunction) RawGraphState_getitem, METH_VARARGS, "gets an item"}
     {"apply_C_L", (PyCFunction) RawGraphState_apply_C_L, METH_VARARGS, "applies a C_L operator"}
     , {"apply_CZ", (PyCFunction) RawGraphState_apply_CZ, METH_VARARGS, "applies a CZ operator"}
     , {"to_lists", (PyCFunction) RawGraphState_to_lists, METH_NOARGS, "converts the graph state to a python representation using lists"}
+    , {"deepcopy", (PyCFunction) RawGraphState_deepcopy, METH_NOARGS, "deepcopy the graph"}
     , {NULL}
 };
 
-static PyTypeObject RawGraphStateType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "pyqcs.graph.backed.raw_state.RawGraphState",
-    .tp_doc = "special type for graph representation",
-    .tp_basicsize = sizeof(RawGraphState),
-    .tp_itemsize = 0,
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
-    .tp_new = PyType_GenericNew,
-    .tp_init = (initproc) RawGraphState_init,
-    .tp_dealloc = (destructor) RawGraphState_dealloc,
-    .tp_members = RawGraphState_members,
-    .tp_methods = RawGraphState_methods,
-};
 
 static PyModuleDef raw_statemodule = {
     PyModuleDef_HEAD_INIT,
@@ -301,13 +345,15 @@ static PyModuleDef raw_statemodule = {
     .m_size = -1,
 };
 
+
 PyMODINIT_FUNC
 PyInit_raw_state(void)
 {
-    if(import_basic_gates() < 0)
-    {
-        return NULL;
-    }
+    RawGraphStateType.tp_methods = RawGraphState_methods;
+    RawGraphStateType.tp_init = (initproc) RawGraphState_init;
+    RawGraphStateType.tp_dealloc = (destructor) RawGraphState_dealloc;
+    RawGraphStateType.tp_members = RawGraphState_members;
+    RawGraphStateType.tp_basicsize = sizeof(RawGraphState);
     //if(import_array() < 0)
     //{
     //    return NULL;

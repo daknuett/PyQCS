@@ -4,6 +4,10 @@ from abc import ( ABCMeta
         , abstractstaticmethod)
 
 class AbstractState(metaclass=ABCMeta):
+    def __init__(self):
+        self._is_graph = False
+        self._is_naive = False
+
     @abstractmethod
     def get_last_measurement(self):
         pass

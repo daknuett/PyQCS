@@ -157,3 +157,32 @@ ll_iter_reset(ll_iter_t * iter)
     iter->current = iter->start;
     return 0;
 }
+
+int
+ll_deepcopy(ll_node_t ** destination, ll_node_t ** source)
+{
+    ll_node_t * current_source = *source;
+    ll_node_t * new_node = NULL;
+    ll_node_t * last_node = NULL;
+
+    while(current_source)
+    {
+        new_node = ll_node_t_new(NULL, current_source->value);
+        if(!new_node)
+        {
+            return -1;
+        }
+        current_source = current_source->next;
+        if(!last_node)
+        {
+            *destination = new_node;
+        }
+        else
+        {
+            last_node->next = new_node;
+        }
+        last_node = new_node;
+        new_node = NULL;
+    }
+    return 0;
+}

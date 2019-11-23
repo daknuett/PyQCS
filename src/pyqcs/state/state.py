@@ -4,6 +4,8 @@ import numpy as np
 class BasicState(AbstractState):
     __slots__ = ["_nbits", "_ndim", "_qm_state", "_cl_state", "_last_measured"]
     def __init__(self, qm_state, cl_state, nbits, last_measured, **kwargs):
+        AbstractState.__init__(self)
+        self._is_naive = True
         self._qm_state = qm_state
         self._cl_state = cl_state
         self._nbits = nbits

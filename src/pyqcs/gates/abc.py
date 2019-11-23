@@ -9,6 +9,8 @@ from ..state.abc import AbstractState
 
 class AbstractGateCircuit(metaclass=ABCMeta):
     def __init__(self, qbits, identities):
+        self._has_graph = False
+        self._has_naive = False
         self._uses_qbits = qbits
         self._identities = identities
         self._executor = GateListExecutor

@@ -47,4 +47,7 @@ ll_has_value(ll_node_t * list, npy_intp value);
 npy_intp
 ll_length(ll_node_t * list);
 
+int
+ll_deepcopy(ll_node_t ** destination, ll_node_t ** source);
+
 #endif
