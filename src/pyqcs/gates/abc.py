@@ -66,6 +66,7 @@ class AbstractCompoundGateCircuit(AbstractGateCircuit):
         AbstractGateCircuit.__init__(self, qbits, identities)
         self._subcircuits = subcircuits
 
+
 class AbstractGate(metaclass=ABCMeta):
     @abstractmethod
     def __call__(self, qm_state, cl_state):
