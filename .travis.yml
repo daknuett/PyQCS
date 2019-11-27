@@ -7,6 +7,6 @@ python:
     - "3.7"
     - "3.8"
 
-before_install: pip install tox
+install: pip install tox-travis
 
 script: tox --runslow
