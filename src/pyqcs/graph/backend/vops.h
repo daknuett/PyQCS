@@ -1297,7 +1297,7 @@ static npy_intp two_qbit_vops_after_CZ[1152][3] =
 
 // C^\dagger Z C is one of the following matrices.
 // Index is the index of [Z, Y, X, -Z, -Y, -X].
-static npy_uint8 projectors_after_vop_commute[24] = 
+static npy_uint8 observable_after_vop_commute[24] = 
 {2, 0, 0, 2, 4, 0, 4, 5, 0, 5, 1, 1, 1, 2, 3, 2, 3, 4, 3, 4, 5, 3, 5, 1};
 
 #endif

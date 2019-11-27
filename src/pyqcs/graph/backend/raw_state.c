@@ -201,6 +201,17 @@ cleanup_error:
     return NULL;
 }
 
+static PyObject *
+RawGraphState_measure(RawGraphState * self, PyObject * args)
+{
+    npy_intp qbit;
+    double random;
+    if(!PyArg_ParseTuple(args, "ld", &qbit, &random))
+    {
+        return NULL;
+    }
+}
+
 
 static PyObject *
 RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
