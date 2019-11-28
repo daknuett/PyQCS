@@ -6,11 +6,14 @@ This package contains a quantum computing simulator.
 
 The following gates are imported:
 
-    C(act, control): CNOT
-    X(act): NOT
+    CX = C(act, control): CNOT
+    X(act): NOT, Pauli X gate
     H(act): Hadamard
     R(act, phi): Rotation
     M(act): Measurement
+    Z(act): Pauli Z gate
+    CZ(act, control): Controlled Pauli Z gate
+
 
 The following functions are provided to make measurements easier:
 
