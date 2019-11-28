@@ -10,6 +10,7 @@ python:
 before_install: 
 - ./install-sqc.sh
 - pip install -r requirements.tx
+- export NUMPY_INCLUDE= -I$(shell python -c 'import numpy; print(numpy.get_include())')
 
 install: python setup.py build install
 
