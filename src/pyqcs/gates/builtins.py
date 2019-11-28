@@ -10,10 +10,10 @@ class BuiltinGateBuilder(AbstractSingleGateCircuitBuilder):
 
     def __call__(self, act, *args):
         if((act,) + args not in self._registry):
-            gate = BuiltinGate(self._type, act, *args)
-            circuit = SingleGateCircuit((1 << act), [], self._type + "(" + ",".join((str(a) for a in (act,) + args)) + ")", gate)
-            self._registry[(act,) + args] = circuit
-        return self._registry[(act,) + args]
+            gate = BuiltinGate(self._type, act,*args)
+            circuit = SingleGateCircuit((1 << act), [], self._type + "(" + ",".join((str(a) for a in args)) + ")", gate)
+            self._registry[(act, *args)] = circuit
+        return self._registry[(act, *args)]
 
 _H = BuiltinGateBuilder('H')
 def H(act):
