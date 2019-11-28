@@ -117,7 +117,7 @@ GenericGate_init
         , "Computes a generic gate on a state." // doc
         , 0 // unused
         , "(n),(m)->(n),(m),()"); 
-    if(self->ufunc <= 0)
+    if(self->ufunc == 0)
     {
         //I have no idea what is going on.
         //PyErr_SetString(PyExc_ValueError, "failed to construct the ufunc for unknow reasons");
