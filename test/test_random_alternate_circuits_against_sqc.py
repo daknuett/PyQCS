@@ -17,7 +17,7 @@ def get_circuits(random_basis_values, nqbits):
                 yield H(i - nqbits - 1)
             elif(i <= 3*nqbits):
                 yield R(i - 2*nqbits - 1, x)
-            
+
             else:
                 if(k <= i - 3*nqbits - 1):
                     k -= 1
@@ -32,7 +32,7 @@ def get_circuits(random_basis_values, nqbits):
                 o = o.H(i - nqbits - 1)
             elif(i <= 3*nqbits):
                 o = o.Rz(i - 2*nqbits - 1, x)
-            
+
             else:
                 if(k <= i - 3*nqbits - 1):
                     k -= 1
