@@ -6,7 +6,7 @@ This package contains a quantum computing simulator.
 
 The following gates are imported:
 
-    C(act, control): CNOT 
+    C(act, control): CNOT
     X(act): NOT
     H(act): Hadamard
     R(act, phi): Rotation
@@ -42,10 +42,10 @@ def measure(state, bit_mask):
     state = State(state._qm_state, np.array([-1 for i in state._cl_state], dtype=np.int8), state._nbits, 0)
     new_state = circuit * state
     return new_state, sum([1 << i for i,v in enumerate(new_state._cl_state) if v == 1])
-    
+
 
 def _do_sample(state, circuit, nsamples):
-    for i in range(nsamples):
+    for _ in range(nsamples):
         new_state = circuit * state
         yield new_state, sum([1 << i for i,v in enumerate(new_state._cl_state) if v == 1])
 
@@ -64,7 +64,7 @@ def sample(state, bit_mask, nsamples, keep_states=False):
 
     if(keep_states):
         return Counter(_do_sample(state, circuit, nsamples))
-    
+
     return Counter((i[1] for i in _do_sample(state, circuit, nsamples)))
 
 def list_to_circuit(list_of_circuits, name=None):
