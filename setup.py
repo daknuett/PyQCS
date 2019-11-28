@@ -1,15 +1,20 @@
 from setuptools import setup, Extension, find_packages
+import numpy
 
 
 basic_gates = Extension(
                         "pyqcs.gates.implementations.basic_gates"
                         , sources=["src/pyqcs/gates/implementations/basic_gates.c"]
-                        , extra_compile_args=["-fstack-protector", "-Wno-unused-variable"]
+                        , extra_compile_args=["-fstack-protector"
+                                             , "-Wno-unused-variable"
+                                             , "-I%s" % numpy.get_include()]
                     )
 generic_gate = Extension(
                         "pyqcs.gates.implementations.generic_gate"
                         , sources=["src/pyqcs/gates/implementations/generic_gate.c"]
-                        , extra_compile_args=["-fstack-protector", "-Wno-unused-variable"])
+                        , extra_compile_args=["-fstack-protector"
+                                            , "-Wno-unused-variable"
+                                            , "-I%s" % numpy.get_include()])
 
 setup(
         name="pyqcs"
