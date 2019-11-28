@@ -14,7 +14,7 @@ class BasicState(AbstractState):
     def new_zero_state(cls, nbits, **kwargs):
         if(nbits > 29):
             # (2**29 * 16) / 2**30 = 8 GiB.
-            raise Warning("State will require more than 8GiB RAM. " 
+            raise Warning("State will require more than 8GiB RAM. "
                         "Using such big states can lead to random crashes.")
         ndim = 2**nbits
         qm_state = np.zeros(ndim, dtype=np.cfloat)

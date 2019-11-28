@@ -42,7 +42,7 @@ class GateListExecutor(object):
                 yield gate_or_executor
             else:
                 yield from gate_or_executor.to_gate_list_generator()
-        
+
 
 class RepeatingGateListExecutorSpawner(object):
     def __init__(self, times):
