@@ -1,7 +1,6 @@
 from abc import ( ABCMeta
         , abstractclassmethod
-        , abstractmethod
-        , abstractstaticmethod)
+        , abstractmethod)
 
 class AbstractState(metaclass=ABCMeta):
     @abstractmethod
