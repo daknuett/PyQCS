@@ -1,6 +1,9 @@
 PyQCS -- A quantum computing simulator
 **************************************
 
+.. image:: https://travis-ci.org/daknuett/PyQCS.svg?branch=master
+    :target: https://travis-ci.org/daknuett/PyQCS
+
 .. contents::
 
 Links
