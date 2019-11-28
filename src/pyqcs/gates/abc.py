@@ -1,7 +1,6 @@
 from abc import ( ABCMeta
                 , abstractclassmethod
-                , abstractmethod
-                , abstractstaticmethod)
+                , abstractmethod)
 
 
 from .executor import GateListExecutor, RepeatingGateListExecutorSpawner
@@ -30,7 +29,7 @@ class AbstractGateCircuit(metaclass=ABCMeta):
             return self.new_from_circuit_with_executor(RepeatingGateListExecutorSpawner(other))
         raise TypeError()
 
-            
+
     def add_identity(self, identity):
         self._identities.append(identity)
 
@@ -44,7 +43,7 @@ class AbstractGateCircuit(metaclass=ABCMeta):
     @abstractmethod
     def __ror__(self, other):
         pass
-    
+
     @abstractmethod
     def get_child_executors(self):
         pass
