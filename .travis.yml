@@ -8,9 +8,10 @@ python:
     - "3.8"
 
 before_install: 
-- ./install-sqc.sh
-- pip install -r requirements.tx
-- export NUMPY_INCLUDE="-I$(python -c 'import numpy; print(numpy.get_include())')"
+    - ./install-sqc.sh
+    - pip install -r requirements.tx
+    - export NUMPY_INCLUDE="-I$(python -c 'import numpy; print(numpy.get_include())')"
+    - python -c 'import numpy; print(numpy.get_include())'
 
 install: python setup.py build install
 
