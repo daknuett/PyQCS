@@ -3,6 +3,8 @@ PyQCS -- A quantum computing simulator
 
 .. image:: https://travis-ci.org/daknuett/PyQCS.svg?branch=master
     :target: https://travis-ci.org/daknuett/PyQCS
+.. image:: https://api.codacy.com/project/badge/Grade/a6ca800c070a46f297216d03f9351129
+    :target: https://www.codacy.com/manual/daknuett_2/PyQCS?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=daknuett/PyQCS&amp;utm_campaign=Badge_Grade
 
 .. contents::
 
