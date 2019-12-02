@@ -206,10 +206,38 @@ RawGraphState_measure(RawGraphState * self, PyObject * args)
 {
     npy_intp qbit;
     double random;
+    npy_uint8 observable;
+    npy_intp invert_result = 0;
+    npy_intp result;
+
     if(!PyArg_ParseTuple(args, "ld", &qbit, &random))
     {
         return NULL;
     }
+
+    if(qbit > self->length)
+    {
+        PyErr_SetString(PyExc_ValueError, "qbit index out of range");
+        return NULL;
+    }
+
+     observable = observable_after_vop_commute[self->vops[qbit]];
+     if(observable > 2)
+     {
+         invert_result = 1;
+     }
+
+     // The only deterministic result, that also does not change
+     // the graph state.
+     if((observable == 2 || observable == 5) 
+        && ll_length(self->lists[qbit]) == 0)
+     {
+        result = invert_result; // = 0 ^ invert_result
+        return Py_BuildValue("l", result);
+     }
+
+     PyErr_SetString(PyExc_NotImplementedError, "to be done");
+
 }
 
 
