@@ -237,6 +237,7 @@ RawGraphState_measure(RawGraphState * self, PyObject * args)
      }
 
      PyErr_SetString(PyExc_NotImplementedError, "to be done");
+     return NULL;
 
 }
 
