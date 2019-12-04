@@ -221,24 +221,43 @@ RawGraphState_measure(RawGraphState * self, PyObject * args)
         return NULL;
     }
 
-     observable = observable_after_vop_commute[self->vops[qbit]];
-     if(observable > 2)
-     {
-         invert_result = 1;
-     }
+    observable = observable_after_vop_commute[self->vops[qbit]];
+    if(observable > 2)
+    {
+        invert_result = 1;
+    }
 
-     // The only deterministic result, that also does not change
-     // the graph state.
-     if((observable == 2 || observable == 5) 
-        && ll_length(self->lists[qbit]) == 0)
-     {
-        result = invert_result; // = 0 ^ invert_result
-        return Py_BuildValue("l", result);
-     }
+    // The only deterministic result, that also does not change
+    // the graph state.
+    if((observable == 2 || observable == 5) 
+       && ll_length(self->lists[qbit]) == 0)
+    {
+       result = invert_result; // = 0 ^ invert_result
+       return Py_BuildValue("l", result);
+    }
 
-     PyErr_SetString(PyExc_NotImplementedError, "to be done");
-     return NULL;
+    // Select the result randomly according to 
+    // the given random number:
+    if(random >= 0.5)
+    {
+        result = 1;
+    }
+    printf("observable: %ld, random: %f, result: %ld\n", observable, random, result);
+    // invert_result means we are measuring -O instead of O.
+    // This can be achieved by measuring O and inverting the result.
+    // The state is changed according to the inverted result.
+    if(invert_result)
+    {
+        result ^= 1;
+        observable -= 3;
+    }
 
+    if(graph_update_after_measurement(self, observable, result))
+    {
+        return NULL;
+    }
+
+    return Py_BuildValue("l", result);
 }
 
 
@@ -372,6 +391,7 @@ static PyMemberDef RawGraphState_members[] = {{NULL}};
 static PyMethodDef RawGraphState_methods[] = {
     {"apply_C_L", (PyCFunction) RawGraphState_apply_C_L, METH_VARARGS, "applies a C_L operator"}
     , {"apply_CZ", (PyCFunction) RawGraphState_apply_CZ, METH_VARARGS, "applies a CZ operator"}
+    , {"measure", (PyCFunction) RawGraphState_measure, METH_VARARGS, "measures a qbit"}
     , {"to_lists", (PyCFunction) RawGraphState_to_lists, METH_NOARGS, "converts the graph state to a python representation using lists"}
     , {"deepcopy", (PyCFunction) RawGraphState_deepcopy, METH_NOARGS, "deepcopy the graph"}
     , {NULL}

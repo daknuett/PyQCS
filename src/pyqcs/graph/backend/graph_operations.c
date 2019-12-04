@@ -263,3 +263,71 @@ graph_clear_vop(RawGraphState * self, npy_intp a, npy_intp b)
     }
     return 0;
 }
+
+int
+graph_update_after_X_measurement(RawGraphState * self
+                            , npy_intp qbit
+                            , npy_intp result)
+{
+    PyErr_SetString(PyExc_NotImplementedError, "to be done");
+    return -1;
+}
+
+int
+graph_update_after_Y_measurement(RawGraphState * self
+                            , npy_intp qbit
+                            , npy_intp result)
+{
+    PyErr_SetString(PyExc_NotImplementedError, "to be done");
+    return -1;
+}
+
+int
+graph_update_after_Z_measurement(RawGraphState * self
+                            , npy_intp qbit
+                            , npy_intp result)
+{
+    if(!result)
+    {
+        // Measured a +1
+        // Now upating the graph state is simple:
+        // U_zplus is just the identity (the rest of the graph is not changed)
+        // and the vertex operator must accout for stabilizing in Z.
+        // That means that K_g^(i) is changed to Z, so right multiply
+        // an operator O to the VOP s.t OK_g^(i)o^\dagger = Z. That is achieved
+        // by O = H.
+
+        self->vops[qbit] = vop_lookup_table[self->vops[qbit]][VOP_H];
+        return 0;
+    }
+    // Here we have to apply U_zminus to the VOP-free G-state which means
+    // right multiplying that operator to the VOPs.
+    self->vops[qbit] = vop_lookup_table[self->vops[qbit]][VOP_H];
+    ll_iter_t * iter = ll_iter_t_new(self->lists[qbit]);
+    npy_intp neighbour;
+    while(ll_iter_next(iter, &neighbour))
+    {
+        self->vops[neighbour] = vop_lookup_table[self->vops[neighbour]][VOP_Z];
+    }
+    free(iter);
+    return 0;
+}
+
+
+int
+graph_update_after_measurement(RawGraphState * self
+                            , npy_uint8 observable
+                            , npy_intp qbit
+                            , npy_intp result)
+{
+    // X measurement. Note that the qbit has neighbours.
+    if(observable == 2)
+    {
+        return graph_update_after_X_measurement(self, qbit, result);
+    }
+    if(observable == 1)
+    {
+        return graph_update_after_Y_measurement(self, qbit, result);
+    }
+    return graph_update_after_Z_measurement(self, qbit, result);
+}
