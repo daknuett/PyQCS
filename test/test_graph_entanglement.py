@@ -120,7 +120,7 @@ def test_few_CZ_clear_vops(graph_zero_state_10, naive_zero_state_10):
 
     g.apply_C_L(2, VOP_X)
     g.apply_CZ(2, 4)
-    
+
     state2 = (X(2) | CZ(2, 4)) * state1
 
     assert graph_lists_to_naive_state(g.to_lists()) == state2
@@ -179,11 +179,3 @@ def test_many_CZ_clear_vops_precomputed():
     assert g.to_lists() == ([2, 2, 20], [[2], [2], [0, 1]])
     assert graph_lists_to_naive_state(g.to_lists()) == s
 
-
-if __name__ == "__main__":
-    g = RawGraphState(10)
-    for i in range(10):
-        g.apply_C_L(i, VOP_H)
-    s = State.new_zero_state(10)
-
-    test_many_CZ_clear_vops(g, s)
