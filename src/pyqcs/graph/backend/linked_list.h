@@ -30,7 +30,7 @@ int
 ll_iter_reset(ll_iter_t * iter);
 
 void
-ll_recursively_delete_list(ll_node_t * list);
+ll_recursively_delete_list(ll_node_t ** list);
 
 ll_node_t *
 ll_node_t_new(ll_node_t * next, npy_intp value);

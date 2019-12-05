@@ -208,7 +208,7 @@ RawGraphState_measure(RawGraphState * self, PyObject * args)
     double random;
     npy_uint8 observable;
     npy_intp invert_result = 0;
-    npy_intp result;
+    npy_intp result = 0;
 
     if(!PyArg_ParseTuple(args, "ld", &qbit, &random))
     {
@@ -242,7 +242,6 @@ RawGraphState_measure(RawGraphState * self, PyObject * args)
     {
         result = 1;
     }
-    printf("observable: %ld, random: %f, result: %ld\n", observable, random, result);
     // invert_result means we are measuring -O instead of O.
     // This can be achieved by measuring O and inverting the result.
     // The state is changed according to the inverted result.
@@ -252,7 +251,7 @@ RawGraphState_measure(RawGraphState * self, PyObject * args)
         observable -= 3;
     }
 
-    if(graph_update_after_measurement(self, observable, result))
+    if(graph_update_after_measurement(self, observable, qbit, result))
     {
         return NULL;
     }
@@ -380,7 +379,7 @@ RawGraphState_dealloc(RawGraphState * self)
     int i;
     for(i = 0; i < self->length; i++)
     {
-        ll_recursively_delete_list(self->lists[i]);
+        ll_recursively_delete_list(&self->lists[i]);
     }
     free(self->lists);
     free(self->vops);

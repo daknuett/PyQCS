@@ -179,3 +179,13 @@ def test_many_CZ_clear_vops_precomputed():
     assert g.to_lists() == ([2, 2, 20], [[2], [2], [0, 1]])
     assert graph_lists_to_naive_state(g.to_lists()) == s
 
+def test_3qbit_CZ():
+    s = (H(0) | H(1) | H(2)) * State.new_zero_state(3)
+    s = (CZ(0, 1) | CZ(0, 2)) * s
+
+    g = RawGraphState(3)
+    g.apply_CZ(0, 1)
+    g.apply_CZ(0, 2)
+
+    assert graph_lists_to_naive_state(g.to_lists()) == s
+

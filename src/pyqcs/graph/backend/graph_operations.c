@@ -265,6 +265,21 @@ graph_clear_vop(RawGraphState * self, npy_intp a, npy_intp b)
 }
 
 int
+graph_isolate_qbit(RawGraphState * self
+                , npy_intp qbit)
+{
+    ll_iter_t * iter = ll_iter_t_new(self->lists[qbit]);
+    npy_intp ngb;
+    while(ll_iter_next(iter, &ngb))
+    {
+        ll_delete_value(&self->lists[ngb], qbit);
+    }
+    free(iter);
+    ll_recursively_delete_list(&self->lists[qbit]);
+    return 0;
+}
+
+int
 graph_update_after_X_measurement(RawGraphState * self
                             , npy_intp qbit
                             , npy_intp result)
@@ -297,12 +312,14 @@ graph_update_after_Z_measurement(RawGraphState * self
         // an operator O to the VOP s.t OK_g^(i)o^\dagger = Z. That is achieved
         // by O = H.
 
-        self->vops[qbit] = vop_lookup_table[self->vops[qbit]][VOP_H];
+        self->vops[qbit] = vop_lookup_table[self->vops[qbit]][projected_vop[0]];
+        graph_isolate_qbit(self, qbit);
+
         return 0;
     }
     // Here we have to apply U_zminus to the VOP-free G-state which means
     // right multiplying that operator to the VOPs.
-    self->vops[qbit] = vop_lookup_table[self->vops[qbit]][VOP_H];
+    self->vops[qbit] = vop_lookup_table[self->vops[qbit]][projected_vop[3]];
     ll_iter_t * iter = ll_iter_t_new(self->lists[qbit]);
     npy_intp neighbour;
     while(ll_iter_next(iter, &neighbour))
@@ -310,6 +327,8 @@ graph_update_after_Z_measurement(RawGraphState * self
         self->vops[neighbour] = vop_lookup_table[self->vops[neighbour]][VOP_Z];
     }
     free(iter);
+    graph_isolate_qbit(self, qbit);
+
     return 0;
 }
 

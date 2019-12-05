@@ -1,15 +1,16 @@
 #include "linked_list.h"
 
 void
-ll_recursively_delete_list(ll_node_t * list)
+ll_recursively_delete_list(ll_node_t ** list)
 {
     ll_node_t * next_node;
-    while(list)
+    while(*list)
     {
-        next_node = list->next;
-        free(list);
-        list = next_node;
+        next_node = (*list)->next;
+        free(*list);
+        *list = next_node;
     }
+    *list = NULL;
 }
 
 ll_node_t *
