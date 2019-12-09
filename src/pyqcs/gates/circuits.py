@@ -2,8 +2,8 @@ from .abc import AbstractGateCircuit, AbstractNamedGateCircuit, AbstractCompound
 from .executor import GateListExecutor
 
 class SingleGateCircuit(AbstractNamedGateCircuit):
-    def __init__(self, qbits, identities, name, gate):
-        AbstractNamedGateCircuit.__init__(self, qbits, identities, name)
+    def __init__(self, qbits, identities, name, descr, gate):
+        AbstractNamedGateCircuit.__init__(self, qbits, identities, name, descr)
         self._gate = gate
 
 
@@ -51,17 +51,17 @@ class AnonymousCompoundGateCircuit(AbstractCompoundGateCircuit):
         new_circuit = AnonymousCompoundGateCircuit(self._subcircuits, self._uses_qbits)
         new_circuit._executor = executor
         return new_circuit
-        
+
     def get_child_executors(self):
         return [c.to_executor() for c in self._subcircuits]
 
 class NamedCompoundGateCircuit(AnonymousCompoundGateCircuit, AbstractNamedGateCircuit):
-    def __init__(self, subcircuit_list, name, identities=[]):
+    def __init__(self, subcircuit_list, name, descr, identities=[]):
         qbits = 0
         for subcircuit in subcircuit_list:
             qbits |= subcircuit._uses_qbits
         AnonymousCompoundGateCircuit.__init__(self, subcircuit_list, qbits=qbits)
-        AbstractNamedGateCircuit.__init__(self, qbits, identities, name)
+        AbstractNamedGateCircuit.__init__(self, qbits, identities, name, descr)
 
     @classmethod
     def from_anonymous(cls, anonymous, name, identities=[]):
@@ -72,7 +72,7 @@ class NamedCompoundGateCircuit(AnonymousCompoundGateCircuit, AbstractNamedGateCi
 
 
     def new_from_circuit_with_executor(self, executor):
-        # Don't give that new circuit a name. It is a new 
+        # Don't give that new circuit a name. It is a new
         # circuit.
         new_circuit = AnonymousCompoundGateCircuit([self], self._uses_qbits)
         new_circuit._executor = executor

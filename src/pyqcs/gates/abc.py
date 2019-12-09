@@ -30,7 +30,7 @@ class AbstractGateCircuit(metaclass=ABCMeta):
             return self.new_from_circuit_with_executor(RepeatingGateListExecutorSpawner(other))
         raise TypeError()
 
-            
+
     def add_identity(self, identity):
         self._identities.append(identity)
 
@@ -44,7 +44,7 @@ class AbstractGateCircuit(metaclass=ABCMeta):
     @abstractmethod
     def __ror__(self, other):
         pass
-    
+
     @abstractmethod
     def get_child_executors(self):
         pass
@@ -54,9 +54,10 @@ class AbstractGateCircuit(metaclass=ABCMeta):
         pass
 
 class AbstractNamedGateCircuit(AbstractGateCircuit):
-    def __init__(self, qbits, identities, name):
+    def __init__(self, qbits, identities, name, descr):
         AbstractGateCircuit.__init__(self, qbits, identities)
         self._name = name
+        self._descr = descr
 
 class AbstractCompoundGateCircuit(AbstractGateCircuit):
     __slots__ = ["_subcircuits"]
