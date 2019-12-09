@@ -1,7 +1,6 @@
 from abc import ( ABCMeta
                 , abstractclassmethod
-                , abstractmethod
-                , abstractstaticmethod)
+                , abstractmethod)
 
 
 from .executor import GateListExecutor, RepeatingGateListExecutorSpawner

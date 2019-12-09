@@ -75,7 +75,7 @@ def test_raw_r1_0():
 
     tests = [(
                 (sqc.operator(2).Rz(0, r) * state).v
-                , BasicGate('R', 0, 0, r, nop)(qm_state, cl_state)[0]) 
+                , BasicGate('R', 0, 0, r, nop)(qm_state, cl_state)[0])
                     for r in np.arange(0, 2 * np.pi, 0.1)]
 
     for expect, got in tests:
@@ -91,7 +91,7 @@ def test_raw_r2_0():
 
     tests = [(
                 (sqc.operator(2).Rz(1, r) * state).v
-                , BasicGate('R', 1, 0, r, nop)(qm_state, cl_state)[0]) 
+                , BasicGate('R', 1, 0, r, nop)(qm_state, cl_state)[0])
                     for r in np.arange(0, 2 * np.pi, 0.1)]
 
     for expect, got in tests:
@@ -107,7 +107,7 @@ def test_raw_r1_1():
 
     tests = [(
                 (sqc.operator(2).X(0).Rz(0, r) * state).v
-                , BasicGate('R', 0, 0, r, nop)(qm_state, cl_state)[0]) 
+                , BasicGate('R', 0, 0, r, nop)(qm_state, cl_state)[0])
                     for r in np.arange(0, 2 * np.pi, 0.1)]
 
     for expect, got in tests:
@@ -127,7 +127,7 @@ def test_raw_r2_1():
 
     tests = [(
                 (sqc.operator(2).X(1).Rz(1, r) * state).v
-                , BasicGate('R', 1, 0, r, nop)(qm_state, cl_state)[0]) 
+                , BasicGate('R', 1, 0, r, nop)(qm_state, cl_state)[0])
                     for r in np.arange(0, 2 * np.pi, 0.1)]
 
     for expect, got in tests:

@@ -11,7 +11,7 @@ def test_or_creates_AnonymousCompoundGateCircuit():
     circuit = gc1 | gc2
 
     assert isinstance(circuit, AnonymousCompoundGateCircuit)
-    
+
 def test_or_preserves_order():
     gc1 = X(0)
     gc2 = X(1)

@@ -18,10 +18,10 @@ def test_raw_x1():
 
     qm_state_new, cl_state_new, measured = gate(qm_state, cl_state)
 
-    assert qm_state_new[0] == 0 
+    assert qm_state_new[0] == 0
     assert qm_state_new[1] == 1
-    assert qm_state_new[2] == 0 
-    assert qm_state_new[3] == 0 
+    assert qm_state_new[2] == 0
+    assert qm_state_new[3] == 0
     assert measured == 0
 
 def test_raw_x2():
@@ -35,9 +35,9 @@ def test_raw_x2():
 
     qm_state_new, cl_state_new, measured = gate(qm_state, cl_state)
 
-    assert qm_state_new[0] == 0 
+    assert qm_state_new[0] == 0
     assert qm_state_new[1] == 0
-    assert qm_state_new[2] == 1 
+    assert qm_state_new[2] == 1
     assert qm_state_new[3] == 0
     assert measured == 0
 
@@ -55,9 +55,9 @@ def test_raw_x12():
 
     qm_state_new, cl_state_new, measured = gate(qm_state, cl_state)
 
-    assert qm_state_new[0] == 0 
+    assert qm_state_new[0] == 0
     assert qm_state_new[1] == 0
-    assert qm_state_new[2] == 0 
+    assert qm_state_new[2] == 0
     assert qm_state_new[3] == 1
     assert measured == 0
 
@@ -231,10 +231,10 @@ def test_raw_z1():
 
     qm_state_new, cl_state_new, measured = gate(qm_state, cl_state)
 
-    assert qm_state_new[0] == 1 
+    assert qm_state_new[0] == 1
     assert qm_state_new[1] == 0
-    assert qm_state_new[2] == 0 
-    assert qm_state_new[3] == 0 
+    assert qm_state_new[2] == 0
+    assert qm_state_new[3] == 0
     assert measured == 0
 
 def test_raw_xz1():
@@ -250,8 +250,8 @@ def test_raw_xz1():
 
     qm_state_new, cl_state_new, measured = gate(qm_state, cl_state)
 
-    assert qm_state_new[0] == 0 
+    assert qm_state_new[0] == 0
     assert qm_state_new[1] == -1
-    assert qm_state_new[2] == 0 
-    assert qm_state_new[3] == 0 
+    assert qm_state_new[2] == 0
+    assert qm_state_new[3] == 0
     assert measured == 0
