@@ -14,7 +14,7 @@ class BuiltinGateBuilder(AbstractSingleGateCircuitBuilder):
             circuit = SingleGateCircuit((1 << act)
                         , []
                         , self._type + "(" + ",".join((str(a) for a in args)) + ")"
-                        , (self._type, *args)
+                        , (self._type, act, *args)
                         , gate)
             self._registry[(act, *args)] = circuit
         return self._registry[(act, *args)]
