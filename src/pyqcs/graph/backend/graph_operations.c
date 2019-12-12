@@ -293,8 +293,32 @@ graph_update_after_Y_measurement(RawGraphState * self
                             , npy_intp qbit
                             , npy_intp result)
 {
-    PyErr_SetString(PyExc_NotImplementedError, "to be done");
-    return -1;
+    if(!result)
+    {
+        self->vops[qbit] = vop_lookup_table[self->vops[qbit]][projected_vop[1]];
+        ll_iter_t * iter = ll_iter_t_new(self->lists[qbit]);
+        npy_intp neighbour;
+        while(ll_iter_next(iter, &neighbour))
+        {
+            self->vops[neighbour] = vop_lookup_table[self->vops[neighbour]][8];
+        }
+        free(iter);
+        graph_isolate_qbit(self, qbit);
+
+    }
+    else
+    {
+        self->vops[qbit] = vop_lookup_table[self->vops[qbit]][projected_vop[4]];
+        ll_iter_t * iter = ll_iter_t_new(self->lists[qbit]);
+        npy_intp neighbour;
+        while(ll_iter_next(iter, &neighbour))
+        {
+            self->vops[neighbour] = vop_lookup_table[self->vops[neighbour]][VOP_S];
+        }
+        free(iter);
+        graph_isolate_qbit(self, qbit);
+    }
+    return 0;
 }
 
 int

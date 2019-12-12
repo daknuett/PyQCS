@@ -1301,6 +1301,6 @@ static npy_uint8 observable_after_vop_commute[24] =
 {2, 0, 0, 2, 4, 0, 4, 5, 0, 5, 1, 1, 1, 2, 3, 2, 3, 4, 3, 4, 5, 3, 5, 1};
 
 static npy_uint8 projected_vop[6] = 
-{0, 3, 2, 7, 1, 5};
+{0, 3, 2, 7, 18, 5};
 
 #endif
