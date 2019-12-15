@@ -280,11 +280,40 @@ graph_isolate_qbit(RawGraphState * self
 }
 
 int
+graph_toggle_neighbourhood(RawGraphState * self
+                        , npy_intp qbit)
+{
+    ll_node_t * neighbours = self->lists[qbit];
+
+    npy_intp b, c;
+
+    ll_iter_t * iter_b = ll_iter_t_new(neighbours);
+    ll_iter_t * iter_c = ll_iter_t_new(neighbours);
+
+    while(ll_iter_next(iter_b, &b))
+    {
+        while(ll_iter_next(iter_c, &c))
+        {
+            // Do not re-toggle the edge.
+            if(b == c)
+            {
+                break;
+            }
+            graph_toggle_edge(self, b, c);
+        }
+        ll_iter_reset(iter_c);
+    }
+    free(iter_b);
+    free(iter_c);
+    return 0;
+}
+
+int
 graph_update_after_X_measurement(RawGraphState * self
                             , npy_intp qbit
                             , npy_intp result)
 {
-    PyErr_SetString(PyExc_NotImplementedError, "to be done");
+    PyErr_SetString(PyExc_NotImplementedError, "to be done (X basis)");
     return -1;
 }
 
@@ -303,6 +332,7 @@ graph_update_after_Y_measurement(RawGraphState * self
             self->vops[neighbour] = vop_lookup_table[self->vops[neighbour]][8];
         }
         free(iter);
+        graph_toggle_neighbourhood(self, qbit);
         graph_isolate_qbit(self, qbit);
 
     }
@@ -316,6 +346,7 @@ graph_update_after_Y_measurement(RawGraphState * self
             self->vops[neighbour] = vop_lookup_table[self->vops[neighbour]][VOP_S];
         }
         free(iter);
+        graph_toggle_neighbourhood(self, qbit);
         graph_isolate_qbit(self, qbit);
     }
     return 0;
