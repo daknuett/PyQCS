@@ -329,7 +329,7 @@ graph_update_after_Y_measurement(RawGraphState * self
         npy_intp neighbour;
         while(ll_iter_next(iter, &neighbour))
         {
-            self->vops[neighbour] = vop_lookup_table[self->vops[neighbour]][8];
+            self->vops[neighbour] = vop_lookup_table[self->vops[neighbour]][VOP_S];
         }
         free(iter);
         graph_toggle_neighbourhood(self, qbit);
@@ -343,7 +343,7 @@ graph_update_after_Y_measurement(RawGraphState * self
         npy_intp neighbour;
         while(ll_iter_next(iter, &neighbour))
         {
-            self->vops[neighbour] = vop_lookup_table[self->vops[neighbour]][VOP_S];
+            self->vops[neighbour] = vop_lookup_table[self->vops[neighbour]][8];
         }
         free(iter);
         graph_toggle_neighbourhood(self, qbit);
