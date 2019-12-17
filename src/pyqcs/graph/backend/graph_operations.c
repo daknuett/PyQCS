@@ -327,7 +327,7 @@ graph_update_after_X_measurement(RawGraphState * self
         npy_intp c;
         while(ll_iter_next(iter_c, &c))
         {
-            if(c != b && !ll_has_value(self-lists[b]))
+            if(c != b && !ll_has_value(self->lists[b], c))
             {
                 self->vops[c] = vop_lookup_table[self->vops[c]][VOP_Z];
             }
@@ -344,7 +344,7 @@ graph_update_after_X_measurement(RawGraphState * self
         npy_intp c;
         while(ll_iter_next(iter_c, &c))
         {
-            if(c != qbit && !ll_has_value(self-lists[qbit]))
+            if(c != qbit && !ll_has_value(self->lists[qbit], c))
             {
                 self->vops[c] = vop_lookup_table[self->vops[c]][VOP_Z];
             }
@@ -354,10 +354,55 @@ graph_update_after_X_measurement(RawGraphState * self
 
     ll_iter_t * iter_c = ll_iter_t_new(self->lists[b]);
     ll_iter_t * iter_d = ll_iter_t_new(self->lists[qbit]);
+    npy_intp c, d;
 
+    while(ll_iter_next(iter_c, &c))
+    {
+        ll_iter_reset(iter_d);
+        while(ll_iter_next(iter_d, &d))
+        {
+            graph_toggle_edge(self, c, d);
+        }
+    }
 
-    PyErr_SetString(PyExc_NotImplementedError, "to be done (X basis)");
-    return -1;
+    ll_iter_reset(iter_c);
+    free(iter_d);
+    iter_d = ll_iter_t_new(self->lists[b]);
+    while(ll_iter_next(iter_c, &c))
+    {
+        if(!ll_has_value(self->lists[qbit], c))
+        {
+            continue;
+        }
+        ll_iter_reset(iter_d);
+        while(ll_iter_next(iter_d, &d))
+        {
+            if(d == c)
+            {
+                continue;
+            }
+            if(!ll_has_value(self->lists[qbit], d))
+            {
+                continue;
+            }
+            graph_toggle_edge(self, c, d);
+        }
+    }
+
+    free(iter_c);
+    free(iter_d);
+
+    iter_d = ll_iter_t_new(self->lists[qbit]);
+    while(ll_iter_next(iter_d, &d))
+    {
+        if(d == b)
+        {
+            continue;
+        }
+        graph_toggle_edge(self, d, b);
+    }
+    free(iter_d);
+    return 0;
 }
 
 int
