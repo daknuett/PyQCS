@@ -313,6 +313,49 @@ graph_update_after_X_measurement(RawGraphState * self
                             , npy_intp qbit
                             , npy_intp result)
 {
+    // We are ensured that this list has at least one element, 
+    // as the case of the isolated qbit is handled explicitly in RawGraphState_measure.
+    npy_intp b = self->lists[qbit]->value;
+
+    if(!result)
+    {
+        // Update the VOPs
+        self->vops[qbit] = vop_lookup_table[self->vops[qbit]][projected_vop[2]];
+        self->vops[b] = vop_lookup_table[self->vops[b]][VOP_siY];
+
+        ll_iter_t * iter_c = ll_iter_t_new(self->lists[qbit]);
+        npy_intp c;
+        while(ll_iter_next(iter_c, &c))
+        {
+            if(c != b && !ll_has_value(self-lists[b]))
+            {
+                self->vops[c] = vop_lookup_table[self->vops[c]][VOP_Z];
+            }
+        }
+        free(iter_c);
+    }
+    else
+    {
+        // Update the VOPs
+        self->vops[qbit] = vop_lookup_table[self->vops[qbit]][projected_vop[5]];
+        self->vops[b] = vop_lookup_table[self->vops[b]][VOP_smiY];
+
+        ll_iter_t * iter_c = ll_iter_t_new(self->lists[b]);
+        npy_intp c;
+        while(ll_iter_next(iter_c, &c))
+        {
+            if(c != qbit && !ll_has_value(self-lists[qbit]))
+            {
+                self->vops[c] = vop_lookup_table[self->vops[c]][VOP_Z];
+            }
+        }
+        free(iter_c);
+    }
+
+    ll_iter_t * iter_c = ll_iter_t_new(self->lists[b]);
+    ll_iter_t * iter_d = ll_iter_t_new(self->lists[qbit]);
+
+
     PyErr_SetString(PyExc_NotImplementedError, "to be done (X basis)");
     return -1;
 }
@@ -329,7 +372,7 @@ graph_update_after_Y_measurement(RawGraphState * self
         npy_intp neighbour;
         while(ll_iter_next(iter, &neighbour))
         {
-            self->vops[neighbour] = vop_lookup_table[self->vops[neighbour]][VOP_S];
+            self->vops[neighbour] = vop_lookup_table[self->vops[neighbour]][VOP_smiZ];
         }
         free(iter);
         graph_toggle_neighbourhood(self, qbit);
@@ -343,7 +386,7 @@ graph_update_after_Y_measurement(RawGraphState * self
         npy_intp neighbour;
         while(ll_iter_next(iter, &neighbour))
         {
-            self->vops[neighbour] = vop_lookup_table[self->vops[neighbour]][8];
+            self->vops[neighbour] = vop_lookup_table[self->vops[neighbour]][VOP_siZ];
         }
         free(iter);
         graph_toggle_neighbourhood(self, qbit);

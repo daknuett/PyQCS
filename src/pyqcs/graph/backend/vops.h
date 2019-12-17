@@ -37,6 +37,13 @@ static npy_uint8 vop_lookup_table[24][24] =
 #define VOP_Z 5
 #define VOP_X 14
 
+#define VOP_siZ 8
+#define VOP_smiZ 1
+#define VOP_smiX 12
+#define VOP_siY 7
+#define VOP_smiY 13
+
+
 // S, I, Z, S^\dagger
 #define vop_commutes_with_CZ(v) (v == 1 || v == 2 || v == 5 || v == 8)
 
@@ -103,9 +110,6 @@ static char C_L_as_products[24][5] =
 	, "sx"
 };
 */
-
-#define VOP_siZ 8
-#define VOP_smiX 12
 
 
 
