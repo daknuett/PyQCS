@@ -321,7 +321,7 @@ graph_update_after_X_measurement(RawGraphState * self
     {
         // Update the VOPs
         self->vops[qbit] = vop_lookup_table[self->vops[qbit]][projected_vop[2]];
-        self->vops[b] = vop_lookup_table[self->vops[b]][VOP_siY];
+        self->vops[b] = vop_lookup_table[self->vops[b]][VOP_smiY];
 
         ll_iter_t * iter_c = ll_iter_t_new(self->lists[qbit]);
         npy_intp c;
@@ -338,7 +338,7 @@ graph_update_after_X_measurement(RawGraphState * self
     {
         // Update the VOPs
         self->vops[qbit] = vop_lookup_table[self->vops[qbit]][projected_vop[5]];
-        self->vops[b] = vop_lookup_table[self->vops[b]][VOP_smiY];
+        self->vops[b] = vop_lookup_table[self->vops[b]][VOP_siY];
 
         ll_iter_t * iter_c = ll_iter_t_new(self->lists[b]);
         npy_intp c;
