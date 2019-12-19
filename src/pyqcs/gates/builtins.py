@@ -73,4 +73,4 @@ def GenericGate(act, array):
         raise ValueError("act qbit must be >= 0")
     gate = _GenericGate(act, array)
 
-    return SingleGateCircuit(1 << act, [], str(array), gate)
+    return SingleGateCircuit(1 << act, [], str(array), ("GenericGate", act, array), gate)

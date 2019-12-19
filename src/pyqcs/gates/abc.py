@@ -1,5 +1,4 @@
 from abc import ( ABCMeta
-                , abstractclassmethod
                 , abstractmethod)
 
 

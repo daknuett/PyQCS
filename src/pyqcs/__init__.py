@@ -34,7 +34,7 @@ from .gates.circuits import AnonymousCompoundGateCircuit, NamedCompoundGateCircu
 def list_to_circuit(list_of_circuits, name=None):
     if(not name):
         return AnonymousCompoundGateCircuit(list_of_circuits)
-    return NamedCompoundGateCircuit(list_of_circuits, name)
+    return NamedCompoundGateCircuit(list_of_circuits, name, (name,))
 
 def build_measurement_circuit(bit_mask):
     if(isinstance(bit_mask, int)):
