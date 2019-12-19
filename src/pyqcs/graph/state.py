@@ -1,4 +1,3 @@
-import numpy
 from ..state.abc import AbstractState
 from .backend.raw_state import RawGraphState
 from .util import graph_lists_to_naive_state
@@ -22,7 +21,7 @@ class GraphState(AbstractState):
     def get_last_measurement(self):
         # FIXME
         raise NotImplementedError("measurement is not yet implemented")
-     
+
     def deepcopy(self):
         return GraphState(self._g_state.deepcopy(), self._nbits)
 
@@ -48,6 +47,6 @@ class GraphState(AbstractState):
 
         return cls(g_state, nbits, **kwargs)
 
-    def apply_gate(self, gate):
+    def apply_gate(self, gate, force_new_state=False):
         raise NotImplementedError("todo")
 

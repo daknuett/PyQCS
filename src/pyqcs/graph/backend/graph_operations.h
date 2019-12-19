@@ -43,4 +43,10 @@ graph_qbits_are_isolated(RawGraphState * self, npy_intp i, npy_intp j);
 
 int
 graph_clear_vop(RawGraphState * self, npy_intp a, npy_intp b);
+
+int
+graph_update_after_measurement(RawGraphState * self
+                            , npy_uint8 observable
+                            , npy_intp qbit
+                            , npy_intp result);
 #endif

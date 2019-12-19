@@ -5,7 +5,7 @@ from pyqcs import State, X, H, Z
 
 def test_X():
     state = State.new_zero_state(3)
-    gate = GenericGate(0, np.array([[0, 1], [1, 0]], dtype=np.cdouble)) 
+    gate = GenericGate(0, np.array([[0, 1], [1, 0]], dtype=np.cdouble))
 
     assert state.apply_gate(gate) == X(0) * state
 

@@ -37,6 +37,13 @@ static npy_uint8 vop_lookup_table[24][24] =
 #define VOP_Z 5
 #define VOP_X 14
 
+#define VOP_siZ 8
+#define VOP_smiZ 1
+#define VOP_smiX 12
+#define VOP_siY 7
+#define VOP_smiY 13
+
+
 // S, I, Z, S^\dagger
 #define vop_commutes_with_CZ(v) (v == 1 || v == 2 || v == 5 || v == 8)
 
@@ -103,9 +110,6 @@ static char C_L_as_products[24][5] =
 	, "sx"
 };
 */
-
-#define VOP_siZ 8
-#define VOP_smiX 12
 
 
 
@@ -1297,7 +1301,10 @@ static npy_intp two_qbit_vops_after_CZ[1152][3] =
 
 // C^\dagger Z C is one of the following matrices.
 // Index is the index of [Z, Y, X, -Z, -Y, -X].
-static npy_uint8 projectors_after_vop_commute[24] = 
+static npy_uint8 observable_after_vop_commute[24] = 
 {2, 0, 0, 2, 4, 0, 4, 5, 0, 5, 1, 1, 1, 2, 3, 2, 3, 4, 3, 4, 5, 3, 5, 1};
+
+static npy_uint8 projected_vop[6] = 
+{0, 1, 2, 7, 18, 5};
 
 #endif

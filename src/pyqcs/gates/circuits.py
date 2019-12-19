@@ -68,7 +68,7 @@ class AnonymousCompoundGateCircuit(AbstractCompoundGateCircuit):
         new_circuit._has_graph = self._has_graph
         new_circuit._has_naive = self._has_naive
         return new_circuit
-        
+
     def get_child_executors(self):
         return [c.to_executor() for c in self._subcircuits]
 
@@ -95,7 +95,7 @@ class NamedCompoundGateCircuit(AnonymousCompoundGateCircuit, AbstractNamedGateCi
 
 
     def new_from_circuit_with_executor(self, executor):
-        # Don't give that new circuit a name. It is a new 
+        # Don't give that new circuit a name. It is a new
         # circuit.
         new_circuit = AnonymousCompoundGateCircuit([self], self._uses_qbits)
         new_circuit._executor = executor
