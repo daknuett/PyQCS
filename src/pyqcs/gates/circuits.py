@@ -44,7 +44,7 @@ class AnonymousCompoundGateCircuit(AbstractCompoundGateCircuit):
         if(has_graph is None or has_naive is None):
             has_graph = True
             has_naive = True
-            for subc in subcircuits:
+            for subc in subcircuit_list:
                 has_graph = has_graph and subc._has_graph
                 has_naive = has_naive and subc._has_naive
             self._has_naive = has_naive
@@ -79,7 +79,7 @@ class NamedCompoundGateCircuit(AnonymousCompoundGateCircuit, AbstractNamedGateCi
             qbits |= subcircuit._uses_qbits
         has_graph = True
         has_naive = True
-        for subc in subcircuits:
+        for subc in subcircuit_list:
             has_graph = has_graph and subc._has_graph
             has_naive = has_naive and subc._has_naive
 

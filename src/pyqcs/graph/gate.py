@@ -11,7 +11,7 @@ class AbstractGraphOperation(metaclass=ABCMeta):
 
 class CZOperation(AbstractGraphOperation):
     def __init__(self, act, control):
-        GraphOperation.__init__(self)
+        AbstractGraphOperation.__init__(self)
         self._act = act
         self._control = control
 
@@ -23,7 +23,7 @@ class CZOperation(AbstractGraphOperation):
 
 class CLOperation(AbstractGraphOperation):
     def __init__(self, act, clifford_index):
-        GraphOperation.__init__(self)
+        AbstractGraphOperation.__init__(self)
         self._act = act
 
         if(not isinstance(clifford_index, int)):
