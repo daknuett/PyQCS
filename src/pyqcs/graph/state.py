@@ -20,17 +20,6 @@ class GraphState(AbstractState):
 
         return cls(g_state, nbits, **kwargs)
 
-    @classmethod
-    def new_zero_state(cls, nbits, **kwargs):
-        if(nbits <= 0):
-            raise ValueError("nbits must be greater than 0")
-
-        g_state = RawGraphState(nbits)
-        for i in range(nbits):
-            g.apply_C_L(i, 0)
-
-        return cls(g_state, nbits, **kwargs)
-
     def get_last_measurement(self):
         # FIXME
         raise NotImplementedError("measurement is not yet implemented")
