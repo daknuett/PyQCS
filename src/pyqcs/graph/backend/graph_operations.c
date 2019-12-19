@@ -310,20 +310,20 @@ graph_toggle_neighbourhood(RawGraphState * self
 
 int
 graph_update_after_X_measurement(RawGraphState * self
-                            , npy_intp qbit
+                            , npy_intp a
                             , npy_intp result)
 {
     // We are ensured that this list has at least one element, 
-    // as the case of the isolated qbit is handled explicitly in RawGraphState_measure.
-    npy_intp b = self->lists[qbit]->value;
+    // as the case of the isolated a is handled explicitly in RawGraphState_measure.
+    npy_intp b = self->lists[a]->value;
 
     if(!result)
     {
         // Update the VOPs
-        self->vops[qbit] = vop_lookup_table[self->vops[qbit]][projected_vop[2]];
+        self->vops[a] = vop_lookup_table[self->vops[a]][projected_vop[2]];
         self->vops[b] = vop_lookup_table[self->vops[b]][VOP_smiY];
 
-        ll_iter_t * iter_c = ll_iter_t_new(self->lists[qbit]);
+        ll_iter_t * iter_c = ll_iter_t_new(self->lists[a]);
         npy_intp c;
         while(ll_iter_next(iter_c, &c))
         {
@@ -337,14 +337,14 @@ graph_update_after_X_measurement(RawGraphState * self
     else
     {
         // Update the VOPs
-        self->vops[qbit] = vop_lookup_table[self->vops[qbit]][projected_vop[5]];
+        self->vops[a] = vop_lookup_table[self->vops[a]][projected_vop[5]];
         self->vops[b] = vop_lookup_table[self->vops[b]][VOP_siY];
 
         ll_iter_t * iter_c = ll_iter_t_new(self->lists[b]);
         npy_intp c;
         while(ll_iter_next(iter_c, &c))
         {
-            if(c != qbit && !ll_has_value(self->lists[qbit], c))
+            if(c != a && !ll_has_value(self->lists[a], c))
             {
                 self->vops[c] = vop_lookup_table[self->vops[c]][VOP_Z];
             }
@@ -352,8 +352,21 @@ graph_update_after_X_measurement(RawGraphState * self
         free(iter_c);
     }
 
-    ll_iter_t * iter_c = ll_iter_t_new(self->lists[b]);
-    ll_iter_t * iter_d = ll_iter_t_new(self->lists[qbit]);
+    ll_node_t * ngbh_a = NULL;
+    ll_node_t * ngbh_b = NULL;
+    if(ll_deepcopy(&ngbh_a, &self->lists[a]))
+    {
+        PyErr_SetString(PyExc_MemoryError, "failed to copy neighbourhood of qbit a");
+        return -1;
+    }
+    if(ll_deepcopy(&ngbh_b, &self->lists[b]))
+    {
+        PyErr_SetString(PyExc_MemoryError, "failed to copy neighbourhood of qbit b");
+        ll_recursively_delete_list(&ngbh_a);
+        return -1;
+    }
+    ll_iter_t * iter_c = ll_iter_t_new(ngbh_b);
+    ll_iter_t * iter_d = ll_iter_t_new(ngbh_a);
     npy_intp c, d;
 
     while(ll_iter_next(iter_c, &c))
@@ -361,16 +374,20 @@ graph_update_after_X_measurement(RawGraphState * self
         ll_iter_reset(iter_d);
         while(ll_iter_next(iter_d, &d))
         {
+            if(c == d)
+            {
+                continue;
+            }
             graph_toggle_edge(self, c, d);
         }
     }
 
     ll_iter_reset(iter_c);
     free(iter_d);
-    iter_d = ll_iter_t_new(self->lists[b]);
+    iter_d = ll_iter_t_new(ngbh_b);
     while(ll_iter_next(iter_c, &c))
     {
-        if(!ll_has_value(self->lists[qbit], c))
+        if(!ll_has_value(self->lists[a], c))
         {
             continue;
         }
@@ -381,7 +398,7 @@ graph_update_after_X_measurement(RawGraphState * self
             {
                 continue;
             }
-            if(!ll_has_value(self->lists[qbit], d))
+            if(!ll_has_value(self->lists[a], d))
             {
                 continue;
             }
@@ -392,7 +409,7 @@ graph_update_after_X_measurement(RawGraphState * self
     free(iter_c);
     free(iter_d);
 
-    iter_d = ll_iter_t_new(self->lists[qbit]);
+    iter_d = ll_iter_t_new(ngbh_a);
     while(ll_iter_next(iter_d, &d))
     {
         if(d == b)
@@ -402,6 +419,8 @@ graph_update_after_X_measurement(RawGraphState * self
         graph_toggle_edge(self, d, b);
     }
     free(iter_d);
+    ll_recursively_delete_list(&ngbh_a);
+    ll_recursively_delete_list(&ngbh_b);
     return 0;
 }
 

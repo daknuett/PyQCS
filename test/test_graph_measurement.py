@@ -146,7 +146,7 @@ def test_bell_state():
 def test_random_random_x_graph_update_entangled():
     for i in range(10):
         s = (H(0) | H(1) | H(2) | H(3) | H(4)) * State.new_zero_state(5)
-        s = (CZ(0, 1) | CZ(0, 2) | CZ(1, 3) | CZ(2, 4)) * s
+        s = (CZ(0, 1) | CZ(0, 2) | CZ(1, 3) | CZ(1, 4)) * s
         s = H(0) * s
 
         s_bar = M(0) * s
@@ -159,6 +159,7 @@ def test_random_random_x_graph_update_entangled():
         g.apply_CZ(1, 3)
         g.apply_CZ(1, 4)
         g.apply_C_L(0, 0)
+        print("lists:", g.to_lists())
         r = g.measure(0, result)
 
         assert r == result
@@ -166,6 +167,7 @@ def test_random_random_x_graph_update_entangled():
         print("naive", s_bar)
         print("converted", graph_lists_to_naive_state(g.to_lists()))
         print("lists:", g.to_lists())
+        #print("naive._qm_state", s_bar._qm_state)
+        #print("converted._qm_state", graph_lists_to_naive_state(g.to_lists())._qm_state)
         assert graph_lists_to_naive_state(g.to_lists()) == s_bar
-
 
