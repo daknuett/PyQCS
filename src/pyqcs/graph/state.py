@@ -1,13 +1,15 @@
 from ..state.abc import AbstractState
 from .backend.raw_state import RawGraphState
 from .util import graph_lists_to_naive_state
+from.gate import GraphGate
 
 class GraphState(AbstractState):
-    def __init__(self, g_state, nbits):
+    def __init__(self, g_state, nbits, force_new_state=False):
         AbstractState.__init__(self)
         self._is_graph = True
         self._g_state = g_state
         self._nbits = nbits
+        self._force_new_state = force_new_state
 
     @classmethod
     def new_plus_state(cls, nbits, **kwargs):
@@ -15,6 +17,17 @@ class GraphState(AbstractState):
             raise ValueError("nbits must be greater than 0")
 
         g_state = RawGraphState(nbits)
+
+        return cls(g_state, nbits, **kwargs)
+
+    @classmethod
+    def new_zero_state(cls, nbits, **kwargs):
+        if(nbits <= 0):
+            raise ValueError("nbits must be greater than 0")
+
+        g_state = RawGraphState(nbits)
+        for i in range(nbits):
+            g.apply_C_L(i, 0)
 
         return cls(g_state, nbits, **kwargs)
 
@@ -48,5 +61,15 @@ class GraphState(AbstractState):
         return cls(g_state, nbits, **kwargs)
 
     def apply_gate(self, gate, force_new_state=False):
-        raise NotImplementedError("todo")
+        if(not isinstance(gate, GraphGate)):
+            raise TypeError("gate must be a GraphGate but got {}".format(str(type(gate))))
+
+        state = self
+        if(force_new_state or self._force_new_state):
+            state = self.deepcopy()
+
+        for op in gate._operation_list:
+            op.apply_to_raw_state(state)
+
+        return state
 
