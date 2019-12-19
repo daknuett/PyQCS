@@ -55,9 +55,10 @@ class AbstractGateCircuit(metaclass=ABCMeta):
         pass
 
 class AbstractNamedGateCircuit(AbstractGateCircuit):
-    def __init__(self, qbits, identities, name):
+    def __init__(self, qbits, identities, name, descr):
         AbstractGateCircuit.__init__(self, qbits, identities)
         self._name = name
+        self._descr = descr
 
 class AbstractCompoundGateCircuit(AbstractGateCircuit):
     __slots__ = ["_subcircuits"]

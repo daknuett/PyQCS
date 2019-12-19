@@ -2,8 +2,8 @@ from .abc import AbstractGateCircuit, AbstractNamedGateCircuit, AbstractCompound
 from .executor import GateListExecutor
 
 class SingleGateCircuit(AbstractNamedGateCircuit):
-    def __init__(self, qbits, identities, name, gate_naive, gate_graph):
-        AbstractNamedGateCircuit.__init__(self, qbits, identities, name)
+    def __init__(self, qbits, identities, name, descr, gate_naive, gate_graph):
+        AbstractNamedGateCircuit.__init__(self, qbits, identities, name, descr)
         if(gate_naive is not None):
             self._has_naive = True
         self._gate = gate_naive
@@ -73,7 +73,7 @@ class AnonymousCompoundGateCircuit(AbstractCompoundGateCircuit):
         return [c.to_executor() for c in self._subcircuits]
 
 class NamedCompoundGateCircuit(AnonymousCompoundGateCircuit, AbstractNamedGateCircuit):
-    def __init__(self, subcircuit_list, name, identities=[]):
+    def __init__(self, subcircuit_list, name, descr, identities=[]):
         qbits = 0
         for subcircuit in subcircuit_list:
             qbits |= subcircuit._uses_qbits
@@ -84,7 +84,7 @@ class NamedCompoundGateCircuit(AnonymousCompoundGateCircuit, AbstractNamedGateCi
             has_naive = has_naive and subc._has_naive
 
         AnonymousCompoundGateCircuit.__init__(self, subcircuit_list, has_graph=has_graph, has_naive=has_naive, qbits=qbits)
-        AbstractNamedGateCircuit.__init__(self, qbits, identities, name)
+        AbstractNamedGateCircuit.__init__(self, qbits, identities, name, descr)
 
     @classmethod
     def from_anonymous(cls, anonymous, name, identities=[]):
