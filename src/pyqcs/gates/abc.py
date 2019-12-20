@@ -4,7 +4,7 @@ from abc import ( ABCMeta
 
 from .executor import GateListExecutor, RepeatingGateListExecutorSpawner
 from ..state.abc import AbstractState
-from ..graph.state import GraphState
+from ..graph.abc import AbstractGraphState
 
 class AbstractGateCircuit(metaclass=ABCMeta):
     def __init__(self, qbits, identities):
@@ -15,7 +15,7 @@ class AbstractGateCircuit(metaclass=ABCMeta):
         self._executor = GateListExecutor
 
     def __mul__(self, other):
-        if(isinstance(other, GraphState)):
+        if(isinstance(other, AbstractGraphState)):
             if(not self._has_graph):
                 raise TypeError("Cannot apply circuit to graph state. Check your gates.")
             if(not other.check_qbits(self)):

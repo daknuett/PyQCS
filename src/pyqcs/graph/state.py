@@ -1,11 +1,11 @@
-from ..state.abc import AbstractState
+from .abc import AbstractGraphState
 from .backend.raw_state import RawGraphState
 from .util import graph_lists_to_naive_state
 from.gate import GraphGate
 
-class GraphState(AbstractState):
+class GraphState(AbstractGraphState):
     def __init__(self, g_state, nbits, force_new_state=False, measured=None):
-        AbstractState.__init__(self)
+        AbstractGraphState.__init__(self)
         self._is_graph = True
         self._g_state = g_state
         self._nbits = nbits
