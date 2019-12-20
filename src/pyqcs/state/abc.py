@@ -8,9 +8,6 @@ class AbstractState(metaclass=ABCMeta):
         self._is_naive = False
 
     @abstractmethod
-    def get_last_measurement(self):
-        pass
-    @abstractmethod
     def apply_gate(self, gate, force_new_state=False):
         pass
     @abstractmethod

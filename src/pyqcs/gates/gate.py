@@ -19,6 +19,9 @@ class BuiltinGate(BaseGate):
         BaseGate.__init__(self, BasicGate(type_, act, control, r, numpy.random.uniform))
 
 class GenericGate(BaseGate):
+    """
+    This is the Wrapper for the GenericGate C object.
+    """
     def __init__(self, act, arr):
         if(not isinstance(arr, numpy.ndarray)):
             raise TypeError("matrices must be numpy ndarrays")
@@ -42,4 +45,3 @@ class GenericGate(BaseGate):
         arr = arr.astype(numpy.cdouble)
 
         BaseGate.__init__(self, _GenericGate(act, arr[0,0], arr[1,1], arr[0,1], arr[1,0]))
-

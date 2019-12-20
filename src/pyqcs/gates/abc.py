@@ -4,6 +4,7 @@ from abc import ( ABCMeta
 
 from .executor import GateListExecutor, RepeatingGateListExecutorSpawner
 from ..state.abc import AbstractState
+from ..graph.state import GraphState
 
 class AbstractGateCircuit(metaclass=ABCMeta):
     def __init__(self, qbits, identities):
@@ -14,6 +15,15 @@ class AbstractGateCircuit(metaclass=ABCMeta):
         self._executor = GateListExecutor
 
     def __mul__(self, other):
+        if(isinstance(other, GraphState)):
+            if(not self._has_graph):
+                raise TypeError("Cannot apply circuit to graph state. Check your gates.")
+            if(not other.check_qbits(self)):
+                raise ValueError(
+                        "Gate circuit requires qbits {}, but given state has less.".format(
+                            bin(self._uses_qbits)
+                            ))
+            return self._executor(self.get_child_executors(graph=True))(other)
         if(isinstance(other, AbstractState)):
             if(not other.check_qbits(self)):
                 raise ValueError(
@@ -34,8 +44,8 @@ class AbstractGateCircuit(metaclass=ABCMeta):
     def add_identity(self, identity):
         self._identities.append(identity)
 
-    def to_executor(self):
-        return self._executor(self.get_child_executors())
+    def to_executor(self, graph=False):
+        return self._executor(self.get_child_executors(graph=graph))
 
     @abstractmethod
     def __or__(self, other):
@@ -46,7 +56,7 @@ class AbstractGateCircuit(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_child_executors(self):
+    def get_child_executors(self, graph=False):
         pass
 
     @abstractmethod

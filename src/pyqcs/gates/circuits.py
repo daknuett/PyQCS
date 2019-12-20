@@ -12,8 +12,11 @@ class SingleGateCircuit(AbstractNamedGateCircuit):
         self._gate_g = gate_graph
 
 
-    def get_child_executors(self):
-        return [GateListExecutor([self._gate])]
+    def get_child_executors(self, graph=False):
+        if(not graph):
+            return [GateListExecutor([self._gate])]
+        else:
+            return [GateListExecutor([self._gate_g])]
 
     def gate_list_generator(self):
         yield self._gate
@@ -69,8 +72,8 @@ class AnonymousCompoundGateCircuit(AbstractCompoundGateCircuit):
         new_circuit._has_naive = self._has_naive
         return new_circuit
 
-    def get_child_executors(self):
-        return [c.to_executor() for c in self._subcircuits]
+    def get_child_executors(self, graph=False):
+        return [c.to_executor(graph=graph) for c in self._subcircuits]
 
 class NamedCompoundGateCircuit(AnonymousCompoundGateCircuit, AbstractNamedGateCircuit):
     def __init__(self, subcircuit_list, name, descr, identities=[]):

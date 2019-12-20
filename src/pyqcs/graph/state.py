@@ -4,12 +4,16 @@ from .util import graph_lists_to_naive_state
 from.gate import GraphGate
 
 class GraphState(AbstractState):
-    def __init__(self, g_state, nbits, force_new_state=False):
+    def __init__(self, g_state, nbits, force_new_state=False, measured=None):
         AbstractState.__init__(self)
         self._is_graph = True
         self._g_state = g_state
         self._nbits = nbits
         self._force_new_state = force_new_state
+        self._measured = measured
+        if(measured is None):
+            self._measured = dict()
+
 
     @classmethod
     def new_plus_state(cls, nbits, **kwargs):
@@ -20,12 +24,9 @@ class GraphState(AbstractState):
 
         return cls(g_state, nbits, **kwargs)
 
-    def get_last_measurement(self):
-        # FIXME
-        raise NotImplementedError("measurement is not yet implemented")
 
     def deepcopy(self):
-        return GraphState(self._g_state.deepcopy(), self._nbits)
+        return GraphState(self._g_state.deepcopy(), self._nbits, self._force_new_state, self._measured)
 
     def to_naive_state(self):
         return graph_lists_to_naive_state(self._g_state.to_lists())
@@ -45,7 +46,7 @@ class GraphState(AbstractState):
 
         g_state = RawGraphState(nbits)
         for i in range(nbits):
-            g.apply_C_L(i, 0)
+            g_state.apply_C_L(i, 0)
 
         return cls(g_state, nbits, **kwargs)
 
@@ -58,7 +59,9 @@ class GraphState(AbstractState):
             state = self.deepcopy()
 
         for op in gate._operation_list:
-            op.apply_to_raw_state(state)
+            has_measured, result = op.apply_to_raw_state(state._g_state)
+            if(has_measured):
+                state._measured[result[0]] = result[1]
 
         return state
 

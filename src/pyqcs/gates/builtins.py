@@ -1,7 +1,7 @@
 from .gate import BuiltinGate, GenericGate as _GenericGate
 from .circuits import SingleGateCircuit
 from ..build.abc import AbstractSingleGateCircuitBuilder
-from ..graph.gate import GraphGate, CLOperation, CZOperation
+from ..graph.gate import GraphGate, CLOperation, CZOperation, MeasurementOperation
 
 class BuiltinGateBuilder(AbstractSingleGateCircuitBuilder):
     __slots__ = ["_type"]
@@ -39,7 +39,10 @@ def X(act):
         raise ValueError("act qbit must be >= 0")
     return _X(act, 0, 0)
 
-_M = BuiltinGateBuilder('M', lambda i0, i1, i2: None)
+
+def _get_graph_M_gate(act, i1, i2):
+    return GraphGate([MeasurementOperation(act)])
+_M = BuiltinGateBuilder('M', _get_graph_M_gate)
 def M(act):
     if(act < 0):
         raise ValueError("act qbit must be >= 0")
@@ -84,7 +87,12 @@ def CZ(act, control):
         raise ValueError("act qbit and control qbit must be different")
     return _B(act, control, 0)
 
+
 def GenericGate(act, array):
+    """
+    This is the circuit builder that is used to generate 1-qbit
+    generic gates.
+    """
     if(act < 0):
         raise ValueError("act qbit must be >= 0")
     gate = _GenericGate(act, array)

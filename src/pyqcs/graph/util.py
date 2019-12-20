@@ -1,6 +1,6 @@
 from numpy import array
 
-from ..gates.builtins import CZ, H, GenericGate
+from ..gates.builtins import H, CZ, GenericGate
 from ..state.state import BasicState
 
 C_L = [array([[ 0.70710678+0.j,  0.70710678+0.j], [ 0.70710678+0.j, -0.70710678+0.j]])

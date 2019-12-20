@@ -26,9 +26,6 @@ class BasicState(AbstractState):
 
         return cls(qm_state, cl_state, nbits, last_measured, **kwargs)
 
-    def get_last_measurement(self):
-        return self._cl_state, self._last_measured
-
     def check_qbits(self, gate_circuit):
         if(gate_circuit._uses_qbits < (1 << self._nbits)):
             return True
