@@ -32,7 +32,7 @@ class SingleGateCircuit(AbstractNamedGateCircuit):
 
 
     def new_from_circuit_with_executor(self, executor):
-        new_circuit = AnonymousCompoundGateCircuit([self], self._uses_qbits
+        new_circuit = AnonymousCompoundGateCircuit([self], qbits=self._uses_qbits
                                                     , has_graph=self._has_graph
                                                     , has_naive=self._has_naive)
         new_circuit._executor = executor
@@ -69,7 +69,7 @@ class AnonymousCompoundGateCircuit(AbstractCompoundGateCircuit):
         return AnonymousCompoundGateCircuit([other, self])
 
     def new_from_circuit_with_executor(self, executor):
-        new_circuit = AnonymousCompoundGateCircuit(self._subcircuits, self._uses_qbits)
+        new_circuit = AnonymousCompoundGateCircuit(self._subcircuits, qbits=self._uses_qbits)
         new_circuit._executor = executor
         new_circuit._has_graph = self._has_graph
         new_circuit._has_naive = self._has_naive
