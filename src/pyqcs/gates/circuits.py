@@ -32,7 +32,9 @@ class SingleGateCircuit(AbstractNamedGateCircuit):
 
 
     def new_from_circuit_with_executor(self, executor):
-        new_circuit = AnonymousCompoundGateCircuit([self], self._uses_qbits)
+        new_circuit = AnonymousCompoundGateCircuit([self], self._uses_qbits
+                                                    , has_graph=self._has_graph
+                                                    , has_naive=self._has_naive)
         new_circuit._executor = executor
         return new_circuit
 
@@ -44,6 +46,8 @@ class AnonymousCompoundGateCircuit(AbstractCompoundGateCircuit):
             for subcircuit in subcircuit_list:
                 qbits |= subcircuit._uses_qbits
 
+        AbstractCompoundGateCircuit.__init__(self, qbits, [], subcircuit_list)
+
         if(has_graph is None or has_naive is None):
             has_graph = True
             has_naive = True
@@ -53,7 +57,6 @@ class AnonymousCompoundGateCircuit(AbstractCompoundGateCircuit):
             self._has_naive = has_naive
             self._has_graph = has_graph
 
-        AbstractCompoundGateCircuit.__init__(self, qbits, [], subcircuit_list)
 
     def __or__(self, other):
         if(not isinstance(other, AbstractGateCircuit)):
