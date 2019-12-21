@@ -3,12 +3,24 @@ import numpy as np
 
 class BasicState(AbstractState):
     __slots__ = ["_nbits", "_ndim", "_qm_state", "_cl_state", "_last_measured"]
-    def __init__(self, qm_state, cl_state, nbits, last_measured, **kwargs):
+    def __init__(self
+                , qm_state
+                , cl_state
+                , nbits
+                , last_measured
+                , lenght_error=1e-8
+                , check_normalization=False
+                , **kwargs):
         self._qm_state = qm_state
         self._cl_state = cl_state
         self._nbits = nbits
         self._ndim = 2**nbits
         self._last_measured = last_measured
+        self._length_error = lenght_error
+        self._check_normalization = check_normalization
+
+        if(check_normalization and not self.is_normalized()):
+            raise ValueError("State has non-one length")
 
     @classmethod
     def new_zero_state(cls, nbits, **kwargs):
@@ -33,11 +45,21 @@ class BasicState(AbstractState):
         return False
 
     def deepcopy(self):
-        return BasicState(self._qm_state.copy(), self._cl_state.copy(), self._nbits, self._last_measured)
+        return BasicState(self._qm_state.copy()
+                        , self._cl_state.copy()
+                        , self._nbits
+                        , self._last_measured
+                        , check_normalization=self._check_normalization
+                        , lenght_error=self._length_error)
 
     def apply_gate(self, gate, force_new_state=False):
         qm_state, cl_state, last_measured = gate(self._qm_state, self._cl_state)
-        return BasicState(qm_state, cl_state, self._nbits,  last_measured)
+        return BasicState(qm_state
+                        , cl_state
+                        , self._nbits
+                        ,  last_measured
+                        , lenght_error=self._length_error
+                        , check_normalization=self._check_normalization)
 
     def _easy_format_state_part(self, cf, i):
         return "{}*|{}>".format(str(cf), bin(i))
@@ -76,3 +98,6 @@ class BasicState(AbstractState):
             return np.allclose(phaseless, np.ones(len([n for n in nonzeros if n])))
 
         raise TypeError()
+
+    def is_normalized(self):
+        return np.isclose(np.sum(np.absolute(self._qm_state)**2), 1, atol=self._length_error)

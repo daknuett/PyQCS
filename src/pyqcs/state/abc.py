@@ -22,3 +22,6 @@ class AbstractState(metaclass=ABCMeta):
     @abstractclassmethod
     def new_zero_state(cls, nbits, **kwargs):
         pass
+    @abstractmethod
+    def is_normalized(self):
+        pass
