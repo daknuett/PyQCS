@@ -48,7 +48,7 @@ class MeasurementOperation(AbstractGraphOperation):
             raise TypeError("state must be of type RawGraphState, but got {}".format(str(type(state))))
 
         rnd = uniform()
-        result = state.measure(rnd)
+        result = state.measure(self._act, rnd)
 
         return True, (self._act, result)
 
