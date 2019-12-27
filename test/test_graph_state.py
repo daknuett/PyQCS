@@ -32,4 +32,3 @@ def test_measurement_result():
         assert g.to_naive_state() == State.new_zero_state(2)
     else:
         assert g.to_naive_state() == (X(0) | X(1)) * State.new_zero_state(2)
-
