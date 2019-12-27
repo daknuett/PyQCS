@@ -1,3 +1,4 @@
+import numpy as np
 from .gate import BuiltinGate, GenericGate as _GenericGate
 from .circuits import SingleGateCircuit
 from ..build.abc import AbstractSingleGateCircuitBuilder
@@ -86,6 +87,14 @@ def CZ(act, control):
     if(act == control):
         raise ValueError("act qbit and control qbit must be different")
     return _B(act, control, 0)
+
+def _get_graph_S_gate(act, i1, i2):
+    return GraphGate([CLOperation(act, 1)])
+_S = BuiltinGateBuilder('R', _get_graph_S_gate)
+def S(act):
+    if(act < 0):
+        raise ValueError("act qbit must be >= 0")
+    return _S(act, 0, np.pi/2)
 
 
 def GenericGate(act, array):
