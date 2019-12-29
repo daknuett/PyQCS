@@ -17,6 +17,7 @@ graph_backend = Extension("pyqcs.graph.backend.raw_state"
                         ]
                         , extra_compile_args=["-fstack-protector"
                                              , "-Wno-unused-variable"
+                                             , "-g"
                                              , "-I%s" % numpy.get_include()]
                     )
 generic_gate = Extension(
@@ -24,6 +25,7 @@ generic_gate = Extension(
                         , sources=["src/pyqcs/gates/implementations/generic_gate.c"]
                         , extra_compile_args=["-fstack-protector"
                                             , "-Wno-unused-variable"
+                                            , "-g"
                                             , "-I%s" % numpy.get_include()])
 
 setup(
