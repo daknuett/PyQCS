@@ -337,7 +337,7 @@ RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
                 else
                 {
                     // Sub-Sub-Case 2.2.2
-                    if(ll_length(self->lists[j]) > 1)
+                    if(ll_length(self->lists[j]) > 0)
                     {
                         result = graph_clear_vop(self, j, i);
                         if(!result)
