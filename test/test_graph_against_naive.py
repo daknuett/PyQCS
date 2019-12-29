@@ -1,4 +1,5 @@
 import pytest
+import numpy as np
 from pyqcs import CZ, H, S, X, State
 from pyqcs.graph.state import GraphState
 from pyqcs.util.random_circuits import random_circuit
@@ -14,14 +15,15 @@ def do_test_q4_l10():
     naive = circuit * naive
     graph = circuit * graph
 
-    if(naive != graph.to_naive_state()):
-        print()
-        print("naive", naive)
-        print("graph", graph.to_naive_state())
     assert naive == graph.to_naive_state()
 
+@pytest.mark.slow
 def test_random_q4_l10():
     for _ in range(1000):
+        do_test_q4_l10()
+
+def test_random_q4_l10_redux():
+    for _ in range(100):
         do_test_q4_l10()
 
 def do_test_q10_l100():
