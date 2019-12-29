@@ -14,9 +14,10 @@ def do_test_q4_l10():
     naive = circuit * naive
     graph = circuit * graph
 
-    print()
-    print("naive", naive)
-    print("graph", graph.to_naive_state())
+    if(naive != graph.to_naive_state()):
+        print()
+        print("naive", naive)
+        print("graph", graph.to_naive_state())
     assert naive == graph.to_naive_state()
 
 def test_random_q4_l10():
@@ -37,5 +38,3 @@ def test_random_q10_l100():
     for _ in range(4000):
         do_test_q10_l100()
 
-if __name__ == "__main__":
-    test_random_q4_l10()
