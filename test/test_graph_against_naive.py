@@ -27,8 +27,8 @@ def test_random_q4_l10_redux():
         do_test_q4_l10()
 
 def do_test_q10_l100():
-    naive = State.new_zero_state(4)
-    graph = GraphState.new_zero_state(4)
+    naive = State.new_zero_state(10)
+    graph = GraphState.new_zero_state(10)
     circuit = random_circuit(10, 100, X, H, S_with_extra_arg, CZ)
 
     naive = circuit * naive
