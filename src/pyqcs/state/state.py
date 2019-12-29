@@ -65,10 +65,10 @@ class BasicState(AbstractState):
 
             # Note that states are still considered to be the same
             # if they have a different global phase.
-            if(not np.allclose(self._qm_state == 0, other._qm_state == 0)):
+            if(not np.allclose(np.isclose(self._qm_state, 0), np.isclose(other._qm_state, 0))):
                 return False
 
-            nonzeros = self._qm_state != 0
+            nonzeros = np.invert(np.isclose(self._qm_state, 0))
             phases = self._qm_state[nonzeros] / other._qm_state[nonzeros]
             angles = np.angle(phases)
             phaseless = np.exp(-1j * np.max(angles)) * phases
