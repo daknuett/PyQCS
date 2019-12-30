@@ -11,7 +11,11 @@ before_install:
     - pip install -r requirements.tx
     - export NUMPY_INCLUDE="-I$(python -c 'import numpy; print(numpy.get_include())')"
     - python -c 'import numpy; print(numpy.get_include())'
+    - pip install codacy-coverage
+    - pip install pytest-cov
 
 install: python setup.py build install
 
-script: pytest -v --runslow test/
+script: 
+    - pytest -v --cov=pyqcs --cov-report=xml --runslow test/
+    - python-codacy-coverage -r coverage.xml

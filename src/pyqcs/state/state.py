@@ -3,7 +3,14 @@ import numpy as np
 
 class BasicState(AbstractState):
     __slots__ = ["_nbits", "_ndim", "_qm_state", "_cl_state", "_last_measured"]
-    def __init__(self, qm_state, cl_state, nbits, last_measured, **kwargs):
+    def __init__(self
+                , qm_state
+                , cl_state
+                , nbits
+                , last_measured
+                , lenght_error=1e-8
+                , check_normalization=False
+                , **kwargs):
         AbstractState.__init__(self)
         self._is_naive = True
         self._qm_state = qm_state
@@ -11,6 +18,11 @@ class BasicState(AbstractState):
         self._nbits = nbits
         self._ndim = 2**nbits
         self._last_measured = last_measured
+        self._length_error = lenght_error
+        self._check_normalization = check_normalization
+
+        if(check_normalization and not self.is_normalized()):
+            raise ValueError("State has non-one length")
 
     @classmethod
     def new_zero_state(cls, nbits, **kwargs):
@@ -32,11 +44,21 @@ class BasicState(AbstractState):
         return False
 
     def deepcopy(self):
-        return BasicState(self._qm_state.copy(), self._cl_state.copy(), self._nbits, self._last_measured)
+        return BasicState(self._qm_state.copy()
+                        , self._cl_state.copy()
+                        , self._nbits
+                        , self._last_measured
+                        , check_normalization=self._check_normalization
+                        , lenght_error=self._length_error)
 
     def apply_gate(self, gate, force_new_state=False):
         qm_state, cl_state, last_measured = gate(self._qm_state, self._cl_state)
-        return BasicState(qm_state, cl_state, self._nbits,  last_measured)
+        return BasicState(qm_state
+                        , cl_state
+                        , self._nbits
+                        ,  last_measured
+                        , lenght_error=self._length_error
+                        , check_normalization=self._check_normalization)
 
     def _easy_format_state_part(self, cf, i):
         return "{}*|{}>".format(str(cf), bin(i))
@@ -60,18 +82,23 @@ class BasicState(AbstractState):
                 return False
             if(not np.allclose(self._cl_state, other._cl_state)):
                 return False
-            if(np.allclose(self._qm_state, other._qm_state)):
-                return True
 
-            # Note that states are still considered to be the same
-            # if they have a different global phase.
-            if(not np.allclose(np.isclose(self._qm_state, 0), np.isclose(other._qm_state, 0))):
+            overlap = self @ other
+            if(not np.isclose(np.absolute(overlap), 1)):
                 return False
-
-            nonzeros = np.invert(np.isclose(self._qm_state, 0))
-            phases = self._qm_state[nonzeros] / other._qm_state[nonzeros]
-            angles = np.angle(phases)
-            phaseless = np.exp(-1j * np.max(angles)) * phases
-            return np.allclose(phaseless, np.ones(len([n for n in nonzeros if n])))
+            return True
 
         raise TypeError()
+
+    def __matmul__(self, other):
+        if(not isinstance(other, BasicState)):
+            raise TypeError()
+        if(not (other.is_normalized() and self.is_normalized())):
+            raise ValueError("states must be normalized")
+        if(self._nbits != other._nbits):
+            raise ValueError("states must have same qbit count")
+
+        return self._qm_state.transpose().conjugate().dot(other._qm_state)
+
+    def is_normalized(self):
+        return np.isclose(np.sum(np.absolute(self._qm_state)**2), 1, atol=self._length_error)

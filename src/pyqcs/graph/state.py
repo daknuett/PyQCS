@@ -65,3 +65,5 @@ class GraphState(AbstractGraphState):
 
         return state
 
+    def is_normalized(self):
+        return True
