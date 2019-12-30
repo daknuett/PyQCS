@@ -83,21 +83,23 @@ class BasicState(AbstractState):
                 return False
             if(not np.allclose(self._cl_state, other._cl_state)):
                 return False
-            if(np.allclose(self._qm_state, other._qm_state)):
-                return True
 
-            # Note that states are still considered to be the same
-            # if they have a different global phase.
-            if(not np.allclose(self._qm_state == 0, other._qm_state == 0)):
+            overlap = self @ other
+            if(not np.isclose(np.absolute(overlap), 1)):
                 return False
-
-            nonzeros = self._qm_state != 0
-            phases = self._qm_state[nonzeros] / other._qm_state[nonzeros]
-            angles = np.angle(phases)
-            phaseless = np.exp(-1j * np.max(angles)) * phases
-            return np.allclose(phaseless, np.ones(len([n for n in nonzeros if n])))
+            return True
 
         raise TypeError()
+
+    def __matmul__(self, other):
+        if(not isinstance(other, BasicState)):
+            raise TypeError()
+        if(not (other.is_normalized() and self.is_normalized())):
+            raise ValueError("states must be normalized")
+        if(self._nbits != other._nbits):
+            raise ValueError("states must have same qbit count")
+
+        return self._qm_state.transpose().conjugate().dot(other._qm_state)
 
     def is_normalized(self):
         return np.isclose(np.sum(np.absolute(self._qm_state)**2), 1, atol=self._length_error)
