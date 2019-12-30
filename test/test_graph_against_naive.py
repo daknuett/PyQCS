@@ -15,6 +15,9 @@ def do_test_q4_l10():
     naive = circuit * naive
     graph = circuit * graph
 
+    if(naive != graph.to_naive_state()):
+        print("naive", naive)
+        print("graph", graph.to_naive_state())
     assert naive == graph.to_naive_state()
 
 @pytest.mark.slow
@@ -34,6 +37,9 @@ def do_test_q10_l100():
     naive = circuit * naive
     graph = circuit * graph
 
+    if(naive != graph.to_naive_state()):
+        print("naive", naive)
+        print("graph", graph.to_naive_state())
     assert naive == graph.to_naive_state()
 @pytest.mark.slow
 def test_random_q10_l100():
