@@ -34,7 +34,9 @@ def test_fragments():
 
     for fragment in fragments:
         s = fragment * s
+        print("g", g._g_state.to_lists())
         g_bar = fragment * g.deepcopy()
+        print("g_bar", g_bar._g_state.to_lists())
 
         if(g_bar.to_naive_state() != s):
             print("failure occured in")
@@ -42,9 +44,16 @@ def test_fragments():
             print("state before is")
             print(circuit_to_diagram(graph_state_to_circuit(g)))
             print(g._g_state.to_lists())
+            print(g.to_naive_state())
             print("state after is")
             print(circuit_to_diagram(graph_state_to_circuit(g_bar)))
             print(g_bar._g_state.to_lists())
+            print(g_bar.to_naive_state())
+            print()
+            print("expected")
+            print(s)
+            print()
+            print("overlap is: ", s @ g_bar.to_naive_state())
 
         g = g_bar
         assert g_bar.to_naive_state() == s
