@@ -98,7 +98,7 @@ class BasicState(AbstractState):
         if(self._nbits != other._nbits):
             raise ValueError("states must have same qbit count")
 
-        return self._qm_state.transpose().conjugate().dot(other._qm_state)
+        return self._qm_state.conjugate().dot(other._qm_state)
 
     def is_normalized(self):
         return np.isclose(np.sum(np.absolute(self._qm_state)**2), 1, atol=self._length_error)
