@@ -98,7 +98,7 @@ graph_clear_vops(RawGraphState * self, npy_intp a, npy_intp b)
 
         for(i = product_length - 1; i >= 0; i--)
         {
-            if(C_L_as_products[vop][i] == VOP_smiX)
+            if(C_L_as_products_daggered[vop][i] == VOP_siX)
             {
                 graph_La_transform(self, a);
             }
@@ -127,7 +127,7 @@ graph_clear_vops(RawGraphState * self, npy_intp a, npy_intp b)
 
         for(i = product_length - 1; i >= 0; i--)
         {
-            if(C_L_as_products[vop][i] == VOP_smiX)
+            if(C_L_as_products_daggered[vop][i] == VOP_siX)
             {
                 graph_La_transform(self, b);
             }
@@ -159,11 +159,11 @@ graph_La_transform(RawGraphState * self, npy_intp i)
     ll_iter_t * iter_b = ll_iter_t_new(neighbours);
     ll_iter_t * iter_c = ll_iter_t_new(neighbours);
 
-    self->vops[i] = vop_lookup_table[self->vops[i]][VOP_smiX];
+    self->vops[i] = vop_lookup_table[self->vops[i]][VOP_siX];
 
     while(ll_iter_next(iter_b, &b))
     {
-        self->vops[b] = vop_lookup_table[self->vops[b]][VOP_siZ];
+        self->vops[b] = vop_lookup_table[self->vops[b]][VOP_smiZ];
         while(ll_iter_next(iter_c, &c))
         {
             // Do not re-toggle the edge.
@@ -242,7 +242,7 @@ graph_clear_vop(RawGraphState * self, npy_intp a, npy_intp b)
 
         for(i = product_length - 1; i >= 0; i--)
         {
-            if(C_L_as_products[vop][i] == VOP_smiX)
+            if(C_L_as_products_daggered[vop][i] == VOP_siX)
             {
                 graph_La_transform(self, a);
             }
