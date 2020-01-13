@@ -44,6 +44,6 @@ setup(
         }
         , author="Daniel Knüttel"
         , author_email="daniel.knuettel@daknuett.eu"
-        , python_requires=">3.4"
+        , python_requires=">3.5"
     )
 
