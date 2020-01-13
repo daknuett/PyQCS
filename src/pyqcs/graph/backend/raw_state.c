@@ -284,8 +284,14 @@ RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
                 && ll_length(self->lists[j]) > 1)
             {
                 // Sub-Case 2.1
-                graph_clear_vops(self, i, j);
-                result = graph_toggle_edge(self, i, j);
+                if(graph_clear_vops(self, i, j) == GRAPH_CLEAR_VOP_CANNOT_CLEAR_SECOND_VOP)
+                {
+                    result = graph_isolated_two_qbit_CZ(self, i, j);
+                }
+                else
+                {
+                    result = graph_toggle_edge(self, i, j);
+                }
             }
             else
             {
@@ -323,8 +329,14 @@ RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
                 && ll_length(self->lists[j]) > 0)
             {
                 // Sub-Case 2.1
-                graph_clear_vops(self, i, j);
-                result = graph_toggle_edge(self, i, j);
+                if(graph_clear_vops(self, i, j) == GRAPH_CLEAR_VOP_CANNOT_CLEAR_SECOND_VOP)
+                {
+                    result = graph_isolated_two_qbit_CZ(self, i, j);
+                }
+                else
+                {
+                    result = graph_toggle_edge(self, i, j);
+                }
             }
             else
             {
@@ -356,7 +368,6 @@ RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
                 }
             }
         }
-
     }
 
     if(result == -2)

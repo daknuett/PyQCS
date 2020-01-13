@@ -100,7 +100,10 @@ graph_clear_vops(RawGraphState * self, npy_intp a, npy_intp b)
         {
             if(C_L_as_products_daggered[vop][i] == VOP_siX)
             {
-                graph_La_transform(self, a);
+                if(graph_La_transform(self, a))
+                {
+                    goto exit_e;
+                }
             }
             else
             {
@@ -108,15 +111,26 @@ graph_clear_vops(RawGraphState * self, npy_intp a, npy_intp b)
                 // because we checked that both a and b have non-operand neighbours. 
                 if(self->lists[a]->value != b)
                 {
-                    graph_La_transform(self, self->lists[a]->value);
+                    if(graph_La_transform(self, self->lists[a]->value))
+                    {
+                        goto exit_e;
+                    }
                 }
                 else
                 {
-                    graph_La_transform(self, self->lists[a]->next->value);
+                    if(graph_La_transform(self, self->lists[a]->next->value))
+                    {
+                        goto exit_e;
+                    }
                 }
             }
         }
 
+    }
+    if(ll_has_value(self->lists[b], a) 
+            && ll_length(self->lists[b]) == 1)
+    {
+        return GRAPH_CLEAR_VOP_CANNOT_CLEAR_SECOND_VOP;
     }
     // Clear b:
     // Note that there is no need to clear the identity.
@@ -129,7 +143,10 @@ graph_clear_vops(RawGraphState * self, npy_intp a, npy_intp b)
         {
             if(C_L_as_products_daggered[vop][i] == VOP_siX)
             {
-                graph_La_transform(self, b);
+                if(graph_La_transform(self, b))
+                {
+                    goto exit_e;
+                }
             }
             else
             {
@@ -137,16 +154,24 @@ graph_clear_vops(RawGraphState * self, npy_intp a, npy_intp b)
                 // because we checked that both a and b have non-operand neighbours. 
                 if(self->lists[b]->value != a)
                 {
-                    graph_La_transform(self, self->lists[b]->value);
+                    if(graph_La_transform(self, self->lists[b]->value))
+                    {
+                        goto exit_e;
+                    }
                 }
                 else
                 {
-                    graph_La_transform(self, self->lists[b]->next->value);
+                    if(graph_La_transform(self, self->lists[b]->next->value))
+                    {
+                        goto exit_e;
+                    }
                 }
             }
         }
     }
     return 0;
+exit_e:
+    return -1;
 }
 
 int
@@ -161,6 +186,7 @@ graph_La_transform(RawGraphState * self, npy_intp i)
 
     self->vops[i] = vop_lookup_table[self->vops[i]][VOP_siX];
 
+
     while(ll_iter_next(iter_b, &b))
     {
         self->vops[b] = vop_lookup_table[self->vops[b]][VOP_smiZ];
@@ -171,6 +197,10 @@ graph_La_transform(RawGraphState * self, npy_intp i)
             {
                 break;
             }
+            //if(c == i)
+            //{
+            //    continue;
+            //}
             graph_toggle_edge(self, b, c);
         }
         ll_iter_reset(iter_c);

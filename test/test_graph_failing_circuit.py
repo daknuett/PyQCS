@@ -122,6 +122,21 @@ def test_fragments_short():
         g = g_bar
         assert g_bar.to_naive_state() == s
 
+def test_qbit_gets_isolated():
+    g = GraphState.new_plus_state(4)
+    s = (H(0) | H(1) | H(2) | H(3)) * State.new_zero_state(4)
+    circuit = (CZ(0, 1) | CZ(1, 3) | CZ(3, 2) | CZ(0, 3) | CZ(1, 2))
+    g = circuit * g
+    s = circuit * s
+    circuit = S(1) | S(3) | H(1) | H(3)
+    g = circuit * g
+    s = circuit * s
 
+    print(g._g_state.to_lists())
+    g = CZ(1, 3) * g
+    s = CZ(1, 3) * s
+    print(g._g_state.to_lists())
+
+    assert g.to_naive_state() == s
 if(__name__ == "__main__"):
     test_fragments_long()

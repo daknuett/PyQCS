@@ -9,6 +9,8 @@
 
 #include "linked_list.h"
 
+#define GRAPH_CLEAR_VOP_CANNOT_CLEAR_SECOND_VOP -4
+
 typedef struct 
 {
     PyObject_HEAD
