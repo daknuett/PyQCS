@@ -16,6 +16,7 @@ def first_CZ_State():
 
 vops = list(range(24))
 
+@pytest.mark.slow
 def test_graph_third_CZ():
     failing = []
     for v1_ in vops:
