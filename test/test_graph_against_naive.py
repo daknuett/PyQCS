@@ -23,6 +23,7 @@ def do_test_q4_l10():
 
 @pytest.mark.slow
 def test_random_q4_l10():
+    np.random.seed(0xdeadbeef)
     for _ in range(1000):
         do_test_q4_l10()
 
@@ -48,7 +49,7 @@ def do_test_q10_l100():
 @pytest.mark.slow
 def test_random_q10_l100():
     np.random.seed(1)
-    for _ in range(4000):
+    for _ in range(10000):
         do_test_q10_l100()
 
 if __name__ == "__main__":
