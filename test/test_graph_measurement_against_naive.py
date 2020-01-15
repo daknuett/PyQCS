@@ -18,13 +18,18 @@ def do_test_q4_l10():
 
     results_naive = {}
     results_graph = {}
-    while( 0 not in results_naive
-            or 1 not in results_naive
-            or 0 not in results_graph
-            or 1 not in results_graph):
+    cnt = 0
+    while((0 not in results_naive
+                or 1 not in results_naive
+                or 0 not in results_graph
+                or 1 not in results_graph)
+            and cnt < 100):
         g_bar = M(0) * graph
         n_bar = M(0) * naive
 
+        if(n_bar._cl_state[0] in results_naive
+                and g_bar._measured[0] in results_graph):
+            cnt += 1
         results_naive[n_bar._cl_state[0]] = n_bar
         results_graph[g_bar._measured[0]] = g_bar
 
@@ -32,6 +37,22 @@ def do_test_q4_l10():
                                 , sorted(results_graph.items())):
         assert kn == kg
         vn._cl_state[0] = -1
+        if(vn != vg.to_naive_state()):
+            print("before:")
+            print(naive)
+            print("lists:", graph._g_state.to_lists())
+            print()
+            print("expected:")
+            print(vn)
+            print("got:")
+            print(vg.to_naive_state())
+            print("lists:", vg._g_state.to_lists())
+            print()
+            print("all results:")
+            print("expect:")
+            print(results_naive)
+            print("got:")
+            print({k: v.to_naive_state() for k,v in results_graph.items()})
         assert vn == vg.to_naive_state()
 
 #@pytest.mark.slow
