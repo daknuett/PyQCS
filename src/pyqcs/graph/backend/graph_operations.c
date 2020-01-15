@@ -177,10 +177,13 @@ exit_e:
 int
 graph_La_transform(RawGraphState * self, npy_intp i)
 {
+    int result = 0;
     ll_node_t * neighbours = self->lists[i];
     
     npy_intp b, c;
 
+    // Probability for problems to occur here is small enough.
+    // Don't do error checking for now. FIXME.
     ll_iter_t * iter_b = ll_iter_t_new(neighbours);
     ll_iter_t * iter_c = ll_iter_t_new(neighbours);
 
@@ -201,13 +204,18 @@ graph_La_transform(RawGraphState * self, npy_intp i)
             //{
             //    continue;
             //}
-            graph_toggle_edge(self, b, c);
+            result = graph_toggle_edge(self, b, c);
+            if(result)
+            {
+                goto lat_exit;
+            }
         }
         ll_iter_reset(iter_c);
     }
+lat_exit:
     free(iter_b);
     free(iter_c);
-    return 0;
+    return result;
 }
 
 int
@@ -262,6 +270,7 @@ graph_clear_vop(RawGraphState * self, npy_intp a, npy_intp b)
 {
     npy_uint8 product_length, vop;
     npy_intp i;
+    int result = 0;
 
     // Start clearing with a:
     // Note that there is no need to clear the identity.
@@ -274,7 +283,11 @@ graph_clear_vop(RawGraphState * self, npy_intp a, npy_intp b)
         {
             if(C_L_as_products_daggered[vop][i] == VOP_siX)
             {
-                graph_La_transform(self, a);
+                result = graph_La_transform(self, a);
+                if(result)
+                {
+                    goto gcv_exit;
+                }
             }
             else
             {
@@ -282,16 +295,25 @@ graph_clear_vop(RawGraphState * self, npy_intp a, npy_intp b)
                 // because we checked that both a and b have non-operand neighbours. 
                 if(self->lists[a]->value != b)
                 {
-                    graph_La_transform(self, self->lists[a]->value);
+                    result = graph_La_transform(self, self->lists[a]->value);
+                    if(result)
+                    {
+                        goto gcv_exit;
+                    }
                 }
                 else
                 {
-                    graph_La_transform(self, self->lists[a]->next->value);
+                    result = graph_La_transform(self, self->lists[a]->next->value);
+                    if(result)
+                    {
+                        goto gcv_exit;
+                    }
                 }
             }
         }
     }
-    return 0;
+gcv_exit:
+    return result;
 }
 
 int
