@@ -1,4 +1,3 @@
-import numpy as np
 from numpy.random import choice
 
 from itertools import product
