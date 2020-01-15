@@ -84,97 +84,6 @@ graph_toggle_edge(RawGraphState * self, npy_intp i, npy_intp j)
 }
 
 int
-graph_clear_vops(RawGraphState * self, npy_intp a, npy_intp b)
-{
-    npy_uint8 product_length, vop;
-    npy_intp i;
-
-    // Start clearing with a:
-    // Note that there is no need to clear the identity.
-    if(self->vops[a] != VOP_I)
-    {
-        vop = self->vops[a];
-        product_length = C_L_as_products_lengths[vop];
-
-        for(i = product_length - 1; i >= 0; i--)
-        {
-            if(C_L_as_products_daggered[vop][i] == VOP_siX)
-            {
-                if(graph_La_transform(self, a))
-                {
-                    goto exit_e;
-                }
-            }
-            else
-            {
-                // self->lists[a]->value is guaranteed to exist
-                // because we checked that both a and b have non-operand neighbours. 
-                if(self->lists[a]->value != b)
-                {
-                    if(graph_La_transform(self, self->lists[a]->value))
-                    {
-                        goto exit_e;
-                    }
-                }
-                else
-                {
-                    if(graph_La_transform(self, self->lists[a]->next->value))
-                    {
-                        goto exit_e;
-                    }
-                }
-            }
-        }
-
-    }
-    if(ll_has_value(self->lists[b], a) 
-            && ll_length(self->lists[b]) == 1)
-    {
-        return GRAPH_CLEAR_VOP_CANNOT_CLEAR_SECOND_VOP;
-    }
-    // Clear b:
-    // Note that there is no need to clear the identity.
-    if(self->vops[b] != VOP_I)
-    {
-        vop = self->vops[b];
-        product_length = C_L_as_products_lengths[vop];
-
-        for(i = product_length - 1; i >= 0; i--)
-        {
-            if(C_L_as_products_daggered[vop][i] == VOP_siX)
-            {
-                if(graph_La_transform(self, b))
-                {
-                    goto exit_e;
-                }
-            }
-            else
-            {
-                // self->lists[b]->value is guaranteed to exist
-                // because we checked that both a and b have non-operand neighbours. 
-                if(self->lists[b]->value != a)
-                {
-                    if(graph_La_transform(self, self->lists[b]->value))
-                    {
-                        goto exit_e;
-                    }
-                }
-                else
-                {
-                    if(graph_La_transform(self, self->lists[b]->next->value))
-                    {
-                        goto exit_e;
-                    }
-                }
-            }
-        }
-    }
-    return 0;
-exit_e:
-    return -1;
-}
-
-int
 graph_La_transform(RawGraphState * self, npy_intp i)
 {
     int result = 0;
@@ -563,4 +472,22 @@ graph_update_after_measurement(RawGraphState * self
         return graph_update_after_Y_measurement(self, qbit, result);
     }
     return graph_update_after_Z_measurement(self, qbit, result);
+}
+
+int 
+graph_can_clear_vop(RawGraphState * self, npy_intp i, npy_intp j)
+{
+    if(ll_has_value(self->lists[i], j))
+    {
+        if(ll_length(self->lists[i]) > 1)
+        {
+            return 1;
+        }
+        return 0;
+    }
+    if(ll_length(self->lists[i]) > 0)
+    {
+        return 1;
+    }
+    return 0;
 }

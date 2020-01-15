@@ -28,8 +28,6 @@ RawGraphState_init(RawGraphState * self
             , PyObject * args
             , PyObject * kwds)
 {
-    // FIXME: 
-    // Do I actually want a new zero state here?
     static char * kwrds[] = {"length", NULL};
     npy_intp length;
     npy_intp i;
@@ -274,101 +272,47 @@ RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
     {
         // Case 1
         result = graph_toggle_edge(self, i, j);
+        goto rs_CZ_exit;
     }
-    else
+    // From now on Case 2.
+    if(graph_qbits_are_isolated(self, i, j))
     {
-        // Case 2
-        if(ll_has_value(self->lists[i], j))
+        // Sub-Sub-Case 2.2.1
+        result = graph_isolated_two_qbit_CZ(self, i, j);
+        goto rs_CZ_exit;
+    }
+    int cleared_i = 0;
+    int cleared_j = 0;
+    if(graph_can_clear_vop(self, i, j))
+    {
+        cleared_i = 1;
+        result = graph_clear_vop(self, i, j);
+        if(result)
         {
-            if(ll_length(self->lists[i]) > 1 
-                && ll_length(self->lists[j]) > 1)
-            {
-                // Sub-Case 2.1
-                if(graph_clear_vops(self, i, j) == GRAPH_CLEAR_VOP_CANNOT_CLEAR_SECOND_VOP)
-                {
-                    result = graph_isolated_two_qbit_CZ(self, i, j);
-                }
-                else
-                {
-                    result = graph_toggle_edge(self, i, j);
-                }
-            }
-            else
-            {
-                // Sub-Case 2.2
-                if(graph_qbits_are_isolated(self, i, j))
-                {
-                    // Sub-Sub-Case 2.2.1
-                    result = graph_isolated_two_qbit_CZ(self, i, j);
-                }
-                else
-                {
-                    // Sub-Sub-Case 2.2.2
-                    if(ll_length(self->lists[j]) > 1)
-                    {
-                        result = graph_clear_vop(self, j, i);
-                        if(!result)
-                        {
-                            result = graph_isolated_two_qbit_CZ(self, i, j);
-                        }
-                    }
-                    else
-                    {
-                        result = graph_clear_vop(self, i, j);
-                        if(!result)
-                        {
-                            result = graph_isolated_two_qbit_CZ(self, i, j);
-                        }
-                    }
-                }
-            }
-        }
-        else
-        {
-            if(ll_length(self->lists[i]) > 0 
-                && ll_length(self->lists[j]) > 0)
-            {
-                // Sub-Case 2.1
-                if(graph_clear_vops(self, i, j) == GRAPH_CLEAR_VOP_CANNOT_CLEAR_SECOND_VOP)
-                {
-                    result = graph_isolated_two_qbit_CZ(self, i, j);
-                }
-                else
-                {
-                    result = graph_toggle_edge(self, i, j);
-                }
-            }
-            else
-            {
-                // Sub-Case 2.2
-                if(graph_qbits_are_isolated(self, i, j))
-                {
-                    // Sub-Sub-Case 2.2.1
-                    result = graph_isolated_two_qbit_CZ(self, i, j);
-                }
-                else
-                {
-                    // Sub-Sub-Case 2.2.2
-                    if(ll_length(self->lists[j]) > 0)
-                    {
-                        result = graph_clear_vop(self, j, i);
-                        if(!result)
-                        {
-                            result = graph_isolated_two_qbit_CZ(self, i, j);
-                        }
-                    }
-                    else
-                    {
-                        result = graph_clear_vop(self, i, j);
-                        if(!result)
-                        {
-                            result = graph_isolated_two_qbit_CZ(self, i, j);
-                        }
-                    }
-                }
-            }
+            goto rs_CZ_exit;
         }
     }
+    if(graph_can_clear_vop(self, j, i))
+    {
+        cleared_j = 1;
+        result = graph_clear_vop(self, j, i);
+        if(result)
+        {
+            goto rs_CZ_exit;
+        }
+    }
+    if(cleared_i && cleared_j)
+    {
+        // Sub-Case 2.1
+        result = graph_toggle_edge(self, i, j);
+        goto rs_CZ_exit;
+    }
+
+    // Sub-Sub-Case 2.2.2
+    result = graph_isolated_two_qbit_CZ(self, i, j);
+
+
+rs_CZ_exit:
 
     if(result == -2)
     {

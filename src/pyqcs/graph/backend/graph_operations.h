@@ -28,14 +28,9 @@ graph_toggle_edge_from_to(RawGraphState * self, npy_intp i, npy_intp j);
 int
 graph_toggle_edge(RawGraphState * self, npy_intp i, npy_intp j);
 
-// Used in graph_clear_vops.
+// Used in graph_clear_vop.
 int
 graph_La_transform(RawGraphState * self, npy_intp i);
-
-// Used to clear the vops of two qbits if both qbits have non-operand
-// neighbours.
-int
-graph_clear_vops(RawGraphState * self, npy_intp a, npy_intp b);
 
 int
 graph_isolated_two_qbit_CZ(RawGraphState * self, npy_intp i, npy_intp j);
@@ -43,6 +38,16 @@ graph_isolated_two_qbit_CZ(RawGraphState * self, npy_intp i, npy_intp j);
 int
 graph_qbits_are_isolated(RawGraphState * self, npy_intp i, npy_intp j);
 
+// Check whether the vop on i can be cleared while ignoring j.
+int 
+graph_can_clear_vop(RawGraphState * self, npy_intp i, npy_intp j);
+
+/*
+ * Clear the vop on a, ignoring the vertex b as a partner for graph_La_transform.
+ * XXX: Note that this will result in a SIGSEGV if one does not check whether
+ * the vop on a can be cleared while ignoring b.
+ *
+ * */
 int
 graph_clear_vop(RawGraphState * self, npy_intp a, npy_intp b);
 
