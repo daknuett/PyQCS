@@ -301,6 +301,16 @@ RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
             goto rs_CZ_exit;
         }
     }
+    if(!cleared_i && graph_can_clear_vop(self, i, j))
+    {
+        cleared_i = 1;
+        result = graph_clear_vop(self, i, j);
+        if(result)
+        {
+            goto rs_CZ_exit;
+        }
+    }
+
     if(cleared_i && cleared_j)
     {
         // Sub-Case 2.1
