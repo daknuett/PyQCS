@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from pyqcs.util.random_graphs import random_graph_lists
 from pyqcs.util.from_lists import graph_lists_to_graph_state
@@ -23,6 +24,7 @@ def do_test5_5():
 
     assert g.to_naive_state() == n
 
+@pytest.mark.slow
 def test_random_graph5_5():
     np.random.seed(1)
     for _ in range(1000):
