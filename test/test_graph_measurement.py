@@ -143,7 +143,7 @@ def test_bell_state():
         print("lists:", g.to_lists())
         assert graph_lists_to_naive_state(g.to_lists()) == s_bar
 
-def test_random_random_x_graph_update_entangled():
+def test_random_x_graph_update_entangled():
     for i in range(10):
         s = (H(0) | H(1) | H(2) | H(3) | H(4)) * State.new_zero_state(5)
         s = (CZ(0, 1) | CZ(0, 2) | CZ(1, 3) | CZ(1, 4)) * s
