@@ -47,6 +47,7 @@ graph_can_clear_vop(RawGraphState * self, npy_intp i, npy_intp j);
  * XXX: Note that this will result in a SIGSEGV if one does not check whether
  * the vop on a can be cleared while ignoring b.
  *
+ * To check whether graph_clear_vop can be applied use graph_can_clear_vop.
  * */
 int
 graph_clear_vop(RawGraphState * self, npy_intp a, npy_intp b);
