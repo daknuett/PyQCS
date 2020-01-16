@@ -253,6 +253,13 @@ RawGraphState_measure(RawGraphState * self, PyObject * args)
     {
         return NULL;
     }
+    // invert_result means we are measuring -O instead of O.
+    // This can be achieved by measuring O and inverting the result.
+    // The state is changed according to the inverted result.
+    if(invert_result)
+    {
+        result ^= 1;
+    }
 
     return Py_BuildValue("l", result);
 }
