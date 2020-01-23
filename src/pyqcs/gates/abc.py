@@ -63,6 +63,10 @@ class AbstractGateCircuit(metaclass=ABCMeta):
     def new_from_circuit_with_executor(self, executor):
         pass
 
+    @abstractmethod
+    def get_dagger(self):
+        pass
+
 class AbstractNamedGateCircuit(AbstractGateCircuit):
     def __init__(self, qbits, identities, name, descr):
         AbstractGateCircuit.__init__(self, qbits, identities)
@@ -79,5 +83,8 @@ class AbstractCompoundGateCircuit(AbstractGateCircuit):
 class AbstractGate(metaclass=ABCMeta):
     @abstractmethod
     def __call__(self, qm_state, cl_state):
+        pass
+    @abstractmethod
+    def get_dagger(self):
         pass
 

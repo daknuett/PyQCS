@@ -14,6 +14,9 @@ class BaseGate(AbstractGate):
     def is_inplace(self):
         return False
 
+    def get_dagger(self):
+        return BaseGate(self._impl.get_dagger())
+
 class BuiltinGate(BaseGate):
     def __init__(self, type_, act, control, r):
         BaseGate.__init__(self, BasicGate(type_, act, control, r, numpy.random.uniform))
@@ -45,3 +48,7 @@ class GenericGate(BaseGate):
         arr = arr.astype(numpy.cdouble)
 
         BaseGate.__init__(self, _GenericGate(act, arr[0,0], arr[1,1], arr[0,1], arr[1,0]))
+        self._array = arr
+
+    def get_dagger(self):
+        return GenericGate(self._act, self._array.transpose().conjugate())

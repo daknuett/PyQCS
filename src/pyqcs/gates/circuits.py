@@ -2,7 +2,14 @@ from .abc import AbstractGateCircuit, AbstractNamedGateCircuit, AbstractCompound
 from .executor import GateListExecutor
 
 class SingleGateCircuit(AbstractNamedGateCircuit):
-    def __init__(self, qbits, identities, name, descr, gate_naive, gate_graph):
+    def __init__(self
+            , qbits
+            , identities
+            , name
+            , descr
+            , gate_naive
+            , gate_graph
+            , make_dagger):
         AbstractNamedGateCircuit.__init__(self, qbits, identities, name, descr)
         if(gate_naive is not None):
             self._has_naive = True
@@ -10,6 +17,8 @@ class SingleGateCircuit(AbstractNamedGateCircuit):
         if(gate_graph is not None):
             self._has_graph = True
         self._gate_g = gate_graph
+
+        self._make_dagger = make_dagger
 
 
     def get_child_executors(self, graph=False):
@@ -38,6 +47,9 @@ class SingleGateCircuit(AbstractNamedGateCircuit):
         new_circuit._executor = executor
         return new_circuit
 
+    def get_dagger(self):
+        return self._make_dagger()
+
 
 class AnonymousCompoundGateCircuit(AbstractCompoundGateCircuit):
     def __init__(self, subcircuit_list, has_graph=None, has_naive=None, qbits=None):
@@ -54,8 +66,9 @@ class AnonymousCompoundGateCircuit(AbstractCompoundGateCircuit):
             for subc in subcircuit_list:
                 has_graph = has_graph and subc._has_graph
                 has_naive = has_naive and subc._has_naive
-            self._has_naive = has_naive
-            self._has_graph = has_graph
+
+        self._has_naive = has_naive
+        self._has_graph = has_graph
 
 
     def __or__(self, other):
@@ -77,6 +90,12 @@ class AnonymousCompoundGateCircuit(AbstractCompoundGateCircuit):
 
     def get_child_executors(self, graph=False):
         return [c.to_executor(graph=graph) for c in self._subcircuits]
+
+    def get_dagger(self):
+        return AnonymousCompoundGateCircuit([s.get_dagger() for s in reversed(self._subcircuits)]
+                                            , has_graph=self._has_graph
+                                            , has_naive=self._has_naive
+                                            , qbits=self._uses_qbits)
 
 class NamedCompoundGateCircuit(AnonymousCompoundGateCircuit, AbstractNamedGateCircuit):
     def __init__(self, subcircuit_list, name, descr, identities=[]):
