@@ -30,7 +30,7 @@ generic_gate = Extension(
 
 setup(
         name="pyqcs"
-        , version="1.4.3"
+        , version="2.0.0"
         , description="A quantum computing simulator."
         , long_description = open("README.rst").read()
         , ext_modules=[basic_gates
