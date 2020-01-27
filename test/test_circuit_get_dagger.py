@@ -1,5 +1,7 @@
-from pyqcs import  CZ, CZ, H, R, S, X, State
+import pytest
+from pyqcs import  M, CZ, CZ, H, R, S, X, State
 from pyqcs.graph.state import GraphState
+from pyqcs.gates.exceptions import UnitarityError
 
 
 def test_c_dg_1():
@@ -33,3 +35,12 @@ def test_S_dg():
     circuit_dagger = circuit.get_dagger()
 
     assert (circuit | circuit_dagger) * State.new_zero_state(1) == State.new_zero_state(1)
+
+def test_M_dg():
+    circuit = H(0) | M(0)
+
+    with pytest.raises(UnitarityError):
+        circuit_dagger = circuit.get_dagger()
+
+    assert 1
+

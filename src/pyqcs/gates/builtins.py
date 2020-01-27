@@ -1,16 +1,18 @@
 import numpy as np
 from .gate import BuiltinGate, GenericGate as _GenericGate
 from .circuits import SingleGateCircuit
+from .exceptions import UnitarityError
 from ..build.abc import AbstractSingleGateCircuitBuilder
 from ..graph.gate import GraphGate, CLOperation, CZOperation, MeasurementOperation
 
 class BuiltinGateBuilder(AbstractSingleGateCircuitBuilder):
     __slots__ = ["_type"]
-    def __init__(self, type_, get_graph_gate, has_control=False):
+    def __init__(self, type_, get_graph_gate, has_control=False, can_dagger=True):
         AbstractSingleGateCircuitBuilder.__init__(self)
         self._type = type_
         self.get_graph_gate = get_graph_gate
         self._has_control = has_control
+        self._can_dagger = can_dagger
 
     def __call__(self, act, *args, dagger=False):
         if(dagger):
@@ -24,13 +26,19 @@ class BuiltinGateBuilder(AbstractSingleGateCircuitBuilder):
             if(self._has_control):
                 uses_qbits |= (1 << args[0])
 
+            def mk_dg():
+                if(self._can_dagger):
+                    return self(act, *args, dagger=True)
+                else:
+                    raise UnitarityError("gate is not unitary and cannot be daggered")
+
             circuit = SingleGateCircuit(uses_qbits
                         , []
                         , self._type + "(" + ",".join((str(a) for a in args)) + ")"
                         , (self._type, act, *args)
                         , gate
                         , gate_graph
-                        , lambda: self(act, *args, dagger=True))
+                        , mk_dg)
             self._registry[(act, *args)] = circuit
         return self._registry[(act, *args)]
 
@@ -53,7 +61,7 @@ def X(act):
 
 def _get_graph_M_gate(act, i1, i2, dagger=False):
     return GraphGate([MeasurementOperation(act)])
-_M = BuiltinGateBuilder('M', _get_graph_M_gate)
+_M = BuiltinGateBuilder('M', _get_graph_M_gate, can_dagger=False)
 def M(act):
     if(act < 0):
         raise ValueError("act qbit must be >= 0")
