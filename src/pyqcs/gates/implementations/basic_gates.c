@@ -249,6 +249,7 @@ ufunc_M( char ** args
     npy_intp i;
 
     npy_double amplitude_1 = 0;
+    npy_double amplitude_0 = 0;
 
     // TODO: this can be optimized.
     for(i = 0; i < ndim; i++)
@@ -259,7 +260,23 @@ ufunc_M( char ** args
             amplitude_1 += qm_in[i].real * qm_in[i].real;
             amplitude_1 += qm_in[i].imag * qm_in[i].imag;
         }
+        else
+        {
+            // XXX: do we get big errors here?
+            amplitude_0 += qm_in[i].real * qm_in[i].real;
+            amplitude_0 += qm_in[i].imag * qm_in[i].imag;
+        }
     }
+
+    // XXX:
+    // This is supposed to account for numerical errors that happened
+    // in the sum above. Because the error is unknown try to estimate the 
+    // error by computing the average of amplitude_0 and amplitude_1 (should be 1/2).
+    // If this average is smaller than 1/2 add the missing part to the amplitudes
+    // or substract it in the other case.
+    
+    npy_double amplitude_avg_dif = (amplitude_1 + amplitude_0) / 2 - 0.5;
+    amplitude_1 -= amplitude_avg_dif;
     
 
     npy_double randr;
@@ -287,7 +304,7 @@ ufunc_M( char ** args
 
 
     npy_double partial_amplitude;
-    if(amplitude_1 > randr)
+    if(amplitude_1 >= randr)
     {
         cl_out[argument.act] = 1;
         // Measured 1; now collaps this qbit.
