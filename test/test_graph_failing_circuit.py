@@ -138,5 +138,17 @@ def test_qbit_gets_isolated():
     print(g._g_state.to_lists())
 
     assert g.to_naive_state() == s
+
+def test_b_picks_up_neighbour():
+    g = GraphState.new_plus_state(3)
+    g = (CZ(0, 1) | CZ(1, 2)) * g
+    g._g_state.apply_C_L(1, 12)
+    s = g.to_naive_state()
+
+    s = CZ(0, 1) * s
+    g = CZ(0, 1) * g
+
+    assert s == g.to_naive_state()
+
 if(__name__ == "__main__"):
     test_fragments_long()
