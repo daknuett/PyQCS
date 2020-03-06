@@ -300,11 +300,12 @@ ufunc_M( char ** args
     Py_DECREF(random_result);
     //==================================================//
 
+
     copy_cl_state(cl_out, cl_in, nqbits);
 
 
     npy_double partial_amplitude;
-    if(amplitude_1 >= randr)
+    if(amplitude_1 > randr)
     {
         cl_out[argument.act] = 1;
         // Measured 1; now collaps this qbit.

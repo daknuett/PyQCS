@@ -2,7 +2,13 @@ from .abc import AbstractState
 import numpy as np
 
 class BasicState(AbstractState):
-    __slots__ = ["_nbits", "_ndim", "_qm_state", "_cl_state", "_last_measured"]
+    __slots__ = ["_nbits"
+            , "_ndim"
+            , "_qm_state"
+            , "_cl_state"
+            , "_last_measured"
+            , "_length_error"
+            , "_check_normalization"]
     def __init__(self
                 , qm_state
                 , cl_state
