@@ -1,13 +1,10 @@
 #ifndef linked_list_h_
 #define linked_list_h_
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-#include <numpy/ndarraytypes.h>
-#include <numpy/ufuncobject.h>
 
 typedef struct ll_node_s
 {
     struct ll_node_s * next;
-    npy_intp value;
+    long int value;
 } ll_node_t;
 
 typedef struct ll_iter_s
@@ -23,7 +20,7 @@ ll_iter_t_new(ll_node_t * list);
 // Returns 1 as long as there are elements that have
 // not been iterated yet and stores the current value in result.
 int
-ll_iter_next(ll_iter_t * iter, npy_intp * result);
+ll_iter_next(ll_iter_t * iter, long int * result);
 
 // Resets the iterator. Always returns 0.
 int
@@ -33,18 +30,18 @@ void
 ll_recursively_delete_list(ll_node_t ** list);
 
 ll_node_t *
-ll_node_t_new(ll_node_t * next, npy_intp value);
+ll_node_t_new(ll_node_t * next, long int value);
 
 int
-ll_insert_value(ll_node_t ** list, npy_intp value);
+ll_insert_value(ll_node_t ** list, long int value);
 
 int
-ll_delete_value(ll_node_t ** list, npy_intp value);
+ll_delete_value(ll_node_t ** list, long int value);
 
 int
-ll_has_value(ll_node_t * list, npy_intp value);
+ll_has_value(ll_node_t * list, long int value);
 
-npy_intp
+long int
 ll_length(ll_node_t * list);
 
 int

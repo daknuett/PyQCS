@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "graph_operations.h"
 #include "vops.h"
 #include "error.h"
@@ -5,7 +7,7 @@
 
 
 int
-graph_toggle_edge_from_to(RawGraphState * self, npy_intp i, npy_intp j)
+graph_toggle_edge_from_to(RawGraphState * self, long int i, long int j)
 {
 #ifdef G_USE_OPTIMIZED_TOGGLE_EDGE_FROM_TO
 #warning "G_USE_OPTIMIZED_TOGGLE_EDGE_FROM_TO is untested and might yield unexpected bugs"
@@ -66,7 +68,7 @@ graph_toggle_edge_from_to(RawGraphState * self, npy_intp i, npy_intp j)
 }
 
 int
-graph_toggle_edge(RawGraphState * self, npy_intp i, npy_intp j)
+graph_toggle_edge(RawGraphState * self, long int i, long int j)
 {
     int result;
     if(i < 0 || j < 0 || i >= self->length || j >= self->length || i == j)
@@ -85,12 +87,12 @@ graph_toggle_edge(RawGraphState * self, npy_intp i, npy_intp j)
 }
 
 int
-graph_La_transform(RawGraphState * self, npy_intp i)
+graph_La_transform(RawGraphState * self, long int i)
 {
     int result = 0;
     ll_node_t * neighbours = self->lists[i];
     
-    npy_intp b, c;
+    long int b, c;
 
     // Probability for problems to occur here is small enough.
     // Don't do error checking for now. FIXME.
@@ -129,15 +131,15 @@ lat_exit:
 }
 
 int
-graph_isolated_two_qbit_CZ(RawGraphState * self, npy_intp i, npy_intp j)
+graph_isolated_two_qbit_CZ(RawGraphState * self, long int i, long int j)
 {
-    npy_intp is_CZ = ll_has_value(self->lists[i], j);
-    npy_intp lookup_table_index = two_qbit_config_to_number[self->vops[i]][self->vops[j]][is_CZ];
+    long int is_CZ = ll_has_value(self->lists[i], j);
+    long int lookup_table_index = two_qbit_config_to_number[self->vops[i]][self->vops[j]][is_CZ];
     
     self->vops[i] = two_qbit_vops_after_CZ[lookup_table_index][0];
     self->vops[j] = two_qbit_vops_after_CZ[lookup_table_index][1];
 
-    npy_intp is_entangled = two_qbit_vops_after_CZ[lookup_table_index][2];
+    long int is_entangled = two_qbit_vops_after_CZ[lookup_table_index][2];
 
     if(is_entangled)
     {
@@ -155,10 +157,10 @@ graph_isolated_two_qbit_CZ(RawGraphState * self, npy_intp i, npy_intp j)
 }
 
 int
-graph_qbits_are_isolated(RawGraphState * self, npy_intp i, npy_intp j)
+graph_qbits_are_isolated(RawGraphState * self, long int i, long int j)
 {
-    npy_intp length_i = ll_length(self->lists[i]);
-    npy_intp length_j = ll_length(self->lists[j]);
+    long int length_i = ll_length(self->lists[i]);
+    long int length_j = ll_length(self->lists[j]);
     if(length_i > 1 || length_j > 1)
     {
         return 0;
@@ -176,10 +178,10 @@ graph_qbits_are_isolated(RawGraphState * self, npy_intp i, npy_intp j)
 }
 
 int
-graph_clear_vop(RawGraphState * self, npy_intp a, npy_intp b)
+graph_clear_vop(RawGraphState * self, long int a, long int b)
 {
-    npy_uint8 product_length, vop;
-    npy_intp i;
+    uint8_t product_length, vop;
+    long int i;
     int result = 0;
 
     // Start clearing with a:
@@ -228,10 +230,10 @@ gcv_exit:
 
 int
 graph_isolate_qbit(RawGraphState * self
-                , npy_intp qbit)
+                , long int qbit)
 {
     ll_iter_t * iter = ll_iter_t_new(self->lists[qbit]);
-    npy_intp ngb;
+    long int ngb;
     while(ll_iter_next(iter, &ngb))
     {
         ll_delete_value(&self->lists[ngb], qbit);
@@ -243,11 +245,11 @@ graph_isolate_qbit(RawGraphState * self
 
 int
 graph_toggle_neighbourhood(RawGraphState * self
-                        , npy_intp qbit)
+                        , long int qbit)
 {
     ll_node_t * neighbours = self->lists[qbit];
 
-    npy_intp b, c;
+    long int b, c;
 
     ll_iter_t * iter_b = ll_iter_t_new(neighbours);
     ll_iter_t * iter_c = ll_iter_t_new(neighbours);
@@ -272,12 +274,12 @@ graph_toggle_neighbourhood(RawGraphState * self
 
 int
 graph_update_after_X_measurement(RawGraphState * self
-                            , npy_intp a
-                            , npy_intp result)
+                            , long int a
+                            , long int result)
 {
     // We are ensured that this list has at least one element, 
     // as the case of the isolated a is handled explicitly in RawGraphState_measure.
-    npy_intp b = self->lists[a]->value;
+    long int b = self->lists[a]->value;
 
     if(!result)
     {
@@ -286,7 +288,7 @@ graph_update_after_X_measurement(RawGraphState * self
         self->vops[b] = vop_lookup_table[self->vops[b]][VOP_smiY];
 
         ll_iter_t * iter_c = ll_iter_t_new(self->lists[a]);
-        npy_intp c;
+        long int c;
         while(ll_iter_next(iter_c, &c))
         {
             if(c != b && !ll_has_value(self->lists[b], c))
@@ -303,7 +305,7 @@ graph_update_after_X_measurement(RawGraphState * self
         self->vops[b] = vop_lookup_table[self->vops[b]][VOP_siY];
 
         ll_iter_t * iter_c = ll_iter_t_new(self->lists[b]);
-        npy_intp c;
+        long int c;
         while(ll_iter_next(iter_c, &c))
         {
             if(c != a && !ll_has_value(self->lists[a], c))
@@ -329,7 +331,7 @@ graph_update_after_X_measurement(RawGraphState * self
     }
     ll_iter_t * iter_c = ll_iter_t_new(ngbh_b);
     ll_iter_t * iter_d = ll_iter_t_new(ngbh_a);
-    npy_intp c, d;
+    long int c, d;
 
     while(ll_iter_next(iter_c, &c))
     {
@@ -388,14 +390,14 @@ graph_update_after_X_measurement(RawGraphState * self
 
 int
 graph_update_after_Y_measurement(RawGraphState * self
-                            , npy_intp qbit
-                            , npy_intp result)
+                            , long int qbit
+                            , long int result)
 {
     if(!result)
     {
         self->vops[qbit] = vop_lookup_table[self->vops[qbit]][projected_vop[1]];
         ll_iter_t * iter = ll_iter_t_new(self->lists[qbit]);
-        npy_intp neighbour;
+        long int neighbour;
         while(ll_iter_next(iter, &neighbour))
         {
             self->vops[neighbour] = vop_lookup_table[self->vops[neighbour]][VOP_smiZ];
@@ -409,7 +411,7 @@ graph_update_after_Y_measurement(RawGraphState * self
     {
         self->vops[qbit] = vop_lookup_table[self->vops[qbit]][projected_vop[4]];
         ll_iter_t * iter = ll_iter_t_new(self->lists[qbit]);
-        npy_intp neighbour;
+        long int neighbour;
         while(ll_iter_next(iter, &neighbour))
         {
             self->vops[neighbour] = vop_lookup_table[self->vops[neighbour]][VOP_siZ];
@@ -423,8 +425,8 @@ graph_update_after_Y_measurement(RawGraphState * self
 
 int
 graph_update_after_Z_measurement(RawGraphState * self
-                            , npy_intp qbit
-                            , npy_intp result)
+                            , long int qbit
+                            , long int result)
 {
     if(!result)
     {
@@ -445,7 +447,7 @@ graph_update_after_Z_measurement(RawGraphState * self
     // right multiplying that operator to the VOPs.
     self->vops[qbit] = vop_lookup_table[self->vops[qbit]][projected_vop[3]];
     ll_iter_t * iter = ll_iter_t_new(self->lists[qbit]);
-    npy_intp neighbour;
+    long int neighbour;
     while(ll_iter_next(iter, &neighbour))
     {
         self->vops[neighbour] = vop_lookup_table[self->vops[neighbour]][VOP_Z];
@@ -459,9 +461,9 @@ graph_update_after_Z_measurement(RawGraphState * self
 
 int
 graph_update_after_measurement(RawGraphState * self
-                            , npy_uint8 observable
-                            , npy_intp qbit
-                            , npy_intp result)
+                            , uint8_t observable
+                            , long int qbit
+                            , long int result)
 {
     // X measurement. Note that the qbit has neighbours.
     if(observable == 2)
@@ -476,7 +478,7 @@ graph_update_after_measurement(RawGraphState * self
 }
 
 int 
-graph_can_clear_vop(RawGraphState * self, npy_intp i, npy_intp j)
+graph_can_clear_vop(RawGraphState * self, long int i, long int j)
 {
     if(ll_has_value(self->lists[i], j))
     {

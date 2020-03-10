@@ -1,5 +1,8 @@
 #include "linked_list.h"
 
+#include <stdlib.h>
+#include <inttypes.h>
+
 void
 ll_recursively_delete_list(ll_node_t ** list)
 {
@@ -14,7 +17,7 @@ ll_recursively_delete_list(ll_node_t ** list)
 }
 
 ll_node_t *
-ll_node_t_new(ll_node_t * next, npy_intp value)
+ll_node_t_new(ll_node_t * next, long int value)
 {
     ll_node_t * node = malloc(sizeof(ll_node_t));
     if(!node)
@@ -27,7 +30,7 @@ ll_node_t_new(ll_node_t * next, npy_intp value)
 }
 
 int
-ll_insert_value(ll_node_t ** list, npy_intp value)
+ll_insert_value(ll_node_t ** list, long int value)
 {
     ll_node_t * current_node;
     ll_node_t * last_node;
@@ -74,7 +77,7 @@ ll_insert_value(ll_node_t ** list, npy_intp value)
 }
 
 int
-ll_delete_value(ll_node_t ** list, npy_intp value)
+ll_delete_value(ll_node_t ** list, long int value)
 {
     ll_node_t * current_node;
     ll_node_t * last_node;
@@ -104,7 +107,7 @@ ll_delete_value(ll_node_t ** list, npy_intp value)
 }
 
 int
-ll_has_value(ll_node_t * list, npy_intp value)
+ll_has_value(ll_node_t * list, long int value)
 {
     while(list && list->value < value)
     {
@@ -118,10 +121,10 @@ ll_has_value(ll_node_t * list, npy_intp value)
     return 0;
 }
 
-npy_intp
+long int
 ll_length(ll_node_t * list)
 {
-    npy_intp result = 0;
+    long int result = 0;
     while(list)
     {
         result ++;
@@ -141,7 +144,7 @@ ll_iter_t_new(ll_node_t * list)
 }
 
 int
-ll_iter_next(ll_iter_t * iter, npy_intp * result)
+ll_iter_next(ll_iter_t * iter, long int * result)
 {
     if(!iter->current)
     {

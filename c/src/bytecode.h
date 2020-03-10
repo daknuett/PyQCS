@@ -2,6 +2,7 @@
 #define GQCS_bytecode_h_
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <inttypes.h>
 
 typedef struct __attribute__((packed))
@@ -21,7 +22,7 @@ GQCS_bytecode_head_valid(GQCS_bytecode_head_t * head);
 typedef struct
 {
     GQCS_bytecode_head_t * head;
-    uint16_t * sampleqbits;
+    uint64_t * sampleqbits;
 } GQCS_full_header_t;
 
 GQCS_full_header_t * 

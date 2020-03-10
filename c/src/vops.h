@@ -1,9 +1,9 @@
 #ifndef VOPS_H_
 #define VOPS_H_
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-#include <numpy/ndarraytypes.h>
 
-static npy_uint8 vop_lookup_table[24][24] = 
+#include <inttypes.h>
+
+static uint8_t vop_lookup_table[24][24] = 
 {
 	{2, 4, 0, 12, 1, 7, 15, 5, 10, 19, 8, 22, 3, 14, 13, 6, 23, 18, 17, 9, 21, 20, 11, 16}
 	, {3, 5, 1, 13, 6, 8, 17, 9, 2, 20, 11, 23, 10, 15, 16, 0, 21, 19, 14, 4, 22, 18, 7, 12}
@@ -48,13 +48,13 @@ static npy_uint8 vop_lookup_table[24][24] =
 // S, I, Z, S^\dagger
 #define vop_commutes_with_CZ(v) (v == 1 || v == 2 || v == 5 || v == 8)
 
-static npy_uint8 C_L_as_products_lengths[24] = 
+static uint8_t C_L_as_products_lengths[24] = 
 {
     5, 3, 4, 4, 4, 2, 5, 5, 1, 4, 4, 3, 5, 5, 4, 4, 5, 4, 5, 5, 3, 4, 2, 2
 };
 
 
-static npy_uint8 C_L_as_products_daggered[24][5] = 
+static uint8_t C_L_as_products_daggered[24][5] = 
 {
     {1, 6, 6, 6, 1}
     , {1, 1, 1, 0, 0}
@@ -116,7 +116,7 @@ static char C_L_as_products[24][5] =
 
 
 // this is vop0, vop1, edge
-static npy_intp two_qbit_config_to_number[24][24][2] = 
+static long int two_qbit_config_to_number[24][24][2] = 
 {
     { {0, 1}, {2, 3}, {4, 5}, {6, 7}, {8, 9}, {10, 11}, {12, 13}, {14, 15}, {16, 17}, {18, 19}, {20, 21}, {22, 23}, {24, 25}, {26, 27}, {28, 29}, {30, 31}, {32, 33}, {34, 35}, {36, 37}, {38, 39}, {40, 41}, {42, 43}, {44, 45}, {46, 47} }
     , { {48, 49}, {50, 51}, {52, 53}, {54, 55}, {56, 57}, {58, 59}, {60, 61}, {62, 63}, {64, 65}, {66, 67}, {68, 69}, {70, 71}, {72, 73}, {74, 75}, {76, 77}, {78, 79}, {80, 81}, {82, 83}, {84, 85}, {86, 87}, {88, 89}, {90, 91}, {92, 93}, {94, 95} }
@@ -145,7 +145,7 @@ static npy_intp two_qbit_config_to_number[24][24][2] =
 };
 
 
-static npy_intp two_qbit_vops_after_CZ[1152][3] = 
+static long int two_qbit_vops_after_CZ[1152][3] = 
 {
     {0, 0, 0}
     , {2, 2, 0}
@@ -1303,10 +1303,10 @@ static npy_intp two_qbit_vops_after_CZ[1152][3] =
 
 // C^\dagger Z C is one of the following matrices.
 // Index is the index of [Z, Y, X, -Z, -Y, -X].
-static npy_uint8 observable_after_vop_commute[24] = 
+static uint8_t observable_after_vop_commute[24] = 
 {2, 0, 0, 2, 4, 0, 4, 5, 0, 5, 1, 1, 1, 2, 3, 2, 3, 4, 3, 4, 5, 3, 5, 1};
 
-static npy_uint8 projected_vop[6] = 
+static uint8_t projected_vop[6] = 
 {0, 1, 2, 7, 18, 5};
 
 #endif

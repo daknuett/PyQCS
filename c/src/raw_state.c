@@ -7,12 +7,12 @@
 #include "error.h"
 
 
-static int
+int
 RawGraphState_init(RawGraphState * self
             , long int length
             )
 {
-    static char * kwrds[] = {"length", NULL};
+    char * kwrds[] = {"length", NULL};
     long int i;
 
     if(length <= 0)
@@ -42,7 +42,7 @@ RawGraphState_init(RawGraphState * self
     return 0;
 }
 
-static RawGraphState *
+RawGraphState *
 RawGraphState_deepcopy(RawGraphState * self)
 {
     RawGraphState * new_graph;
@@ -52,6 +52,11 @@ RawGraphState_deepcopy(RawGraphState * self)
     if(!new_graph)
     {
         GQCS_set_error("failed to allocate graph");
+        return NULL;
+    }
+
+    if(RawGraphState_init(new_graph, self->length) < 0)
+    {
         return NULL;
     }
 
@@ -79,9 +84,10 @@ return_after_error:
 }
 
 
-static int
+int
 RawGraphState_apply_C_L(RawGraphState * self
-                        , PyObject * args)
+                        , long int i
+                        , uint8_t vop)
 {
     if(vop >= 24)
     {
@@ -101,7 +107,7 @@ RawGraphState_apply_C_L(RawGraphState * self
 
 }
 
-//static PyObject * 
+//PyObject * 
 //RawGraphState_to_lists(RawGraphState * self)
 //{
 //    PyObject * vop_list;
@@ -154,17 +160,12 @@ RawGraphState_apply_C_L(RawGraphState * self
 //    return NULL;
 //}
 
-static GQCS_measurement_result *
+GQCS_measurement_result *
 RawGraphState_measure(RawGraphState * self, long int qbit, double random)
 {
     uint8_t observable;
     long int invert_result = 0;
     long int result = 0;
-
-    if(!PyArg_ParseTuple(args, "ld", &qbit, &random))
-    {
-        return NULL;
-    }
 
     if(qbit > self->length)
     {
@@ -193,7 +194,7 @@ RawGraphState_measure(RawGraphState * self, long int qbit, double random)
        }
        mres->qbit = qbit;
        mres->result = result;
-       return result;
+       return mres;
     }
 
     // Select the result randomly according to 
@@ -231,11 +232,11 @@ RawGraphState_measure(RawGraphState * self, long int qbit, double random)
    }
    mres->qbit = qbit;
    mres->result = result;
-   return result;
+   return mres;
 }
 
 
-static int
+int
 RawGraphState_apply_CZ(RawGraphState * self, long int i, long int j)
 {
     long int result;
@@ -310,7 +311,7 @@ rs_CZ_exit:
 }
 
 
-static void
+void
 RawGraphState_dealloc(RawGraphState * self)
 {
     int i;
@@ -320,7 +321,5 @@ RawGraphState_dealloc(RawGraphState * self)
     }
     free(self->lists);
     free(self->vops);
-    Py_TYPE(self)->tp_free((PyObject *) self);
+    free(self);
 }
-
-

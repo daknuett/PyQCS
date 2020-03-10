@@ -19,8 +19,6 @@ class ByteCodeHeader(object):
         else:
             raise TypeError("sample must be int or list of ints")
 
-        print(self._sample)
-
         self._nsamples = nsamples
         self._nqbits = nqbits
 
