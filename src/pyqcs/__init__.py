@@ -49,7 +49,11 @@ def build_measurement_circuit(bit_mask):
 def measure(state, bit_mask):
     circuit = build_measurement_circuit(bit_mask)
 
-    state = State(state._qm_state, np.array([-1 for i in state._cl_state], dtype=np.int8), state._nbits, 0)
+    state = state.deepcopy()
+    if(isinstance(state, State)):
+        state._cl_state[:] = -1
+    else:
+        state._measured = dict()
     new_state = circuit * state
     return new_state, sum([1 << i for i,v in enumerate(new_state._cl_state) if v == 1])
 
@@ -57,12 +61,19 @@ def measure(state, bit_mask):
 def _do_sample(state, circuit, nsamples):
     for _ in range(nsamples):
         new_state = circuit * state
-        yield new_state, sum([1 << i for i,v in enumerate(new_state._cl_state) if v == 1])
+        if(isinstance(new_state, State)):
+            yield new_state, sum([1 << i for i,v in enumerate(new_state._cl_state) if v == 1])
+        else:
+            yield new_state, sum([1 << i for i,v in new_state._measured.items() if v == 1])
 
 def sample(state, bit_mask, nsamples, keep_states=False):
     circuit = build_measurement_circuit(bit_mask)
 
-    state = State(state._qm_state, np.array([-1 for i in state._cl_state], dtype=np.int8), state._nbits, 0)
+    state = state.deepcopy(force_new_state=True)
+    if(isinstance(state, State)):
+        state._cl_state[:] = -1
+    else:
+        state._measured = dict()
 
     if(keep_states):
         return Counter(_do_sample(state, circuit, nsamples))
