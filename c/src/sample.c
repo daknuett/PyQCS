@@ -61,7 +61,7 @@ do_and_print_one_series(RawGraphState * state
 
     for(i = 0; i < header->head->nsampleqbits; i++)
     {
-        if(measure_one_qbit(&result, state, header->sampleqbits[i]))
+        if(measure_one_qbit(&result, this_state, header->sampleqbits[i]))
         {
             RawGraphState_dealloc(this_state);
             return -1;

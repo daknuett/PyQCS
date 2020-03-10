@@ -83,8 +83,6 @@ exec_all(RawGraphState * self
             return 0;
         }
 
-        fprintf(stderr, "cmd = %c; act = %ld; argument = %ld\n", instruction->command
-                , instruction->act, instruction->argument);
         if(exec_instruction(self, instruction))
         {
             free(instruction);
