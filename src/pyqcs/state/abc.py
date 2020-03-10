@@ -17,7 +17,7 @@ class AbstractState(metaclass=ABCMeta):
     def check_qbits(self, gate_circuit):
         pass
     @abstractmethod
-    def deepcopy(self):
+    def deepcopy(self, **kwargs):
         pass
 
     @abstractclassmethod
