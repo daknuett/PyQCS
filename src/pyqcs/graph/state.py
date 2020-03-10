@@ -25,8 +25,11 @@ class GraphState(AbstractGraphState):
         return cls(g_state, nbits, **kwargs)
 
 
-    def deepcopy(self):
-        return GraphState(self._g_state.deepcopy(), self._nbits, self._force_new_state, self._measured)
+    def deepcopy(self, **kwargs):
+        key_word_arguments = {"force_new_state": self._force_new_state
+                            , "measured": self._measured}
+        key_word_arguments.update(kwargs)
+        return GraphState(self._g_state.deepcopy(), self._nbits, **key_word_arguments)
 
     def to_naive_state(self):
         return graph_lists_to_naive_state(self._g_state.to_lists())
