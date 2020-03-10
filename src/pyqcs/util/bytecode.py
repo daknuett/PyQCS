@@ -44,17 +44,17 @@ class ByteCodeInstruction(object):
     cmds = {"M": b"M", "CZ": b"Z", "C_L": b"L"}
 
     def __init__(self, command, act, argument):
-        self._command = cmds[command]
+        self._command = self.cmds[command]
         self._act = act
         self._argument = argument
 
     def to_bytes(self):
-        return self._cmd + struct.pack("Q", self._act) + struct.pack("Q", self._argument)
+        return self._command + struct.pack("Q", self._act) + struct.pack("Q", self._argument)
 
 def circuit_to_byte_code(header, circuit, add_header=True):
     if(not circuit._has_graph):
         raise TypeError("Circuit must be applicable to graph.")
-    if(circuit._uses_qbits >= header._nqbits):
+    if(circuit._uses_qbits >= (1 << header._nqbits)):
         raise ValueError("Circuit requires more qbits.")
 
     executor = circuit._executor(circuit.get_child_executors(graph=True))
@@ -63,7 +63,7 @@ def circuit_to_byte_code(header, circuit, add_header=True):
     def C_L_to_instruction(op):
         return ByteCodeInstruction("C_L", op._act, op._clifford_index)
     def CZ_to_instruction(op):
-        return ByteCodeInstruction("CZ", op._act, opt._control)
+        return ByteCodeInstruction("CZ", op._act, op._control)
     def M_to_instruction(op):
         return ByteCodeInstruction("M", op._act, 0)
 
