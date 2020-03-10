@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "exec.h"
 #include "error.h"
 
@@ -8,6 +9,7 @@ read_next_instruction(GQCS_bytecode_instruction_t * out, FILE * in)
     size_t read;
 
     read = fread(out, sizeof(GQCS_bytecode_instruction_t), 1, in);
+
     if(read != 1)
     {
         GQCS_set_error("EOF reached before instruction was complete");
@@ -17,7 +19,7 @@ read_next_instruction(GQCS_bytecode_instruction_t * out, FILE * in)
     if(!GQCS_bytecode_instruction_valid(out))
     {
         GQCS_set_error("instruction invalid");
-        return -1;
+        return -2;
     }
     return 0;
 }
@@ -65,14 +67,24 @@ exec_all(RawGraphState * self
         , FILE * in)
 {
     GQCS_bytecode_instruction_t * instruction = malloc(sizeof(GQCS_bytecode_instruction_t));
+    int result;
     while(1)
     {
-        if(read_next_instruction(instruction, in))
+
+        result = read_next_instruction(instruction, in);
+        if(result < -1)
+        {
+            free(instruction);
+            return -1;
+        }
+        if(result < 0)
         {
             free(instruction);
             return 0;
         }
 
+        fprintf(stderr, "cmd = %c; act = %ld; argument = %ld\n", instruction->command
+                , instruction->act, instruction->argument);
         if(exec_instruction(self, instruction))
         {
             free(instruction);
