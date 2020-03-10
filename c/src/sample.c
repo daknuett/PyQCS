@@ -31,7 +31,7 @@ print_sampling_head(GQCS_full_header_t * header
 {
     long int i;
 
-    fprintf(out, "    ");
+    fprintf(out, "  ");
     
     for(i = 0; i < header->head->nsampleqbits; i++)
     {
