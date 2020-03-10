@@ -43,13 +43,15 @@ class BasicState(AbstractState):
             return True
         return False
 
-    def deepcopy(self):
+    def deepcopy(self, **kwargs):
+        keyword_arguments = {"check_normalization": self._check_normalization
+                            , "lenght_error": self._length_error}
+        keyword_arguments.update(kwargs)
         return BasicState(self._qm_state.copy()
                         , self._cl_state.copy()
                         , self._nbits
                         , self._last_measured
-                        , check_normalization=self._check_normalization
-                        , lenght_error=self._length_error)
+                        , **keyword_arguments)
 
     def apply_gate(self, gate, force_new_state=False):
         qm_state, cl_state, last_measured = gate(self._qm_state, self._cl_state)
