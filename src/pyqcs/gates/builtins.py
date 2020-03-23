@@ -15,6 +15,12 @@ class BuiltinGateBuilder(AbstractSingleGateCircuitBuilder):
         self._can_dagger = can_dagger
 
     def __call__(self, act, *args, dagger=False):
+        # This fixes a rare bug when generating circuits
+        # with NumPy. When more qbits are used than
+        # the NumPy fixed width integer can hold one can
+        # experience weird behaviour
+        act = int(act)
+
         if(dagger):
             args = (args[0], -args[1])
 
