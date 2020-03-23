@@ -20,6 +20,8 @@ class BuiltinGateBuilder(AbstractSingleGateCircuitBuilder):
         # the NumPy fixed width integer can hold one can
         # experience weird behaviour
         act = int(act)
+        args = list(args)
+        args[0] = int(args[0])
 
         if(dagger):
             args = (args[0], -args[1])
