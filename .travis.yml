@@ -17,4 +17,4 @@ install: python setup.py build install
 
 script: 
     - pytest -v --cov=pyqcs --cov-report=xml --runslow test/
-    - python-codacy-coverage -r coverage.xml
+#    - python-codacy-coverage -r coverage.xml
