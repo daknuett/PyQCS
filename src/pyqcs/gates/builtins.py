@@ -156,3 +156,14 @@ def GenericGate(act, array):
 
     circuit._make_dagger = make_dagger
     return circuit
+
+def clear_builtin_gate_cache():
+    _H.clear_gate_registry()
+    _X.clear_gate_registry()
+    _C.clear_gate_registry()
+    _M.clear_gate_registry()
+    _S.clear_gate_registry()
+    _B.clear_gate_registry()
+    _Z.clear_gate_registry()
+    _R.clear_gate_registry()
+

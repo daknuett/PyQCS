@@ -9,3 +9,5 @@ class AbstractCircuitBuilder(metaclass=ABCMeta):
 class AbstractSingleGateCircuitBuilder(AbstractCircuitBuilder):
     def __init__(self):
         self._registry = dict()
+    def clear_gate_registry(self):
+        self._registry = dict()

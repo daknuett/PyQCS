@@ -27,7 +27,7 @@ The same applies for ``sample``
 from collections import Counter
 import numpy as np
 
-from .gates.builtins import C, H, X, R, M, Z, S, CX, CZ, GenericGate
+from .gates.builtins import C, H, X, R, M, Z, S, CX, CZ, GenericGate, clear_builtin_gate_cache
 from .state.state import BasicState as State
 from .gates.circuits import AnonymousCompoundGateCircuit, NamedCompoundGateCircuit
 
