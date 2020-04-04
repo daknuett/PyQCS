@@ -162,13 +162,13 @@ ufunc_H( char ** args
 
         if(!(i & (1 << argument.act)))
         {
-            // This is the |1> state. Just add up.
+            // This is the |0> state. Just add up.
             qm_out[i].real = (qm_in[i].real + qm_in[not_index].real) * M_SQRT1_2;
             qm_out[i].imag = (qm_in[i].imag + qm_in[not_index].imag) * M_SQRT1_2;
         }
         else
         {
-            // This is the |0> state. Subtract the |0> amplitude from the |1> amplitude.
+            // This is the |1> state. Subtract the |1> amplitude from the |0> amplitude.
             qm_out[i].real = (qm_in[not_index].real - qm_in[i].real) * M_SQRT1_2;
             qm_out[i].imag = (qm_in[not_index].imag - qm_in[i].imag) * M_SQRT1_2;
 
