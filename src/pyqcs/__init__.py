@@ -31,6 +31,8 @@ from .gates.builtins import C, H, X, R, M, Z, S, CX, CZ, GenericGate, clear_buil
 from .state.state import BasicState as State
 from .gates.circuits import AnonymousCompoundGateCircuit, NamedCompoundGateCircuit
 
+from .util.to_diagram import CircuitPNGFormatter
+
 def list_to_circuit(list_of_circuits, name=None):
     if(not name):
         return AnonymousCompoundGateCircuit(list_of_circuits)
@@ -79,3 +81,6 @@ def sample(state, bit_mask, nsamples, keep_states=False):
         return Counter(_do_sample(state, circuit, nsamples))
 
     return Counter((i[1] for i in _do_sample(state, circuit, nsamples)))
+
+def circuitpng(circuit, **kwargs):
+    return CircuitPNGFormatter(circuit, **kwargs)

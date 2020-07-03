@@ -42,6 +42,13 @@ Applying a circuit to a state is done using multiplication::
 	state = State.new_zero_state(2)
 	resulting_state = circuit * state
 
+
+New in ``v2.2.0`` is the ``circuitpng`` function that allows displaying circuits as PNGs
+(using a ``pdflatex`` implementation and ``imagemagick``)::
+
+      from pyqcs import H, CX, circuitpng
+      circuit = (H(1) | H(2)) | CX(2, 1) | (H(1) | H(2))
+      circuitpng(circuit)
 	
 
 Basic Design Layout

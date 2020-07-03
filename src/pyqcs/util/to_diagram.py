@@ -1,5 +1,10 @@
 from collections import deque
+from tempfile import TemporaryDirectory
+import subprocess
+import os
+
 from numpy import pi
+
 from .flatten import flatten
 
 def not_implemented(*args):
@@ -83,4 +88,45 @@ def circuit_to_diagram(circuit):
             + r"}")
 
     return tex
+
+class CircuitPNGFormatter(object):
+    def __init__(self, circuit, pdflatex="xelatex", convert="convert"):
+        self.tex = circuit_to_diagram(circuit)
+        self.pdflatex = pdflatex
+        self.convert = convert
+
+    def _repr_png_(self):
+        with TemporaryDirectory() as tmpdirname:
+            with open(tmpdirname + "/main.tex", "w") as fout:
+                fout.write(self.get_tex_file_content())
+            subprocess.run([self.pdflatex, "main.tex"], cwd=tmpdirname)
+            subprocess.run([self.convert
+                            , "-density", "300"
+                            , "main.pdf"
+                            , "-quality", "90"
+                            , "main.png"], cwd=tmpdirname)
+            with open(tmpdirname + "/main.png", "rb") as fin:
+                return fin.read()
+
+    def get_tex_file_content(self):
+        header = r'''
+        \documentclass[preview]{standalone}
+        \usepackage[utf8]{inputenc}
+        \usepackage[T1]{fontenc}
+
+        \usepackage{qcircuit}
+
+        \title{Drawing Circuits with qcircuit}
+
+        \begin{document}
+        '''
+        bottom = r'''
+
+        \end{document}
+
+        '''
+
+        return header + self.tex + bottom
+
+
 
