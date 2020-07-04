@@ -91,10 +91,21 @@ def circuit_to_diagram(circuit):
     return tex
 
 class CircuitPNGFormatter(object):
-    def __init__(self, circuit, pdflatex="xelatex", convert="convert"):
+    def __init__(self, circuit
+                    , pdflatex="xelatex"
+                    , convert="convert"
+                    , pdflatex_args=["main.tex"]
+                    , convert_args=["-profile", "\"icc\""
+                                , "-density", "300"
+                                , "main.pdf"
+                                , "-quality", "90"
+                                , "main.png"]
+                    ):
         self.tex = circuit_to_diagram(circuit)
         self.pdflatex = pdflatex
         self.convert = convert
+        self.convert_args = convert_args
+        self.pdflatex_args = pdflatex_args
 
         if(shutil.which(self.pdflatex) is None):
             raise OSError(f"pdflatex ({self.pdflatex}) not found, set it using ``pdflatex=<program>``")
@@ -105,14 +116,11 @@ class CircuitPNGFormatter(object):
         with TemporaryDirectory() as tmpdirname:
             with open(tmpdirname + "/main.tex", "w") as fout:
                 fout.write(self.get_tex_file_content())
-            subprocess.run([self.pdflatex, "main.tex"], cwd=tmpdirname)
+            subprocess.run([self.pdflatex] + self.pdflatex_args, cwd=tmpdirname)
             if(not os.path.isfile(tmpdirname + "/main.pdf")):
                 raise OSError(f"pdflatex ({self.pdflatex}) did not produce a pdf file")
-            subprocess.run([self.convert
-                            , "-density", "300"
-                            , "main.pdf"
-                            , "-quality", "90"
-                            , "main.png"], cwd=tmpdirname)
+            subprocess.run([self.convert] + self.convert_args
+                            , cwd=tmpdirname)
             if(not os.path.isfile(tmpdirname + "/main.png")):
                 raise OSError(f"imagemagick ({self.convert}) did not produce a png file")
             with open(tmpdirname + "/main.png", "rb") as fin:
