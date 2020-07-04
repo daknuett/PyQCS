@@ -1,7 +1,8 @@
+import os
+import subprocess
+import shutil
 from collections import deque
 from tempfile import TemporaryDirectory
-import subprocess
-import os
 
 from numpy import pi
 
@@ -95,16 +96,25 @@ class CircuitPNGFormatter(object):
         self.pdflatex = pdflatex
         self.convert = convert
 
+        if(shutil.which(self.pdflatex) is None):
+            raise OSError(f"pdflatex ({self.pdflatex}) not found, set it using ``pdflatex=<program>``")
+        if(shutil.which(self.convert) is None):
+            raise OSError(f"imagemagick ({self.convert}) not found, set it using ``convert=<program>``")
+
     def _repr_png_(self):
         with TemporaryDirectory() as tmpdirname:
             with open(tmpdirname + "/main.tex", "w") as fout:
                 fout.write(self.get_tex_file_content())
             subprocess.run([self.pdflatex, "main.tex"], cwd=tmpdirname)
+            if(not os.path.isfile(tmpdirname + "/main.pdf")):
+                raise OSError(f"pdflatex ({self.pdflatex}) did not produce a pdf file")
             subprocess.run([self.convert
                             , "-density", "300"
                             , "main.pdf"
                             , "-quality", "90"
                             , "main.png"], cwd=tmpdirname)
+            if(not os.path.isfile(tmpdirname + "/main.png")):
+                raise OSError(f"imagemagick ({self.convert}) did not produce a png file")
             with open(tmpdirname + "/main.png", "rb") as fin:
                 return fin.read()
 
