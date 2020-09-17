@@ -96,12 +96,12 @@ graph_La_transform(RawGraphState * self, npy_intp i)
     ll_iter_t * iter_b = ll_iter_t_new(neighbours);
     ll_iter_t * iter_c = ll_iter_t_new(neighbours);
 
-    self->vops[i] = vop_lookup_table[self->vops[i]][VOP_siX];
+    graph_unchecked_apply_vop_right(self, i, VOP_siX);
 
 
     while(ll_iter_next(iter_b, &b))
     {
-        self->vops[b] = vop_lookup_table[self->vops[b]][VOP_smiZ];
+        graph_unchecked_apply_vop_right(self, b, VOP_smiZ);
         while(ll_iter_next(iter_c, &c))
         {
             // Do not re-toggle the edge.
@@ -281,8 +281,8 @@ graph_update_after_X_measurement(RawGraphState * self
     if(!result)
     {
         // Update the VOPs
-        self->vops[a] = vop_lookup_table[self->vops[a]][projected_vop[2]];
-        self->vops[b] = vop_lookup_table[self->vops[b]][VOP_smiY];
+        graph_unchecked_apply_vop_right(self, a, projected_vop[2]);
+        graph_unchecked_apply_vop_right(self, b, VOP_smiY);
 
         ll_iter_t * iter_c = ll_iter_t_new(self->lists[a]);
         npy_intp c;
@@ -290,7 +290,7 @@ graph_update_after_X_measurement(RawGraphState * self
         {
             if(c != b && !ll_has_value(self->lists[b], c))
             {
-                self->vops[c] = vop_lookup_table[self->vops[c]][VOP_Z];
+                graph_unchecked_apply_vop_right(self, c, VOP_Z);
             }
         }
         free(iter_c);
@@ -298,8 +298,9 @@ graph_update_after_X_measurement(RawGraphState * self
     else
     {
         // Update the VOPs
-        self->vops[a] = vop_lookup_table[self->vops[a]][projected_vop[5]];
-        self->vops[b] = vop_lookup_table[self->vops[b]][VOP_siY];
+        graph_unchecked_apply_vop_right(self, a, projected_vop[5]);
+        graph_unchecked_apply_vop_right(self, b, VOP_siY);
+
 
         ll_iter_t * iter_c = ll_iter_t_new(self->lists[b]);
         npy_intp c;
@@ -307,7 +308,7 @@ graph_update_after_X_measurement(RawGraphState * self
         {
             if(c != a && !ll_has_value(self->lists[a], c))
             {
-                self->vops[c] = vop_lookup_table[self->vops[c]][VOP_Z];
+                graph_unchecked_apply_vop_right(self, c, VOP_Z);
             }
         }
         free(iter_c);
@@ -392,12 +393,12 @@ graph_update_after_Y_measurement(RawGraphState * self
 {
     if(!result)
     {
-        self->vops[qbit] = vop_lookup_table[self->vops[qbit]][projected_vop[1]];
+        graph_unchecked_apply_vop_right(self, qbit, projected_vop[1]);
         ll_iter_t * iter = ll_iter_t_new(self->lists[qbit]);
         npy_intp neighbour;
         while(ll_iter_next(iter, &neighbour))
         {
-            self->vops[neighbour] = vop_lookup_table[self->vops[neighbour]][VOP_smiZ];
+            graph_unchecked_apply_vop_right(self, neighbour, VOP_smiZ);
         }
         free(iter);
         graph_toggle_neighbourhood(self, qbit);
@@ -406,12 +407,12 @@ graph_update_after_Y_measurement(RawGraphState * self
     }
     else
     {
-        self->vops[qbit] = vop_lookup_table[self->vops[qbit]][projected_vop[4]];
+        graph_unchecked_apply_vop_right(self, qbit, projected_vop[4]);
         ll_iter_t * iter = ll_iter_t_new(self->lists[qbit]);
         npy_intp neighbour;
         while(ll_iter_next(iter, &neighbour))
         {
-            self->vops[neighbour] = vop_lookup_table[self->vops[neighbour]][VOP_siZ];
+            graph_unchecked_apply_vop_right(self, neighbour, VOP_siZ);
         }
         free(iter);
         graph_toggle_neighbourhood(self, qbit);
@@ -435,19 +436,19 @@ graph_update_after_Z_measurement(RawGraphState * self
         // an operator O to the VOP s.t OK_g^(i)o^\dagger = Z. That is achieved
         // by O = H.
 
-        self->vops[qbit] = vop_lookup_table[self->vops[qbit]][projected_vop[0]];
+        graph_unchecked_apply_vop_right(self, qbit, projected_vop[0]);
         graph_isolate_qbit(self, qbit);
 
         return 0;
     }
     // Here we have to apply U_zminus to the VOP-free G-state which means
     // right multiplying that operator to the VOPs.
-    self->vops[qbit] = vop_lookup_table[self->vops[qbit]][projected_vop[3]];
+    graph_unchecked_apply_vop_right(self, qbit, projected_vop[3]);
     ll_iter_t * iter = ll_iter_t_new(self->lists[qbit]);
     npy_intp neighbour;
     while(ll_iter_next(iter, &neighbour))
     {
-        self->vops[neighbour] = vop_lookup_table[self->vops[neighbour]][VOP_Z];
+        graph_unchecked_apply_vop_right(self,neighbour, VOP_Z);
     }
     free(iter);
     graph_isolate_qbit(self, qbit);

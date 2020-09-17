@@ -46,6 +46,7 @@ RawGraphState_init(RawGraphState * self
     self->lists = calloc(sizeof(ll_node_t), length);
     self->vops = malloc(sizeof(npy_uint8) * length);
     self->length = length;
+    self->phase = 0;
     if(!self->lists)
     {
         free(self->vops);
@@ -140,7 +141,7 @@ RawGraphState_apply_C_L(RawGraphState * self
         return NULL;
     }
 
-    self->vops[i] = vop_lookup_table[vop][self->vops[i]];
+    graph_unchecked_apply_vop_left(self, i, vop);
 
     Py_RETURN_NONE;
 
@@ -309,7 +310,7 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
     npy_intp i, j;
     for(i = 0; i < self->length; i++)
     {
-        self->vops[i] = vop_lookup_table[daggered_vops[other->vops[i]]][self->vops[i]];
+        graph_unchecked_apply_vop_left(self, i, daggered_vops[other->vops[i]]);
     }
 
     // Multiply all CZs to the right.
@@ -349,7 +350,7 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
     
     for(i = 0; i < self->length; i++)
     {
-        self->vops[i] = vop_lookup_table[VOP_H][self->vops[i]];
+        graph_unchecked_apply_vop_left(self, i, VOP_H);
     }
 
     npy_uint8 observable;
