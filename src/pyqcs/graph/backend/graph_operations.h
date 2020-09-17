@@ -57,4 +57,7 @@ graph_update_after_measurement(RawGraphState * self
                             , npy_uint8 observable
                             , npy_intp qbit
                             , npy_intp result);
+
+int
+graph_do_apply_CZ(RawGraphState * self, npy_intp i, npy_intp j);
 #endif

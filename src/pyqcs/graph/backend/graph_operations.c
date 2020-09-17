@@ -491,3 +491,65 @@ graph_can_clear_vop(RawGraphState * self, npy_intp i, npy_intp j)
     }
     return 0;
 }
+
+int
+graph_do_apply_CZ(RawGraphState * self, npy_intp i, npy_intp j)
+{
+    npy_intp result;
+
+    if(vop_commutes_with_CZ(self->vops[i]) && vop_commutes_with_CZ(self->vops[j]))
+    {
+        // Case 1
+        result = graph_toggle_edge(self, i, j);
+        goto graph_do_apply_CZ_exit;
+    }
+    // From now on Case 2.
+    if(graph_qbits_are_isolated(self, i, j))
+    {
+        // Sub-Sub-Case 2.2.1
+        result = graph_isolated_two_qbit_CZ(self, i, j);
+        goto graph_do_apply_CZ_exit;
+    }
+    int cleared_i = 0;
+    int cleared_j = 0;
+    if(graph_can_clear_vop(self, i, j))
+    {
+        cleared_i = 1;
+        result = graph_clear_vop(self, i, j);
+        if(result)
+        {
+            goto graph_do_apply_CZ_exit;
+        }
+    }
+    if(graph_can_clear_vop(self, j, i))
+    {
+        cleared_j = 1;
+        result = graph_clear_vop(self, j, i);
+        if(result)
+        {
+            goto graph_do_apply_CZ_exit;
+        }
+    }
+    if(!cleared_i && graph_can_clear_vop(self, i, j))
+    {
+        cleared_i = 1;
+        result = graph_clear_vop(self, i, j);
+        if(result)
+        {
+            goto graph_do_apply_CZ_exit;
+        }
+    }
+
+    if(cleared_i && cleared_j)
+    {
+        // Sub-Case 2.1
+        result = graph_toggle_edge(self, i, j);
+        goto graph_do_apply_CZ_exit;
+    }
+
+    // Sub-Sub-Case 2.2.2
+    result = graph_isolated_two_qbit_CZ(self, i, j);
+
+graph_do_apply_CZ_exit:
+    return result;
+}
