@@ -21,3 +21,43 @@ def test_is_failing_right_now():
     assert abs(res) == pytest.approx(abs(plus_state @ result_state))
 
 # ([4, 0, 14, 0], [[], [], [], []])
+
+#@pytest.mark.skip(reason="WIP")
+def test_failing_in_parts():
+    #circuit_parts = [
+    #        CZ(1, 0)
+    #        , S(0)
+    #        , CZ(2, 1)
+    #        , X(1)
+    #        , CZ(0, 2)
+    #        , S(1)
+    #        , X(1)
+    #        , CZ(1, 2)]
+
+    circuit_parts = [
+            H(0) | X(0) | S(0) | S(0) | H(2) | S(2)
+            | H(3) | S(3) | X(3)
+            , CZ(0, 1)
+            ]
+
+    graph = GraphState.new_zero_state(4)
+    naive = State.new_zero_state(4)
+
+    for i, part in enumerate(circuit_parts):
+        graph = part * graph
+        naive = part * naive
+
+        #if( GraphState.new_zero_state(4) @ graph
+        #        != pytest.approx(State.new_zero_state(4) @ naive)):
+        print("after gate", i)
+        print("naive        :", naive)
+        print("graph(+phase):", graph.to_naive_state())
+        print("graph(-phase):", graph.to_naive_state(global_phase=False))
+        print("lists:", graph._g_state.to_lists())
+        print("phase:", graph._g_state.get_phase())
+        print("result:", GraphState.new_zero_state(4) @ graph)
+        print("expect:", State.new_zero_state(4) @ naive)
+        print()
+
+        assert GraphState.new_zero_state(4) @ graph == pytest.approx(State.new_zero_state(4) @ naive)
+

@@ -132,9 +132,11 @@ graph_isolated_two_qbit_CZ(RawGraphState * self, npy_intp i, npy_intp j)
 {
     npy_intp is_CZ = ll_has_value(self->lists[i], j);
     npy_intp lookup_table_index = two_qbit_config_to_number[self->vops[i]][self->vops[j]][is_CZ];
-    
+
     self->vops[i] = two_qbit_vops_after_CZ[lookup_table_index][0];
     self->vops[j] = two_qbit_vops_after_CZ[lookup_table_index][1];
+
+    self->phase += two_qbit_vops_after_CZ[lookup_table_index][3];
 
     npy_intp is_entangled = two_qbit_vops_after_CZ[lookup_table_index][2];
 

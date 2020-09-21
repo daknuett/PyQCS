@@ -44,18 +44,24 @@ def do_test_q4_l10():
     gr = GraphState.new_zero_state(4) @ graph
 
     if(gr != pytest.approx(nr)):
-        print("naive", naive)
-        print("graph", graph.to_naive_state())
-        print("graph:", graph._g_state.to_lists())
+        #print("naive", naive)
+        #print("graph", graph.to_naive_state())
+        print("graph :", graph._g_state.to_lists())
+        print("expect:", nr)
+        print("got   :", gr)
+        print("abs OK:", abs(nr) == pytest.approx(abs(gr)))
+        print("phase :", np.exp(1j * graph._g_state.get_phase()))
+        print("circuit:")
+        print(circuit_to_diagram(circuit))
     assert gr == pytest.approx(nr)
 
-@pytest.mark.skip("WIP")
+@pytest.mark.skip(reason="WIP")
 def test_random_q4_l10():
     np.random.seed(0xdeadbeef)
     for _ in range(1000):
         do_test_q4_l10()
 
-def do_test_q4_l100():
+def do_test_q4_l100(i):
     naive = State.new_zero_state(4)
     graph = GraphState.new_zero_state(4)
     circuit = random_circuit(4, 100, X, H, S_with_extra_arg, CZ)
@@ -67,13 +73,20 @@ def do_test_q4_l100():
     gr = GraphState.new_zero_state(4) @ graph
 
     if(gr != pytest.approx(nr)):
-        print("naive", naive)
-        print("graph", graph.to_naive_state())
-        print("graph:", graph._g_state.to_lists())
+        print("FAILED #:", i)
+        #print("naive", naive)
+        #print("graph", graph.to_naive_state())
+        print("graph :", graph._g_state.to_lists())
+        print("expect:", nr)
+        print("got   :", gr)
+        print("abs OK:", abs(nr) == pytest.approx(abs(gr)))
+        print("phase :", np.exp(1j * graph._g_state.get_phase()))
+        print("circuit:")
+        print(circuit_to_diagram(circuit))
     assert gr == pytest.approx(nr)
 
-@pytest.mark.skip("WIP")
+#@pytest.mark.skip(reason="WIP")
 def test_random_q4_l100():
     np.random.seed(0xdeadbeef)
-    for _ in range(1000):
-        do_test_q4_l100()
+    for i in range(1000):
+        do_test_q4_l100(i)

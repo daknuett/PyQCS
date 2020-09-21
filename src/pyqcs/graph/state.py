@@ -1,3 +1,4 @@
+import numpy as np
 from .abc import AbstractGraphState
 from .backend.raw_state import RawGraphState
 from .util import graph_lists_to_naive_state
@@ -31,8 +32,12 @@ class GraphState(AbstractGraphState):
         key_word_arguments.update(kwargs)
         return GraphState(self._g_state.deepcopy(), self._nbits, **key_word_arguments)
 
-    def to_naive_state(self):
-        return graph_lists_to_naive_state(self._g_state.to_lists())
+    def to_naive_state(self, global_phase=True):
+        state = graph_lists_to_naive_state(self._g_state.to_lists())
+        if(global_phase):
+            phase = np.exp(1j * self._g_state.get_phase())
+            state._qm_state *= phase
+        return state
 
     def __str__(self):
         return str(self.to_naive_state())

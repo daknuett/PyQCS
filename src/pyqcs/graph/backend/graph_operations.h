@@ -25,14 +25,14 @@ typedef struct
 static inline void
 graph_unchecked_apply_vop_left(RawGraphState * self, npy_intp i, npy_uint8 vop)
 {
+    self->phase = (self->phase - vop_phase_lookup_table[vop][self->vops[i]]) % 8;
     self->vops[i] = vop_lookup_table[vop][self->vops[i]];
-    self->phase = (self->phase + vop_phase_lookup_table[vop][self->vops[i]]) % 8;
 }
 static inline void
 graph_unchecked_apply_vop_right(RawGraphState * self, npy_intp i, npy_uint8 vop)
 {
+    self->phase = (self->phase - vop_phase_lookup_table[self->vops[i]][vop]) % 8;
     self->vops[i] = vop_lookup_table[self->vops[i]][vop];
-    self->phase = (self->phase + vop_phase_lookup_table[self->vops[i]][vop]) % 8;
 }
 
 // Used in graph_toggle_edge.
