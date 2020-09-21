@@ -34,10 +34,24 @@ def test_failing_in_parts():
     #        , X(1)
     #        , CZ(1, 2)]
 
+    #circuit_parts = [
+    #        H(0) | X(0) | S(0) | S(0) | H(2) | S(2) | H(3) | S(3) | X(3)
+    #        , CZ(0, 1)
+    #        ]
+
     circuit_parts = [
-            H(0) | X(0) | S(0) | S(0) | H(2) | S(2)
-            | H(3) | S(3) | X(3)
+            H(3) | S(3) | X(3) | S(3) | X(3) | S(3) | H(3) | X(3) | H(3) | X(3)
+            , H(3)
+            , S(3)
+            , H(0) | S(0) | S(1) | H(1) | X(1) | Z(2)
+            , CZ(2, 1)
+            , CZ(0, 2)
+            , H(1) | S(1) | S(0)
+            , CZ(2, 0) | CZ(1, 0)
+            , H(0) | X(2) | S(2)
             , CZ(0, 1)
+            , X(1) | S(1)
+            , CZ(2, 1) | CZ(2, 0)
             ]
 
     graph = GraphState.new_zero_state(4)

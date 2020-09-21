@@ -85,7 +85,7 @@ def do_test_q4_l100(i):
         print(circuit_to_diagram(circuit))
     assert gr == pytest.approx(nr)
 
-#@pytest.mark.skip(reason="WIP")
+@pytest.mark.skip(reason="WIP")
 def test_random_q4_l100():
     np.random.seed(0xdeadbeef)
     for i in range(1000):

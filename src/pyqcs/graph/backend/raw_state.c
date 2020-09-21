@@ -313,15 +313,15 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
         PyErr_SetString(PyExc_ValueError, "states must have same qbit count");
         return NULL;
     }
-    //printf("phase before multiplying all ops to the right: %d*M_PI_4\n", self->phase);
+    printf("phase before multiplying all ops to the right: %d*M_PI_4\n", self->phase);
 
     // Multiply all VOPs to the right.
     npy_intp i, j;
     for(i = 0; i < self->length; i++)
     {
-        ////printf("updating vops[%ld]: %d * %d ->", i, daggered_vops[other->vops[i]], self->vops[i]);
+        printf("updating vops[%ld]: %d * %d ->", i, daggered_vops[other->vops[i]], self->vops[i]);
         graph_unchecked_apply_vop_left(self, i, daggered_vops[other->vops[i]]);
-        //printf(" %d (%d = Dagger(%d))\n", self->vops[i], daggered_vops[other->vops[i]], other->vops[i]);
+        printf(" %d (%d = Dagger(%d))\n", self->vops[i], daggered_vops[other->vops[i]], other->vops[i]);
     }
 
     // Multiply all CZs to the right.
@@ -350,7 +350,7 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
         free(nbghd);
     }
 
-    //printf("phase after multiplying all ops to the right: %d*M_PI_4\n", self->phase);
+    printf("phase after multiplying all ops to the right: %d*M_PI_4\n", self->phase);
 
     // The state on the left is now the trivial graph state, i.e. the <+|^n state.
     // The state we are operating on contains all the information.
@@ -361,21 +361,21 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
     // We know how the Z projector transforms under the VOPs. To see how the X
     // projector transforms just multiply a H gate to the VOPs.
 
-    //printf("phase before transforming to X basis: %d*M_PI_4\n", self->phase);
+    printf("phase before transforming to X basis: %d*M_PI_4\n", self->phase);
     for(i = 0; i < self->length; i++)
     {
-        //printf("phase(%d) will get extra %d (then %d)... ", self->phase, vop_phase_lookup_table[VOP_H][self->vops[i]], (self->phase - vop_phase_lookup_table[VOP_H][self->vops[i]]) % 8);
+        printf("phase(%d) will get extra %d (then %d)... ", self->phase, vop_phase_lookup_table[VOP_H][self->vops[i]], (self->phase - vop_phase_lookup_table[VOP_H][self->vops[i]]) % 8);
         graph_unchecked_apply_vop_left(self, i, VOP_H);
-        //printf("vop[%ld] now: %d; phase now: %d\n", i, self->vops[i], self->phase);
+        printf("vop[%ld] now: %d; phase now: %d\n", i, self->vops[i], self->phase);
     }
-    //printf("phase after transforming to X basis: %d*M_PI_4\n", self->phase);
+    printf("phase after transforming to X basis: %d*M_PI_4\n", self->phase);
 
 
     npy_uint8 observable;
     double result = 1;
     // XXX: self->phase will be changed while projecting!
     double phase = 0;
-    //printf("combined phase (ket - bra): %d\n", self->phase - other->phase);
+    printf("combined phase (ket - bra): %d\n", self->phase - other->phase);
     npy_intp this_projection;
     npy_intp invert_result = 0;
 
@@ -388,7 +388,7 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
             this_projection = 1;
         }
 
-        //printf("qbit %ld: observable: %d\n", i, observable);
+        printf("qbit %ld: observable: %d\n", i, observable);
         // Projection on +/-X gives factor 1 or 0.
         // FIXME: use ll_is_empty here.
         if((observable == 2 || observable == 5) 
@@ -408,12 +408,12 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
         if(observable == 4)
         {
             phase -= M_PI_4;
-            //printf("qbit %ld gives extra phase -1\n", i);
+            printf("qbit %ld gives extra phase -1\n", i);
         }
         if(observable == 1)
         {
             phase += M_PI_4;
-            //printf("qbit %ld gives extra phase +1\n", i);
+            printf("qbit %ld gives extra phase +1\n", i);
         }
 
 
