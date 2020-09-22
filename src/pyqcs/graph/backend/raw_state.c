@@ -375,7 +375,6 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
     double result = 1;
     // XXX: self->phase will be changed while projecting!
     double phase = 0;
-    printf("combined phase (ket - bra): %d\n", self->phase - other->phase);
     npy_intp this_projection;
     npy_intp invert_result = 0;
 
@@ -407,13 +406,15 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
         // FIXME: Is this true for entangled states?
         if(observable == 4)
         {
-            phase -= M_PI_4;
-            printf("qbit %ld gives extra phase -1\n", i);
+            phase += M_PI_4;
+            printf("qbit %ld gives extra phase +1\n", i);
+            printf("self->phase now: %d*M_PI_4\n", self->phase);
         }
         if(observable == 1)
         {
-            phase += M_PI_4;
-            printf("qbit %ld gives extra phase +1\n", i);
+            phase -= M_PI_4;
+            printf("qbit %ld gives extra phase -1\n", i);
+            printf("self->phase now: %d*M_PI_4\n", self->phase);
         }
 
 
@@ -421,15 +422,21 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
         {
             observable -= 3;
         }
+        printf("self->phase before projection: %d*M_PI_4\n", self->phase);
         if(graph_update_after_measurement(self, observable, i, this_projection))
         {
             return NULL;
         }
+        printf("self->phase after projection: %d*M_PI_4\n", self->phase);
         result *= M_SQRT1_2;
     }
 
     // Phase got updated by ``graph_update_after_measurement``!
+    printf("combined phase (ket[%d] - bra[%d]): %d\n", self->phase, other->phase, self->phase - other->phase);
     phase += self->phase*M_PI_4 - other->phase*M_PI_4;
+
+    printf("phase finally: %f\n", phase);
+    printf("##########\n\n");
 
 
 
