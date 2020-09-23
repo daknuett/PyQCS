@@ -1309,7 +1309,4 @@ static npy_uint8 observable_after_vop_commute[24] =
 static npy_uint8 projected_vop[6] = 
 {0, 1, 2, 7, 18, 5};
 
-static npy_uint8 daggered_vops[24] = 
-{ 0, 8, 2, 10, 15, 5, 12, 13, 1, 23, 3, 11, 6, 7, 14, 4, 16, 22, 18, 19, 20, 21, 17, 9};
-
 #endif

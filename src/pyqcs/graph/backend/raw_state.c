@@ -275,7 +275,61 @@ RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
         return NULL;
     }
 
-    result = graph_do_apply_CZ(self, i, j);
+    if(vop_commutes_with_CZ(self->vops[i]) && vop_commutes_with_CZ(self->vops[j]))
+    {
+        // Case 1
+        result = graph_toggle_edge(self, i, j);
+        goto rs_CZ_exit;
+    }
+    // From now on Case 2.
+    if(graph_qbits_are_isolated(self, i, j))
+    {
+        // Sub-Sub-Case 2.2.1
+        result = graph_isolated_two_qbit_CZ(self, i, j);
+        goto rs_CZ_exit;
+    }
+    int cleared_i = 0;
+    int cleared_j = 0;
+    if(graph_can_clear_vop(self, i, j))
+    {
+        cleared_i = 1;
+        result = graph_clear_vop(self, i, j);
+        if(result)
+        {
+            goto rs_CZ_exit;
+        }
+    }
+    if(graph_can_clear_vop(self, j, i))
+    {
+        cleared_j = 1;
+        result = graph_clear_vop(self, j, i);
+        if(result)
+        {
+            goto rs_CZ_exit;
+        }
+    }
+    if(!cleared_i && graph_can_clear_vop(self, i, j))
+    {
+        cleared_i = 1;
+        result = graph_clear_vop(self, i, j);
+        if(result)
+        {
+            goto rs_CZ_exit;
+        }
+    }
+
+    if(cleared_i && cleared_j)
+    {
+        // Sub-Case 2.1
+        result = graph_toggle_edge(self, i, j);
+        goto rs_CZ_exit;
+    }
+
+    // Sub-Sub-Case 2.2.2
+    result = graph_isolated_two_qbit_CZ(self, i, j);
+
+
+rs_CZ_exit:
 
     if(result == -2)
     {
@@ -290,177 +344,11 @@ RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
     Py_RETURN_NONE;
 }
 
-static PyObject *
-RawGraphState_mul_to(RawGraphState * self, PyObject * args)
-{
-    RawGraphState * other;
-    if(!PyArg_ParseTuple(args, "O!", &RawGraphStateType, &other))
-    {
-        return NULL;
-    }
-
-    if(self->length != other->length)
-    {
-        PyErr_SetString(PyExc_ValueError, "states must have same qbit count");
-        return NULL;
-    }
-
-    // Multiply all VOPs to the right.
-    npy_intp i, j;
-    for(i = 0; i < self->length; i++)
-    {
-        self->vops[i] = vop_lookup_table[daggered_vops[other->vops[i]]][self->vops[i]];
-    }
-
-    // Multiply all CZs to the right.
-    for(i = 0; i < self->length; i++)
-    {
-        ll_iter_t * nbghd = ll_iter_t_new(other->lists[i]);
-        while(ll_iter_next(nbghd, &j))
-        {
-            // Don't apply the same gate twice.
-            if(j > i)
-            {
-                npy_intp result = graph_do_apply_CZ(self, i, j);
-
-                if(result == -2)
-                {
-                    PyErr_SetString(PyExc_ValueError, "internal error: qbit index out of range");
-                    return NULL;
-                }
-                if(result < 0)
-                {
-                    PyErr_SetString(PyExc_MemoryError, "failed to insert edge");
-                    return NULL;
-                }
-            }
-        }
-        free(nbghd);
-    }
-
-    // The state on the left is now the trivial graph state, i.e. the <+|^n state.
-    // The state we are operating on contains all the information.
-    // We will now insert projection operators on the X +1 eigenstate. We can do so
-    // because they act trivially on the state on the left. Because the projection 
-    // operator is hermitian we can also let it act on the ket on the right.
-
-    // We know how the Z projector transforms under the VOPs. To see how the X
-    // projector transforms just multiply a H gate to the VOPs.
-    
-    for(i = 0; i < self->length; i++)
-    {
-        self->vops[i] = vop_lookup_table[VOP_H][self->vops[i]];
-    }
-
-    npy_uint8 observable;
-    double result = 1;
-    double phase = 0;
-    npy_intp this_projection;
-    npy_intp invert_result = 0;
-
-    for(i = 0; i < self->length; i++)
-    {
-        this_projection = 0;
-        observable = observable_after_vop_commute[self->vops[i]];
-        if(observable > 2)
-        {
-            this_projection = 1;
-        }
-        
-        // Projection on +/-X gives factor 1 or 0.
-        // FIXME: use ll_is_empty here.
-        if((observable == 2 || observable == 5) 
-           && ll_length(self->lists[i]) == 0)
-        {
-            if(this_projection)
-            {
-                return Py_BuildValue("l", 0);
-            }
-            else
-            {
-                continue;
-            }
-        }
-
-        // FIXME: Is this true for entangled states?
-        if(observable == 4)
-        {
-            phase -= M_PI_4;
-        }
-        if(observable == 1)
-        {
-            phase += M_PI_4;
-        }
-
-        if(this_projection)
-        {
-            observable -= 3;
-        }
-        if(graph_update_after_measurement(self, observable, i, this_projection))
-        {
-            return NULL;
-        }
-        result *= M_SQRT1_2;
-    }
-
-
-
-    // No second loop of measurements needed.
-    /*
-    // Projections are finished. Both states have zero entanglement. Now
-    // compute the overlap by considering the VOPs.
-    // Remember that vops[i] is actually H*vops[i] because we transformed
-    // the Z earlier. So no need to transform again.
-    
-    this_projection = 1;
-
-    for(i = 0; i < self->length; i++)
-    {
-        switch(observable_after_vop_commute[self->vops[i]])
-        {
-            case 0:
-            {
-                result *= M_SQRT1_2;
-                break;
-            }
-            case 1:
-            {
-                result *= M_SQRT1_2;
-                phase += M_PI_4;
-                break;
-            }
-            case 2: break;
-            case 3:
-            {
-                result *= M_SQRT1_2;
-                break;
-            }
-            case 4:
-            {
-                result *= M_SQRT1_2;
-                phase -= M_PI_4;
-                break;
-            }
-            case 5:
-            {
-                return Py_BuildValue("l", 0);
-            }
-        }
-    }
-    */
-
-    Py_complex c_result;
-    c_result.real = result * cos(phase);
-    c_result.imag = result * sin(phase);
-
-
-    return Py_BuildValue("D", &c_result);
-}
 
 static void
 RawGraphState_dealloc(RawGraphState * self)
 {
-    npy_intp i;
+    int i;
     for(i = 0; i < self->length; i++)
     {
         ll_recursively_delete_list(&self->lists[i]);
@@ -477,7 +365,6 @@ static PyMethodDef RawGraphState_methods[] = {
     , {"measure", (PyCFunction) RawGraphState_measure, METH_VARARGS, "measures a qbit"}
     , {"to_lists", (PyCFunction) RawGraphState_to_lists, METH_NOARGS, "converts the graph state to a python representation using lists"}
     , {"deepcopy", (PyCFunction) RawGraphState_deepcopy, METH_NOARGS, "deepcopy the graph"}
-    , {"mul_to", (PyCFunction) RawGraphState_mul_to, METH_VARARGS, "computes overlap with other graph state; modifies self"}
     , {NULL}
 };
 
