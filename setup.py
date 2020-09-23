@@ -30,7 +30,7 @@ generic_gate = Extension(
 
 setup(
         name="pyqcs"
-        , version="2.2.3"
+        , version="2.2.4"
         , description="A quantum computing simulator."
         , long_description = open("README.rst").read()
         , ext_modules=[basic_gates
@@ -49,5 +49,6 @@ setup(
         , classifiers=[
             "License :: OSI Approved :: GNU General Public License v3 (GPLv3)"
         ]
+        , license="GNU General Public License v3 (GPLv3)"
     )
 
