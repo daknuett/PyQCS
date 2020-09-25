@@ -410,6 +410,12 @@ graph_update_after_Y_measurement(RawGraphState * self
     else
     {
         graph_unchecked_apply_vop_right(self, qbit, projected_vop[4]);
+
+        // XXX: PATCH
+        // I am not sure why this is happening, but it is probably
+        // related to the definition of C_L.
+        self->phase = (self->phase + 6) % 8;
+
         ll_iter_t * iter = ll_iter_t_new(self->lists[qbit]);
         npy_intp neighbour;
         while(ll_iter_next(iter, &neighbour))
