@@ -57,7 +57,10 @@ def measure(state, bit_mask):
     else:
         state._measured = dict()
     new_state = circuit * state
-    return new_state, sum([1 << i for i,v in enumerate(new_state._cl_state) if v == 1])
+    if(isinstance(state, State)):
+        return new_state, sum([1 << i for i,v in enumerate(new_state._cl_state) if v == 1])
+    else:
+        return new_state, sum([1 << i for i,v in new_state._measured.items() if v == 1])
 
 
 def _do_sample(state, circuit, nsamples):
