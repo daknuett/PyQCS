@@ -88,7 +88,7 @@ static npy_uint8 C_L_as_products_lengths[24] =
 };
 
 
-static npy_uint8 C_L_as_products_daggered[24][5] = 
+static npy_uint8 C_L_as_products_daggered[24][5] =
 {
     {1, 6, 6, 6, 1}
     , {1, 1, 1, 0, 0}
@@ -114,6 +114,12 @@ static npy_uint8 C_L_as_products_daggered[24][5] =
     , {1, 1, 6, 6, 0}
     , {6, 1, 0, 0, 0}
     , {1, 6, 0, 0, 0}
+};
+
+// This is unused.
+static npy_int8 C_L_as_products_phases[24] =
+{
+    1, 0, 0, 1, 1, 0, -1, -1, 0, -1, -1, -1, 0, -1, 2, -1, 0, 6, 4, 1, 6, 4, -1, 6
 };
 
 // This is just the readable version of the lookup table above.

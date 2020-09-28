@@ -88,7 +88,7 @@ graph_La_transform(RawGraphState * self, npy_intp i)
 {
     int result = 0;
     ll_node_t * neighbours = self->lists[i];
-    
+
     npy_intp b, c;
 
     // Probability for problems to occur here is small enough.
@@ -102,6 +102,7 @@ graph_La_transform(RawGraphState * self, npy_intp i)
     while(ll_iter_next(iter_b, &b))
     {
         graph_unchecked_apply_vop_right(self, b, VOP_smiZ);
+        self->phase -= 1;
         while(ll_iter_next(iter_c, &c))
         {
             // Do not re-toggle the edge.
@@ -189,6 +190,9 @@ graph_clear_vop(RawGraphState * self, npy_intp a, npy_intp b)
     {
         vop = self->vops[a];
         product_length = C_L_as_products_lengths[vop];
+        // We don't need to account for this phase. Instead
+        // make sure the correct phase is added in graph_La_transform.
+        //self->phase += C_L_as_products_phases[vop];
 
         for(i = product_length - 1; i >= 0; i--)
         {
