@@ -31,6 +31,6 @@ from .state.state import BasicState as State
 from .gates.circuits import AnonymousCompoundGateCircuit, NamedCompoundGateCircuit
 
 
-from .measurement import measure, sample
+from .measurement import measure, sample, tree_amplitudes
 from .utils import list_to_circuit, circuitpng
 
