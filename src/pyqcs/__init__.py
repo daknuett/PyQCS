@@ -24,22 +24,13 @@ Note that ``measure(state, 1)`` is not equivalent to ``M(1) * state``, as ``meas
 The same applies for ``sample``
 """
 
-from collections import Counter
 import numpy as np
 
 from .gates.builtins import C, H, X, R, M, Z, S, CX, CZ, GenericGate, clear_builtin_gate_cache
 from .state.state import BasicState as State
 from .gates.circuits import AnonymousCompoundGateCircuit, NamedCompoundGateCircuit
 
-from .util.to_diagram import CircuitPNGFormatter
 
 from .measurement import measure, sample
+from .utils import list_to_circuit, circuitpng
 
-def list_to_circuit(list_of_circuits, name=None):
-    if(not name):
-        return AnonymousCompoundGateCircuit(list_of_circuits)
-    return NamedCompoundGateCircuit(list_of_circuits, name, (name,))
-
-
-def circuitpng(circuit, **kwargs):
-    return CircuitPNGFormatter(circuit, **kwargs)
