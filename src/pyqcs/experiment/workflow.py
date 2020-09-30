@@ -3,6 +3,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+try:
+    import ray
+except ImportError:
+    raise ImportError("pyqcs experiments require ray for parallelization; install it using pip3 install ray")
+
 
 class Instruction(metaclass=ABCMeta):
     @abstractmethod
@@ -18,6 +23,7 @@ class FunctionInstruction(Instruction):
         return self.fct(params)
 
 
+@ray.remote
 class Workflow(object):
     def __init__(self, name, instructions):
         self.name = name
@@ -30,4 +36,12 @@ class Workflow(object):
             logger.info(f"workflow {self.name}: instruction {i}")
             state = instr(state)
         return state
+
+class WorkflowSpawner(object):
+    def __init__(self, name, instructions):
+        self.name = name
+        self.instructions = instructions
+    def spawn(self):
+        return Workflow.remote(self.name, self.instructions)
+
 
