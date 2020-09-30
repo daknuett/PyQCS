@@ -1,0 +1,99 @@
+from .gates.builtins import M
+from .utils import list_to_circuit
+from .state.state import BasicState as State
+from collections import Counter, deque
+
+import numpy as np
+
+def build_measurement_circuit(bit_mask):
+    if(isinstance(bit_mask, int)):
+        c_list = [M(i) for i in range(bit_mask.bit_length()) if bit_mask & (1 << i)]
+    elif(isinstance(bit_mask, (list, tuple))):
+        c_list = [M(i) for i in bit_mask]
+    else:
+        raise TypeError("bit_mask must be either int, list or tuple, but {} is given".format(type(bit_mask)))
+    return list_to_circuit(c_list)
+
+
+def measure(state, bit_mask):
+    circuit = build_measurement_circuit(bit_mask)
+
+    state = state.deepcopy()
+    if(isinstance(state, State)):
+        state._cl_state[:] = -1
+    else:
+        state._measured = dict()
+    new_state = circuit * state
+    if(isinstance(state, State)):
+        return new_state, sum([1 << i for i,v in enumerate(new_state._cl_state) if v == 1])
+    else:
+        return new_state, sum([1 << i for i,v in new_state._measured.items() if v == 1])
+
+
+def _do_sample(state, circuit, nsamples):
+    for _ in range(nsamples):
+        new_state = circuit * state
+        if(isinstance(new_state, State)):
+            yield new_state, sum([1 << i for i,v in enumerate(new_state._cl_state) if v == 1])
+        else:
+            yield new_state, sum([1 << i for i,v in new_state._measured.items() if v == 1])
+
+def sample(state, bit_mask, nsamples, keep_states=False):
+    circuit = build_measurement_circuit(bit_mask)
+
+    state = state.deepcopy(force_new_state=True)
+    if(isinstance(state, State)):
+        state._cl_state[:] = -1
+    else:
+        state._measured = dict()
+
+    if(keep_states):
+        return Counter(_do_sample(state, circuit, nsamples))
+
+    return Counter((i[1] for i in _do_sample(state, circuit, nsamples)))
+
+def tree_amplitudes(state, bit_mask=None, eps=1e-5):
+    """
+    Compute the probability amplitudes for all (eps-)possible
+    outcomes. ``bit_mask`` is either ``None`` or a permutation
+    of ``list(range(state._nbits))``.
+
+    Only available for dense vector states.
+    """
+
+    if(not isinstance(state, State)):
+        raise TypeError("tree_amplitudes currently works for dense vector states only")
+
+    if(bit_mask is None):
+        bit_mask = list(range(state._nbits))
+
+    if(list(sorted(bit_mask)) != list(range(state._nbits))):
+        raise ValueError("bit_mask must be either None or a permutation of list(range(state._nbits)))")
+
+    next_queue = [(1, 0, state.deepcopy()._qm_state)]
+    qbit_mapping = np.arange(0, 2**state._nbits, 1, dtype=np.int)
+
+    for qbit in bit_mask:
+        this_queue = next_queue
+        next_queue = deque()
+        while(this_queue):
+            prob, prev_outcome, handle_now = this_queue.pop()
+
+            bit_mask_up = np.zeros_like(qbit_mapping, dtype=np.bool)
+            bit_mask_up[np.where(qbit_mapping & (1 << qbit))] = 1
+
+            amplitude_up = np.linalg.norm(handle_now[bit_mask_up])**2
+            amplitude_down = np.linalg.norm(handle_now[~bit_mask_up])**2
+
+            if(amplitude_up > eps):
+                handle_next = handle_now.copy()
+                handle_next[bit_mask_up] /= np.sqrt(amplitude_up)
+                handle_next[~bit_mask_up] = 0
+                next_queue.append((prob * amplitude_up, prev_outcome | (1 << qbit), handle_next))
+            if(amplitude_down > eps):
+                handle_next = handle_now.copy()
+                handle_next[~bit_mask_up] /= np.sqrt(amplitude_down)
+                handle_next[bit_mask_up] = 0
+                next_queue.append((prob * amplitude_down, prev_outcome, handle_next))
+
+    return [[outcome, prob] for prob, outcome, state in next_queue]
