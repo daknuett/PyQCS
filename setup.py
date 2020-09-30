@@ -38,7 +38,7 @@ setup(
                         , graph_backend]
         , packages=find_packages(where="src")
         , package_dir={"pyqcs": "src/pyqcs"}
-        , install_requires=["numpy"]
+        , install_requires=["numpy", "ray"]
         , project_urls={
             "Source Code": "https://github.com/daknuett/pyqcs"
         }

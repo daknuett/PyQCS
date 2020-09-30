@@ -101,6 +101,7 @@ def nelder_mead(wf_spawner, x0
 
         simplex = np.array([x for x,v in sorted(zip(simplex, simplex_values), key=lambda x: x[1])])
         simplex_values = np.sort(simplex_values)
+        # End of step 1.
 
         centroid = np.average(simplex, axis=0)
         reflection = centroid + alpha(N)*(centroid - simplex[-1])
