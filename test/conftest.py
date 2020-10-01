@@ -1,4 +1,5 @@
 import pytest
+import ray
 
 def pytest_addoption(parser):
     parser.addoption(
@@ -17,4 +18,8 @@ def pytest_collection_modifyitems(config, items):
         if "slow" in item.keywords:
             item.add_marker(skip)
 
+
+@pytest.fixture(scope="session")
+def ray_setup():
+    return ray.init()
 
