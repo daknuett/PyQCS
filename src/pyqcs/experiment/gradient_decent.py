@@ -44,6 +44,9 @@ def approx_gradient_decent(wf_spawner, x0, eps, gamma, nmax=40_000, rho=1e-6):
     Returns ``success: bool, x_final``.
 
     Uses an ``ActorPool`` with ``len(x0)`` actors.
+
+    This function expects the objective function to be costly.
+    Therefore all function evaluations are parallelized.
     """
     pool = ray.util.ActorPool([wf_spawner.spawn() for _ in x0])
     x = x0
