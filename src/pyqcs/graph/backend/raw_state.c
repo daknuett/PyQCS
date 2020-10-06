@@ -380,6 +380,8 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
 
     for(i = 0; i < self->length; i++)
     {
+        //printf("adding extra phase for vop[%d]: %d*M_PI_4\n", self->vops[i], extra_phase_mul_to_zero[self->vops[i]]);
+        phase += M_PI_4 * extra_phase_mul_to_zero[self->vops[i]];
         this_projection = 0;
         observable = observable_after_vop_commute[self->vops[i]];
         if(observable > 2)
@@ -390,7 +392,7 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
         //printf("qbit %ld: observable: %d\n", i, observable);
         // Projection on +/-X gives factor 1 or 0.
         // FIXME: use ll_is_empty here.
-        if((observable == 2 || observable == 5) 
+        if((observable == 2 || observable == 5)
            && ll_length(self->lists[i]) == 0)
         {
             if(this_projection)
@@ -399,6 +401,10 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
             }
             else
             {
+                if(graph_update_after_measurement(self, observable - 3, i, this_projection))
+                {
+                    return NULL;
+                }
                 continue;
             }
         }
@@ -441,48 +447,6 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
 
 
     // No second loop of measurements needed.
-    /*
-    // Projections are finished. Both states have zero entanglement. Now
-    // compute the overlap by considering the VOPs.
-    // Remember that vops[i] is actually H*vops[i] because we transformed
-    // the Z earlier. So no need to transform again.
-    
-    this_projection = 1;
-
-    for(i = 0; i < self->length; i++)
-    {
-        switch(observable_after_vop_commute[self->vops[i]])
-        {
-            case 0:
-            {
-                result *= M_SQRT1_2;
-                break;
-            }
-            case 1:
-            {
-                result *= M_SQRT1_2;
-                phase += M_PI_4;
-                break;
-            }
-            case 2: break;
-            case 3:
-            {
-                result *= M_SQRT1_2;
-                break;
-            }
-            case 4:
-            {
-                result *= M_SQRT1_2;
-                phase -= M_PI_4;
-                break;
-            }
-            case 5:
-            {
-                return Py_BuildValue("l", 0);
-            }
-        }
-    }
-    */
 
     Py_complex c_result;
     c_result.real = result * cos(phase);
