@@ -33,7 +33,7 @@ performance framework, such as `GPT's QIS module
 <https://github.com/lehner/gpt>`_.
 
 The second backend uses a graphical state representation (see for instance
-*`arXiv:quant-ph/0504117 <https://arxiv.org/abs/quant-ph/0504117v2>`_*) which
+`arXiv:quant-ph/0504117 <https://arxiv.org/abs/quant-ph/0504117v2>`_) which
 allows for the simulation of stabilizer states and -circuits. The graphical
 simulator is considerably faster, in particular it does not exhibit exponential
 growth in the number of qbits. The graphical states are available as
