@@ -15,6 +15,26 @@ Links
 - `the pypi repository <https://pypi.org/project/pyqcs/>`_
 - `some examples on github <https://github.com/daknuett/PyQCS/tree/master/examples>`_
 
+What Is PyQCS?
+==============
+
+PyQCS is a Quantum Computing Simulator built for physics. It currently features
+two simulator backends for different purposes, and a way to construct circuits
+in a relatively readable manner.
+
+By default PyQCS employs a relatively slow simulator backend using dense state
+vectors stored in NumPy arrays. The gates are implemented as NumPy ufuncs.
+Because the states are implemented as NumPy arrays there is a significant
+overhead compared to other simulators. Note that any implementation using dense
+state vectors shows exponential growth in the number of qbits. Therefore this
+simulator backend is limited to qbit numbers  below 30 for reasonable
+performance. For simulations requiring more qbits we recommend a high
+performance framework, such as `GPT's QIS module
+<https://github.com/lehner/gpt>`_.
+
+The second backend uses a graphical state representation 
+(see for instance *`arXiv:quant-ph/0504117 <https://arxiv.org/abs/quant-ph/0504117v2>`_*)
+
 Using PyQCS
 ===========
 
@@ -50,51 +70,6 @@ New in ``v2.2.0`` is the ``circuitpng`` function that allows displaying circuits
       circuit = (H(1) | H(2)) | CX(2, 1) | (H(1) | H(2))
       circuitpng(circuit)
 	
-
-Basic Design Layout
-===================
-
-PyQCS has two fundamental classes for simulating the quantum computation:
-A state which represents the total simulator state at a single point in 
-quasi-time [1]_ and gate circuits that can be applied to such a state;
-yielding a new state.
-
-PyQCS states
-------------
-
-A PyQCS state contains a representation of the quantum mechanical state in which
-the simulator is; using a numpy array. The application of a gate will return a new state with 
-a changed qm state. 
-
-The state also contains a representation of the last measurement and information which qbits 
-have been measured. This information will be used by classical parts of an algorithm.
-
-PyQCS gates
------------
-
-A PyQCS gate is essentially a function mapping a ``2**N`` dimensional ``cdouble`` array and an
-``N`` dimensional ``double`` array to a ``2**N`` dimensional ``cdouble`` array,
-an ``N`` dimensional ``double`` array and a ``int64`` scalar.
-
-PyQCS gates usually are implemented as objects with a numpy ufunc backend and some data. 
-
-A normal user will never access the gates directly but use either `PyQCS gate circuits`_ or
-`PyQCS gate circuit builders`_
-
-PyQCS gate circuits
--------------------
-
-Circuits are way one describes how the gates are applied to the state. Even single gate applications are
-described as circuits as those are more convenient to use. Gate circuits can also be used to optimize
-circuits in an abstract way and implement the error simulation.
-
-PyQCS gate circuit builders
----------------------------
-
-Gate circuit builders are a more abstract way to construct gate circuits and are used typically to reduce
-the effort to construct a circuit. When called a circuit builder returns a new circuit with the
-given parameters. Typical cases are circuits that can be applied to different qbits.
- 
 
 Built-in Gates
 ==============
