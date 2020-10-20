@@ -400,6 +400,7 @@ graph_update_after_Y_measurement(RawGraphState * self
     if(!result)
     {
         graph_unchecked_apply_vop_right(self, qbit, projected_vop[1]);
+        self->phase += 1;
         ll_iter_t * iter = ll_iter_t_new(self->lists[qbit]);
         npy_intp neighbour;
         while(ll_iter_next(iter, &neighbour))

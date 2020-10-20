@@ -380,8 +380,6 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
 
     for(i = 0; i < self->length; i++)
     {
-        //printf("adding extra phase for vop[%d]: %d*M_PI_4\n", self->vops[i], extra_phase_mul_to_zero[self->vops[i]]);
-        phase += M_PI_4 * extra_phase_mul_to_zero[self->vops[i]];
         this_projection = 0;
         observable = observable_after_vop_commute[self->vops[i]];
         if(observable > 2)
@@ -401,10 +399,13 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
             }
             else
             {
+                printf(">>> vop_%ld before projection: %d\n", i, self->vops[i]);
                 if(graph_update_after_measurement(self, observable - 3, i, this_projection))
                 {
                     return NULL;
                 }
+                printf("<<< adding extra phase for vop_%ld[%d]: %d*M_PI_4\n", i, self->vops[i], extra_phase_mul_to_zero[self->vops[i]]);
+                phase += M_PI_4 * extra_phase_mul_to_zero[self->vops[i]];
                 continue;
             }
         }
@@ -428,12 +429,16 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
         {
             observable -= 3;
         }
-        //printf("self->phase before projection: %d*M_PI_4\n", self->phase);
+        printf("self->phase before projection: %d*M_PI_4\n", self->phase);
+        printf(">>> vop_%ld before projection: %d\n", i, self->vops[i]);
+        printf("observable: %d, projection: %d\n", observable, this_projection);
         if(graph_update_after_measurement(self, observable, i, this_projection))
         {
             return NULL;
         }
-        //printf("self->phase after projection: %d*M_PI_4\n", self->phase);
+        printf("<<< adding extra phase for vop_%ld[%d]: %d*M_PI_4\n", i, self->vops[i], extra_phase_mul_to_zero[self->vops[i]]);
+        phase += M_PI_4 * extra_phase_mul_to_zero[self->vops[i]];
+        printf("self->phase after projection: %d*M_PI_4\n", self->phase);
         result *= M_SQRT1_2;
     }
 

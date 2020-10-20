@@ -1353,14 +1353,15 @@ static npy_uint8 projected_vop[6] =
 static npy_uint8 daggered_vops[24] = 
 { 0, 8, 2, 10, 15, 5, 12, 13, 1, 23, 3, 11, 6, 7, 14, 4, 16, 22, 18, 19, 20, 21, 17, 9};
 
-// This is super dirty and purely phenomenological:
-// Basically SHS|+> = 1/sqrt(2)(1 + i)|+> (similarly for other
-// Clifford gates). But (SHS)^dagger X SHS = X. So the phase is
-// disregarded under projection (as expected). But because the
-// algorithm to compute the overlap of graphical states uses projections
-// this phase cannot be neglected. This lookup table accounts for these
-// extra phases.
+// When computing the overlap between two graphical states
+// a projection operator is inserted between the states
+// (see RawGraphState.mul_to).
+// After this projection both states are eigenstates of the
+// Pauli X operator (note that the left state became so by
+// unitary transformation). Therefore the remaining overlap
+// is 1 up to a phase. This lookuptable accounts for that phase.
+// Typical example: SHS|+> = exp(ipi/4)|+>.
 static npy_int8 extra_phase_mul_to_zero[24] =
-{ 0, -1, 0, 0, 0, 0, 0, 0, -1, 0, 0, -2, 0, 0, 0, 0, 0, -7, 0, 6, 0, 4, 0, 1};
+{ 0, -1, 0, -1, 0, 0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, -7, 0, 6, 0, 4, 0, 1};
 
 #endif
