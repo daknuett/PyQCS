@@ -32,8 +32,17 @@ performance. For simulations requiring more qbits we recommend a high
 performance framework, such as `GPT's QIS module
 <https://github.com/lehner/gpt>`_.
 
-The second backend uses a graphical state representation 
-(see for instance *`arXiv:quant-ph/0504117 <https://arxiv.org/abs/quant-ph/0504117v2>`_*)
+The second backend uses a graphical state representation (see for instance
+*`arXiv:quant-ph/0504117 <https://arxiv.org/abs/quant-ph/0504117v2>`_*) which
+allows for the simulation of stabilizer states and -circuits. The graphical
+simulator is considerably faster, in particular it does not exhibit exponential
+growth in the number of qbits. The graphical states are available as
+``pyqcs.graph.state.GraphState``.
+
+Unlike other simulators PyQCS focuses on the state: Users start from a state, modify
+the state (using circuits) and then either look at the state or sample from the state.
+This direct access to the state is useful when debugging circuits or when considering
+physical problems. However, it slows down compuations.
 
 Using PyQCS
 ===========
@@ -41,7 +50,7 @@ Using PyQCS
 To do some computation one has to build a quantum circuit and apply it to a state.
 States are created using ``pyqcs.State.new_zero_state(<number of qbits>)``.
 
-Circuits are built from the fundamental gates (see `Built-in Gates`_) by joining them 
+Circuits are built from the fundamental gates (see `Built-in Gates`_) by joining them
 together using the ``|`` operator::
 
 	from pyqcs import H, CX, X
@@ -100,7 +109,10 @@ TODOs
 - Write lot's of documentation.
 - Add more tests.
 - Add a ``NoisyGateListExecutor`` that allows to implement a noise model.
-- Allow states to be multiplied with each other to compute the overlap.
+- Allow graphical states to be multiplied with each other to compute the overlap.
+- Add a way to use graphical states as basis states for compression.
+- Add a fast dense state vector simulator.
+- Add a way to export circuits to GPT's QIS module.
 
 
 
