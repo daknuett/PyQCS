@@ -288,6 +288,7 @@ graph_update_after_X_measurement(RawGraphState * self
     {
         // Update the VOPs
         graph_unchecked_apply_vop_right(self, a, projected_vop[2]);
+        printf("vops[%ld] now %d\n", a, self->vops[a]);
         graph_unchecked_apply_vop_right(self, b, VOP_smiY);
 
         ll_iter_t * iter_c = ll_iter_t_new(self->lists[a]);
@@ -305,6 +306,7 @@ graph_update_after_X_measurement(RawGraphState * self
     {
         // Update the VOPs
         graph_unchecked_apply_vop_right(self, a, projected_vop[5]);
+        printf("vops[%ld] now %d\n", a, self->vops[a]);
         graph_unchecked_apply_vop_right(self, b, VOP_siY);
 
 
@@ -400,7 +402,7 @@ graph_update_after_Y_measurement(RawGraphState * self
     if(!result)
     {
         graph_unchecked_apply_vop_right(self, qbit, projected_vop[1]);
-        self->phase += 1;
+        self->phase -= 1;
         ll_iter_t * iter = ll_iter_t_new(self->lists[qbit]);
         npy_intp neighbour;
         while(ll_iter_next(iter, &neighbour))
@@ -417,6 +419,7 @@ graph_update_after_Y_measurement(RawGraphState * self
         graph_unchecked_apply_vop_right(self, qbit, projected_vop[4]);
 
         // XXX: PATCH
+        // XXX: This is probably wrong I have lost track of what I am doing.
         // I am not sure why this is happening, but it is probably
         // related to the definition of C_L.
         self->phase = (self->phase + 6) % 8;
@@ -476,6 +479,8 @@ graph_update_after_measurement(RawGraphState * self
                             , npy_intp qbit
                             , npy_intp result)
 {
+    printf("vops[%ld] before projection: %d\n", qbit, self->vops[qbit]);
+    printf("self->phase before projection: %d\n", self->phase);
     // X measurement. Note that the qbit has neighbours.
     if(observable == 2)
     {

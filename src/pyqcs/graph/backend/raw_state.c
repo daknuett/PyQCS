@@ -411,18 +411,19 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
         }
 
         // FIXME: Is this true for entangled states?
-        if(observable == 4)
-        {
-            phase += M_PI_4;
-            //printf("qbit %ld gives extra phase +1\n", i);
-            //printf("self->phase now: %d*M_PI_4\n", self->phase);
-        }
-        if(observable == 1)
-        {
-            phase -= M_PI_4;
-            //printf("qbit %ld gives extra phase -1\n", i);
-            //printf("self->phase now: %d*M_PI_4\n", self->phase);
-        }
+        // Is this true at all?
+        //if(observable == 4)
+        //{
+        //    phase += M_PI_4;
+        //    printf("qbit %ld gives extra phase +1\n", i);
+        //    printf("self->phase now: %d*M_PI_4\n", self->phase);
+        //}
+        //if(observable == 1)
+        //{
+        //    phase -= M_PI_4;
+        //    printf("qbit %ld gives extra phase -1\n", i);
+        //    printf("self->phase now: %d*M_PI_4\n", self->phase);
+        //}
 
 
         if(this_projection)
@@ -443,20 +444,18 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
     }
 
     // Phase got updated by ``graph_update_after_measurement``!
-    //printf("combined phase (ket[%d] - bra[%d]): %d\n", self->phase, other->phase, self->phase - other->phase);
+    printf("combined phase (ket[%d] - bra[%d]): %d\n", self->phase, other->phase, self->phase - other->phase);
+    printf("phase accumulated by computations: %f\n", phase);
     phase += self->phase*M_PI_4 - other->phase*M_PI_4;
 
-    //printf("phase finally: %f\n", phase);
-    //printf("##########\n\n");
-
-
+    printf("phase finally: %f\n", phase);
+    printf("##########\n\n");
 
     // No second loop of measurements needed.
 
     Py_complex c_result;
     c_result.real = result * cos(phase);
     c_result.imag = result * sin(phase);
-
 
     return Py_BuildValue("D", &c_result);
 }

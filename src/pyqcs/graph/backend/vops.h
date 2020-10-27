@@ -1362,6 +1362,29 @@ static npy_uint8 daggered_vops[24] =
 // is 1 up to a phase. This lookuptable accounts for that phase.
 // Typical example: SHS|+> = exp(ipi/4)|+>.
 static npy_int8 extra_phase_mul_to_zero[24] =
-{ 0, -1, 0, -1, 0, 0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, -7, 0, 6, 0, 4, 0, 1};
+{ 0
+    , -1
+    , 0
+    , -1
+    , 0
+    , 0
+    , 0
+    , 0
+    , 0
+    , 0
+    , 0
+    , -2
+    , 0
+    , 0
+    , 0
+    , 0
+    , 0
+    , -7
+    , 0
+    , 6
+    , 0
+    , 4
+    , 0
+    , 1};
 
 #endif
