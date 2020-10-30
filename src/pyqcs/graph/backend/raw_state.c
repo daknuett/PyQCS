@@ -313,15 +313,12 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
         PyErr_SetString(PyExc_ValueError, "states must have same qbit count");
         return NULL;
     }
-    //printf("phase before multiplying all ops to the right: %d*M_PI_4\n", self->phase);
 
     // Multiply all VOPs to the right.
     npy_intp i, j;
     for(i = 0; i < self->length; i++)
     {
-        //printf("updating vops[%ld]: %d * %d ->", i, daggered_vops[other->vops[i]], self->vops[i]);
         graph_unchecked_apply_vop_left(self, i, daggered_vops[other->vops[i]]);
-        //printf(" %d (%d = Dagger(%d))\n", self->vops[i], daggered_vops[other->vops[i]], other->vops[i]);
     }
 
     // Multiply all CZs to the right.
@@ -350,8 +347,6 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
         free(nbghd);
     }
 
-    //printf("phase after multiplying all ops to the right: %d*M_PI_4\n", self->phase);
-
     // The state on the left is now the trivial graph state, i.e. the <+|^n state.
     // The state we are operating on contains all the information.
     // We will now insert projection operators on the X +1 eigenstate. We can do so
@@ -361,14 +356,10 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
     // We know how the Z projector transforms under the VOPs. To see how the X
     // projector transforms just multiply a H gate to the VOPs.
 
-    //printf("phase before transforming to X basis: %d*M_PI_4\n", self->phase);
     for(i = 0; i < self->length; i++)
     {
-        //printf("phase(%d) will get extra %d (then %d)... ", self->phase, vop_phase_lookup_table[VOP_H][self->vops[i]], (self->phase - vop_phase_lookup_table[VOP_H][self->vops[i]]) % 8);
         graph_unchecked_apply_vop_left(self, i, VOP_H);
-        //printf("vop[%ld] now: %d; phase now: %d\n", i, self->vops[i], self->phase);
     }
-    //printf("phase after transforming to X basis: %d*M_PI_4\n", self->phase);
 
 
     npy_uint8 observable;
@@ -387,7 +378,6 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
             this_projection = 1;
         }
 
-        //printf("qbit %ld: observable: %d\n", i, observable);
         // Projection on +/-X gives factor 1 or 0.
         // FIXME: use ll_is_empty here.
         if((observable == 2 || observable == 5)
@@ -399,59 +389,29 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
             }
             else
             {
-                printf(">>> vop_%ld before projection: %d\n", i, self->vops[i]);
                 if(graph_update_after_measurement(self, observable - 3, i, this_projection))
                 {
                     return NULL;
                 }
-                printf("<<< adding extra phase for vop_%ld[%d]: %d*M_PI_4\n", i, self->vops[i], extra_phase_mul_to_zero[self->vops[i]]);
                 phase += M_PI_4 * extra_phase_mul_to_zero[self->vops[i]];
                 continue;
             }
         }
 
-        // FIXME: Is this true for entangled states?
-        // Is this true at all?
-        //if(observable == 4)
-        //{
-        //    phase += M_PI_4;
-        //    printf("qbit %ld gives extra phase +1\n", i);
-        //    printf("self->phase now: %d*M_PI_4\n", self->phase);
-        //}
-        //if(observable == 1)
-        //{
-        //    phase -= M_PI_4;
-        //    printf("qbit %ld gives extra phase -1\n", i);
-        //    printf("self->phase now: %d*M_PI_4\n", self->phase);
-        //}
-
-
         if(this_projection)
         {
             observable -= 3;
         }
-        printf("self->phase before projection: %d*M_PI_4\n", self->phase);
-        printf(">>> vop_%ld before projection: %d\n", i, self->vops[i]);
-        printf("observable: %d, projection: %d\n", observable, this_projection);
         if(graph_update_after_measurement(self, observable, i, this_projection))
         {
             return NULL;
         }
-        printf("<<< adding extra phase for vop_%ld[%d]: %d*M_PI_4\n", i, self->vops[i], extra_phase_mul_to_zero[self->vops[i]]);
         phase += M_PI_4 * extra_phase_mul_to_zero[self->vops[i]];
-        printf("self->phase after projection: %d*M_PI_4\n", self->phase);
         result *= M_SQRT1_2;
     }
 
     // Phase got updated by ``graph_update_after_measurement``!
-    printf("combined phase (ket[%d] - bra[%d]): %d\n", self->phase, other->phase, self->phase - other->phase);
-    printf("phase accumulated by computations: %f\n", phase);
     phase += self->phase*M_PI_4 - other->phase*M_PI_4;
-
-    printf("phase finally: %f\n", phase);
-    printf("##########\n\n");
-
-    // No second loop of measurements needed.
 
     Py_complex c_result;
     c_result.real = result * cos(phase);

@@ -67,8 +67,8 @@ def test_vops_preserve_phase_singly_entangled(plus_ket3):
         assert g @ GraphState.new_zero_state(3) == pytest.approx(n @ State.new_zero_state(3))
 
 #@pytest.mark.slow
-#@pytest.mark.selected
-@pytest.mark.skip(reason="WIP")
+#@pytest.mark.skip(reason="WIP")
+@pytest.mark.selected
 def test_vops_preserve_phase_unentangled(plus_ket3):
     for v1, v2, v3 in product(vops, vops, vops):
         g = GraphState.new_plus_state(3)

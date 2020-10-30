@@ -128,7 +128,7 @@ def test_failing_gstate():
 
     assert got == pytest.approx(expect)
 
-@pytest.mark.selected
+#@pytest.mark.selected
 def test_failing_single_qbits():
     vops = [1]
     nstate = (H(0) | vop_to_circuit(0, vops[0])) * State.new_zero_state(1)
