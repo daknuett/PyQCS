@@ -83,3 +83,17 @@ class GraphState(AbstractGraphState):
             raise ValueError("cannot compute overlap of states with different qbit count")
         cmp_state = other._g_state.deepcopy()
         return cmp_state.mul_to(self._g_state)
+
+    def project_to(self, qbit, observable):
+        """
+        Apply the projection operator of ``observable`` to ``qbit``.
+        ``observable`` is a string in ``["Z", "Y", "X", "-Z", "-Y", "-X"]``.
+        """
+        observables = ["Z", "Y", "X", "-Z", "-Y", "-X"]
+        if(observable.upper() not in observables):
+            raise ValueError(f"unknown observable, must be one of {observables}")
+
+        observable = observables.index(observable.upper())
+
+        return self._g_state.project_to(qbit, observable)
+

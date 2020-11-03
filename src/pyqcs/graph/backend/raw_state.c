@@ -228,7 +228,7 @@ RawGraphState_measure(RawGraphState * self, PyObject * args)
         return NULL;
     }
 
-    observable = observable_after_vop_commute[self->vops[qbit]];
+    observable = observable_after_vop_commute[0][self->vops[qbit]];
     if(observable > 2)
     {
         invert_result = 1;
@@ -350,16 +350,9 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
     // The state on the left is now the trivial graph state, i.e. the <+|^n state.
     // The state we are operating on contains all the information.
     // We will now insert projection operators on the X +1 eigenstate. We can do so
-    // because they act trivially on the state on the left. Because the projection 
+    // because they act trivially on the state on the left. Because the projection
     // operator is hermitian we can also let it act on the ket on the right.
 
-    // We know how the Z projector transforms under the VOPs. To see how the X
-    // projector transforms just multiply a H gate to the VOPs.
-
-    for(i = 0; i < self->length; i++)
-    {
-        graph_unchecked_apply_vop_left(self, i, VOP_H);
-    }
 
 
     npy_uint8 observable;
@@ -372,7 +365,7 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
     for(i = 0; i < self->length; i++)
     {
         this_projection = 0;
-        observable = observable_after_vop_commute[self->vops[i]];
+        observable = observable_after_vop_commute[2][self->vops[i]];
         if(observable > 2)
         {
             this_projection = 1;
@@ -393,6 +386,7 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
                 {
                     return NULL;
                 }
+                printf("vop[%ld] = %d -> extra phase %d\n", i, self->vops[i], extra_phase_mul_to_zero[self->vops[i]]);
                 phase += M_PI_4 * extra_phase_mul_to_zero[self->vops[i]];
                 continue;
             }
@@ -406,6 +400,7 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
         {
             return NULL;
         }
+        printf("vop[%ld] = %d -> extra phase %d\n", i, self->vops[i], extra_phase_mul_to_zero[self->vops[i]]);
         phase += M_PI_4 * extra_phase_mul_to_zero[self->vops[i]];
         result *= M_SQRT1_2;
     }
@@ -418,6 +413,63 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
     c_result.imag = result * sin(phase);
 
     return Py_BuildValue("D", &c_result);
+}
+
+static PyObject *
+RawGraphState_project_to(RawGraphState * self, PyObject * args)
+{
+    npy_intp qbit = 0, observable = 0;
+    npy_intp this_projection = 0;
+    if(!PyArg_ParseTuple(args, "ll", &qbit, &observable))
+    {
+        return NULL;
+    }
+    if(qbit > self->length)
+    {
+        PyErr_SetString(PyExc_ValueError, "qbit index out of range");
+        return NULL;
+    }
+    if((observable < 0) || (observable > 5))
+    {
+        PyErr_SetString(PyExc_ValueError, "observable must be in 0, ..., 5 (Z, Y, X, -Z, -Y, -X)");
+        return NULL;
+    }
+
+    observable = observable_after_vop_commute[observable][self->vops[qbit]];
+
+    if(observable > 2)
+    {
+        this_projection = 1;
+    }
+
+    // Projection on +/-X gives factor 1 or 0.
+    // FIXME: use ll_is_empty here.
+    if((observable == 2 || observable == 5)
+       && ll_length(self->lists[qbit]) == 0)
+    {
+        if(this_projection)
+        {
+            if(graph_update_after_measurement(self, observable, qbit, this_projection))
+            {
+                return NULL;
+            }
+            return Py_BuildValue("l", 0);
+        }
+        else
+        {
+            return Py_BuildValue("l", 1);
+        }
+    }
+
+    if(this_projection)
+    {
+        observable -= 3;
+    }
+    if(graph_update_after_measurement(self, observable, qbit, this_projection))
+    {
+        return NULL;
+    }
+    return Py_BuildValue("d", M_SQRT1_2);
 }
 
 static void
@@ -442,6 +494,10 @@ static PyMethodDef RawGraphState_methods[] = {
     , {"get_phase", (PyCFunction) RawGraphState_get_phase, METH_NOARGS, "returns the global phase of the state"}
     , {"deepcopy", (PyCFunction) RawGraphState_deepcopy, METH_NOARGS, "deepcopy the graph"}
     , {"mul_to", (PyCFunction) RawGraphState_mul_to, METH_VARARGS, "computes overlap with other graph state; modifies self"}
+    , {"project_to", (PyCFunction) RawGraphState_project_to, METH_VARARGS
+                    , "the projection operator to the qbit; first argument is the qbit, second argument is the pauli index in "
+                        "(Z, Y, X, -Z, -Y, -X)"
+                            }
     , {NULL}
 };
 

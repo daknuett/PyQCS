@@ -26,6 +26,7 @@ def test_vops_preserve_phase_fully_entangled(plus_ket3):
         n = vop_to_circuit(2, v3) * n
 
         print(f"current vops: {C_L[v1]}(0) | {C_L[v2]}(1) | {C_L[v3]}(2)")
+        print("vops:", v1, v2, v3)
         assert g @ GraphState.new_plus_state(3) == pytest.approx(n @ plus_ket3)
         assert g @ GraphState.new_zero_state(3) == pytest.approx(n @ State.new_zero_state(3))
 
@@ -60,6 +61,7 @@ def test_vops_preserve_phase_singly_entangled(plus_ket3):
         n = vop_to_circuit(2, v3) * n
 
         print(f"current vops: {C_L[v1]}(0) | {C_L[v2]}(1) | {C_L[v3]}(2)")
+        print("vops:", v1, v2, v3)
         #print("current state (w/ phase) :", g.to_naive_state())
         #print("current state (w/o phase):", g.to_naive_state(global_phase=False))
         #print("current naive state      :", n)
@@ -67,8 +69,8 @@ def test_vops_preserve_phase_singly_entangled(plus_ket3):
         assert g @ GraphState.new_zero_state(3) == pytest.approx(n @ State.new_zero_state(3))
 
 #@pytest.mark.slow
-#@pytest.mark.skip(reason="WIP")
-@pytest.mark.selected
+#@pytest.mark.selected
+@pytest.mark.skip(reason="WIP")
 def test_vops_preserve_phase_unentangled(plus_ket3):
     for v1, v2, v3 in product(vops, vops, vops):
         g = GraphState.new_plus_state(3)
@@ -86,5 +88,5 @@ def test_vops_preserve_phase_unentangled(plus_ket3):
         #print("current state (w/ phase) :", g.to_naive_state())
         #print("current state (w/o phase):", g.to_naive_state(global_phase=False))
         #print("current naive state      :", n)
-        #assert g @ GraphState.new_plus_state(3) == pytest.approx(n @ plus_ket3)
-        assert g @ GraphState.new_zero_state(3) == pytest.approx(n @ State.new_zero_state(3))
+        assert g @ GraphState.new_plus_state(3) == pytest.approx(n @ plus_ket3)
+        #assert g @ GraphState.new_zero_state(3) == pytest.approx(n @ State.new_zero_state(3))

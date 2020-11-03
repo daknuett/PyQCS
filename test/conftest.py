@@ -30,11 +30,15 @@ def pytest_collection_modifyitems(config, items):
     if(not config.getoption("--onlyselected")):
         skip_slow = pytest.mark.skip(reason="slow test")
         skip_deprecated = pytest.mark.skip(reason="deprecated test")
+        run_slow = config.getoption("--runslow")
+        run_deprecated = config.getoption("--rundeprecated")
         for item in items:
-            if "slow" in item.keywords:
-                item.add_marker(skip_slow)
-            if "deprecated" in item.keywords:
-                item.add_marker(skip_deprecated)
+            if not run_slow:
+                if "slow" in item.keywords:
+                    item.add_marker(skip_slow)
+            if not run_deprecated:
+                if "deprecated" in item.keywords:
+                    item.add_marker(skip_deprecated)
     else:
         skip_not_selected = pytest.mark.skip(reason="not selected")
         for item in items:

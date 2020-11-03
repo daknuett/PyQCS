@@ -1344,13 +1344,20 @@ static npy_intp two_qbit_vops_after_CZ[1152][4] =
 
 // C^\dagger Z C is one of the following matrices.
 // Index is the index of [Z, Y, X, -Z, -Y, -X].
-static npy_uint8 observable_after_vop_commute[24] = 
-{2, 0, 0, 2, 4, 0, 4, 5, 0, 5, 1, 1, 1, 2, 3, 2, 3, 4, 3, 4, 5, 3, 5, 1};
+static npy_uint8 observable_after_vop_commute[6][24] =
+{
+    {2, 0, 0, 2, 4, 0, 4, 5, 0, 5, 1, 1, 1, 2, 3, 2, 3, 4, 3, 4, 5, 3, 5, 1}
+    , {4, 2, 1, 0, 5, 4, 0, 1, 5, 0, 2, 0, 3, 1, 4, 3, 2, 2, 5, 3, 4, 1, 3, 5}
+    , {0, 4, 2, 1, 0, 5, 2, 0, 1, 4, 0, 5, 2, 3, 2, 4, 1, 3, 4, 5, 3, 5, 1, 3}
+    , {5, 3, 3, 5, 1, 3, 1, 2, 3, 2, 4, 4, 4, 5, 0, 5, 0, 1, 0, 1, 2, 0, 2, 4}
+    , {1, 5, 4, 3, 2, 1, 3, 4, 2, 3, 5, 3, 0, 4, 1, 0, 5, 5, 2, 0, 1, 4, 0, 2}
+    , {3, 1, 5, 4, 3, 2, 5, 3, 4, 1, 3, 2, 5, 0, 5, 1, 4, 0, 1, 2, 0, 2, 4, 0}
+};
 
-static npy_uint8 projected_vop[6] = 
+static npy_uint8 projected_vop[6] =
 {0, 1, 2, 7, 18, 5};
 
-static npy_uint8 daggered_vops[24] = 
+static npy_uint8 daggered_vops[24] =
 { 0, 8, 2, 10, 15, 5, 12, 13, 1, 23, 3, 11, 6, 7, 14, 4, 16, 22, 18, 19, 20, 21, 17, 9};
 
 // When computing the overlap between two graphical states
@@ -1366,15 +1373,15 @@ static npy_int8 extra_phase_mul_to_zero[24] =
     , -1
     , 0
     , -1
+    , -1
+    , 0
+    , 1
     , 0
     , 0
     , 0
-    , 0
-    , 0
-    , 0
-    , 0
+    , -1
     , -2
-    , 0
+    , -1 // NOT UNIQUE ANYMORE WTF.
     , 0
     , 0
     , 0
