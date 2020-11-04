@@ -2,6 +2,11 @@ import numpy as np
 from .. import X, H, R, C, list_to_circuit
 
 
+"""
+Generate random circuits. Refer to ``random_circuit`` for details.
+``random_circuit_XHRC`` uses ``M1=X``, ``M2=H``, ``M3=R``, ``M4=CX``.
+"""
+
 def random_basis_values(nqbits, ngates):
     """
     Sample ngates values from {1,...,4 nqbits} x {1,...,nqbits - 1} x [0, 2pi).

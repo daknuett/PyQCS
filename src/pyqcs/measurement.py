@@ -16,6 +16,15 @@ def build_measurement_circuit(bit_mask):
 
 
 def measure(state, bit_mask):
+    """
+    Measures the qbits ``bit_mask`` (in the order given by
+    ``bit_mask``, if bit_mask is a list, or least significant
+    bit first).
+
+    The original state is unchanged.
+
+    Returns ``new_state, bit_string: int``.
+    """
     circuit = build_measurement_circuit(bit_mask)
 
     state = state.deepcopy()
@@ -39,6 +48,16 @@ def _do_sample(state, circuit, nsamples):
             yield new_state, sum([1 << i for i,v in new_state._measured.items() if v == 1])
 
 def sample(state, bit_mask, nsamples, keep_states=False):
+    """
+    Measures the qbits given in ``bit_mask`` ``nsamples`` times
+    and returns a counter ``{result: count}``.
+
+    If ``keep_states is True`` the resulting states are included in ``result``.
+    This does not work for graphical states because there is currently no
+    meaningful way to hash graphical states.
+
+    The original state is unchanged.
+    """
     circuit = build_measurement_circuit(bit_mask)
 
     state = state.deepcopy(force_new_state=True)
@@ -59,6 +78,12 @@ def tree_amplitudes(state, bit_mask=None, eps=1e-5):
     of ``list(range(state._nbits))``.
 
     Only available for dense vector states.
+
+    The original state is unchanged.
+
+    Amplitudes (and collapsed states) are computed in the order given
+    by ``bit_mask``. If ``bit_mask is None``, ``list(range(state._nbits))``
+    is used.
     """
 
     if(not isinstance(state, State)):
