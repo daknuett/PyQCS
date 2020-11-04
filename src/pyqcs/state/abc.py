@@ -3,6 +3,7 @@ from abc import ( ABCMeta
         , abstractmethod)
 
 class AbstractState(metaclass=ABCMeta):
+    __slots__ = ["_is_graph", "_is_naive"]
     def __init__(self):
         self._is_graph = False
         self._is_naive = False

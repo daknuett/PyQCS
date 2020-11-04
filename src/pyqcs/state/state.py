@@ -2,7 +2,20 @@ from .abc import AbstractState
 import numpy as np
 
 class BasicState(AbstractState):
-    __slots__ = ["_nbits", "_ndim", "_qm_state", "_cl_state", "_last_measured"]
+    """
+    This is the basic dense state vector class. It uses NumPy Arrays to
+    store the coefficients. There is no compression. Gates are implemented
+    as NumPy UFuncs.
+
+    Use ``BasicState.new_zero_state(nqbits: int)`` to instantiate new states.
+
+    It is possible to compute the overlap of two states using ``state1 @ state2
+    -> complex``. Use ``state1 == state2`` to compare states, however, this
+    will disregard a global phase.
+
+    """
+    __slots__ = ["_nbits", "_ndim", "_qm_state", "_cl_state", "_last_measured"
+            , "_length_error", "_check_normalization"]
     def __init__(self
                 , qm_state
                 , cl_state
@@ -22,7 +35,7 @@ class BasicState(AbstractState):
         self._check_normalization = check_normalization
 
         if(check_normalization and not self.is_normalized()):
-            raise ValueError("State has non-one length")
+            raise ValueError("State is not normalized")
 
     @classmethod
     def new_zero_state(cls, nbits, **kwargs):

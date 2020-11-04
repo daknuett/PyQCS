@@ -4,6 +4,7 @@ from .util import graph_lists_to_naive_state
 from.gate import GraphGate
 
 class GraphState(AbstractGraphState):
+    __slots__ = ["_g_state", "_nbits", "_measured", "_force_new_state"]
     def __init__(self, g_state, nbits, force_new_state=False, measured=None):
         AbstractGraphState.__init__(self)
         self._is_graph = True
