@@ -46,7 +46,6 @@ RawGraphState_init(RawGraphState * self
     self->lists = calloc(sizeof(ll_node_t), length);
     self->vops = malloc(sizeof(npy_uint8) * length);
     self->length = length;
-    self->phase = 0;
     if(!self->lists)
     {
         free(self->vops);
@@ -92,7 +91,6 @@ RawGraphState_deepcopy(RawGraphState * self)
         return NULL;
     }
 
-    new_graph->phase = self->phase;
     for(i = 0; i < self->length; i++)
     {
         new_graph->vops[i] = self->vops[i];
@@ -148,12 +146,6 @@ RawGraphState_apply_C_L(RawGraphState * self
 
 }
 
-static PyObject *
-RawGraphState_get_phase(RawGraphState * self)
-{
-    double phase = self->phase * M_PI_4;
-    return Py_BuildValue("d", phase);
-}
 
 static PyObject * 
 RawGraphState_to_lists(RawGraphState * self)
@@ -357,8 +349,6 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
 
     npy_uint8 observable;
     double result = 1;
-    // XXX: self->phase will be changed while projecting!
-    double phase = 0;
     npy_intp this_projection;
     npy_intp invert_result = 0;
 
@@ -386,8 +376,6 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
                 {
                     return NULL;
                 }
-                printf("vop[%ld] = %d -> extra phase %d\n", i, self->vops[i], extra_phase_mul_to_zero[self->vops[i]]);
-                phase += M_PI_4 * extra_phase_mul_to_zero[self->vops[i]];
                 continue;
             }
         }
@@ -400,19 +388,11 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
         {
             return NULL;
         }
-        printf("vop[%ld] = %d -> extra phase %d\n", i, self->vops[i], extra_phase_mul_to_zero[self->vops[i]]);
-        phase += M_PI_4 * extra_phase_mul_to_zero[self->vops[i]];
         result *= M_SQRT1_2;
     }
 
-    // Phase got updated by ``graph_update_after_measurement``!
-    phase += self->phase*M_PI_4 - other->phase*M_PI_4;
 
-    Py_complex c_result;
-    c_result.real = result * cos(phase);
-    c_result.imag = result * sin(phase);
-
-    return Py_BuildValue("D", &c_result);
+    return Py_BuildValue("d", &result);
 }
 
 static PyObject *
@@ -491,7 +471,6 @@ static PyMethodDef RawGraphState_methods[] = {
     , {"apply_CZ", (PyCFunction) RawGraphState_apply_CZ, METH_VARARGS, "applies a CZ operator"}
     , {"measure", (PyCFunction) RawGraphState_measure, METH_VARARGS, "measures a qbit"}
     , {"to_lists", (PyCFunction) RawGraphState_to_lists, METH_NOARGS, "converts the graph state to a python representation using lists"}
-    , {"get_phase", (PyCFunction) RawGraphState_get_phase, METH_NOARGS, "returns the global phase of the state"}
     , {"deepcopy", (PyCFunction) RawGraphState_deepcopy, METH_NOARGS, "deepcopy the graph"}
     , {"mul_to", (PyCFunction) RawGraphState_mul_to, METH_VARARGS, "computes overlap with other graph state; modifies self"}
     , {"project_to", (PyCFunction) RawGraphState_project_to, METH_VARARGS

@@ -14,7 +14,6 @@ def predefined_test_circuits():
             , list_to_circuit([CX(0, i) for i in range(1, 4)])
             ]
 
-@pytest.mark.deprecated
 def test_trivial_overlap_1(predefined_test_circuits):
     for circuit in predefined_test_circuits:
 
@@ -22,7 +21,6 @@ def test_trivial_overlap_1(predefined_test_circuits):
 
         assert g @ g == pytest.approx(1)
 
-@pytest.mark.deprecated
 def test_overlap_0():
     gb = GraphState.new_plus_state(4)
 
@@ -30,7 +28,6 @@ def test_overlap_0():
 
     assert g @ gb == 0
 
-@pytest.mark.deprecated
 def test_overlap_j_2():
     gb = GraphState.new_plus_state(4)
 

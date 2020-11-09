@@ -21,7 +21,7 @@ def do_test_q4_l10():
         print("graph", graph.to_naive_state())
         print("circuit")
         print(circuit_to_diagram(circuit))
-    assert naive @ graph.to_naive_state() == pytest.approx(1)
+    assert naive == graph.to_naive_state()
 
 @pytest.mark.slow
 def test_random_q4_l10():
@@ -47,7 +47,7 @@ def do_test_q10_l100():
         print(circuit_to_diagram(circuit))
         print("naive\n", naive)
         print("graph\n", graph.to_naive_state())
-    assert naive @ graph.to_naive_state() == pytest.approx(1)
+    assert naive == graph.to_naive_state()
 
 @pytest.mark.slow
 def test_random_q10_l100():

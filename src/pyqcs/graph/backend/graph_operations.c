@@ -97,13 +97,11 @@ graph_La_transform(RawGraphState * self, npy_intp i)
     ll_iter_t * iter_c = ll_iter_t_new(neighbours);
 
     graph_unchecked_apply_vop_right(self, i, VOP_siX);
-    self->phase = (self->phase EXTRA_PHASE_A) % 8;
 
 
     while(ll_iter_next(iter_b, &b))
     {
         graph_unchecked_apply_vop_right(self, b, VOP_smiZ);
-        self->phase = (self->phase EXTRA_PHASE_B) % 8;
         while(ll_iter_next(iter_c, &c))
         {
             // Do not re-toggle the edge.
@@ -398,7 +396,6 @@ graph_update_after_Y_measurement(RawGraphState * self
     {
         graph_unchecked_apply_vop_right(self, qbit, projected_vop[1]);
         ll_iter_t * iter = ll_iter_t_new(self->lists[qbit]);
-        self->phase = (self->phase + 7);
         npy_intp neighbour;
         while(ll_iter_next(iter, &neighbour))
         {
@@ -412,7 +409,6 @@ graph_update_after_Y_measurement(RawGraphState * self
     else
     {
         graph_unchecked_apply_vop_right(self, qbit, projected_vop[4]);
-        self->phase = (self->phase + 7) % 8;
 
         ll_iter_t * iter = ll_iter_t_new(self->lists[qbit]);
         npy_intp neighbour;

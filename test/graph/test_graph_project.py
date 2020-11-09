@@ -1,6 +1,7 @@
 import pytest
 
 from itertools import product
+import numpy as np
 
 from pyqcs.graph.state import GraphState
 from pyqcs import State, H, CZ
@@ -28,7 +29,7 @@ def test_vops_preserve_phase_unentangled(plus_ket3):
         if(res == 0):
             assert n.projZ(0, 0) == 0
         else:
-            assert g.to_naive_state() @ n.projZ(0, 0) == pytest.approx(1)
+            assert np.abs(g.to_naive_state() @ n.projZ(0, 0)) == pytest.approx(1)
 
 @pytest.mark.slow
 def test_vops_preserve_phase_singly_entangled(plus_ket3):
@@ -68,7 +69,7 @@ def test_vops_preserve_phase_star_entangled(plus_ket3):
         if(res == 0):
             assert n.projZ(0, 0) == 0
         else:
-            assert g.to_naive_state() @ n.projZ(0, 0) == pytest.approx(1)
+            assert np.abs(g.to_naive_state() @ n.projZ(0, 0)) == pytest.approx(1)
 
 @pytest.mark.slow
 def test_vops_preserve_phase_loop_entangled(plus_ket3):
@@ -89,4 +90,4 @@ def test_vops_preserve_phase_loop_entangled(plus_ket3):
         if(res == 0):
             assert n.projZ(0, 0) == 0
         else:
-            assert g.to_naive_state() @ n.projZ(0, 0) == pytest.approx(1)
+            assert np.abs(g.to_naive_state() @ n.projZ(0, 0)) == pytest.approx(1)

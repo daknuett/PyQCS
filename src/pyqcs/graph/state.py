@@ -32,11 +32,8 @@ class GraphState(AbstractGraphState):
         key_word_arguments.update(kwargs)
         return GraphState(self._g_state.deepcopy(), self._nbits, **key_word_arguments)
 
-    def to_naive_state(self, global_phase=True):
+    def to_naive_state(self):
         state = graph_lists_to_naive_state(self._g_state.to_lists())
-        if(global_phase):
-            phase = np.exp(1j * self._g_state.get_phase())
-            state._qm_state *= phase
         return state
 
     def __str__(self):
