@@ -6,7 +6,7 @@ from pyqcs.graph.state import GraphState
 from pyqcs.util.to_circuit import vop_to_circuit
 from pyqcs import GenericGate
 
-@pytest.mark.slow
+@pytest.mark.selected
 def test_two_qbits_isolated_CZ():
     for c0, c1 ,e in product(range(24), range(24), (True, False)):
         g = GraphState.new_plus_state(2)

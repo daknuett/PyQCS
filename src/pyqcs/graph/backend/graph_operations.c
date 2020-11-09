@@ -97,11 +97,13 @@ graph_La_transform(RawGraphState * self, npy_intp i)
     ll_iter_t * iter_c = ll_iter_t_new(neighbours);
 
     graph_unchecked_apply_vop_right(self, i, VOP_siX);
+    self->phase = (self->phase EXTRA_PHASE_A) % 8;
 
 
     while(ll_iter_next(iter_b, &b))
     {
         graph_unchecked_apply_vop_right(self, b, VOP_smiZ);
+        self->phase = (self->phase EXTRA_PHASE_B) % 8;
         while(ll_iter_next(iter_c, &c))
         {
             // Do not re-toggle the edge.
@@ -180,6 +182,7 @@ graph_clear_vop(RawGraphState * self, npy_intp a, npy_intp b)
     npy_uint8 product_length, vop;
     npy_intp i;
     int result = 0;
+
 
     // Start clearing with a:
     // Note that there is no need to clear the identity.
@@ -500,6 +503,9 @@ int
 graph_do_apply_CZ(RawGraphState * self, npy_intp i, npy_intp j)
 {
     npy_intp result;
+
+    npy_uint8 vopi = self->vops[i]
+        , vopj = self->vops[j];
 
     if(vop_commutes_with_CZ(self->vops[i]) && vop_commutes_with_CZ(self->vops[j]))
     {
