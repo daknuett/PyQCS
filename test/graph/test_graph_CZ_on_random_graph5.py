@@ -22,7 +22,7 @@ def do_test5_5():
         print("got")
         print(g.to_naive_state())
 
-    assert g.to_naive_state() @ n == pytest.approx(1)
+    assert g.to_naive_state() == n
 
 @pytest.mark.slow
 def test_random_graph5_5():
