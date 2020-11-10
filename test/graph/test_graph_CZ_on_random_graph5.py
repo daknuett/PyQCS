@@ -11,7 +11,7 @@ def do_test5_5():
     n =  CZ(0, 1) * g.to_naive_state()
     g = CZ(0, 1) * g
 
-    if(g.to_naive_state() != n):
+    if(g.to_naive_state() @ n != pytest.approx(1)):
         print("before:", lists)
         print("got:", g._g_state.to_lists())
 

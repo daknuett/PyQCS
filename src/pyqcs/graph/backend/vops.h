@@ -48,13 +48,14 @@ static npy_uint8 vop_lookup_table[24][24] =
 // S, I, Z, S^\dagger
 #define vop_commutes_with_CZ(v) (v == 1 || v == 2 || v == 5 || v == 8)
 
-static npy_uint8 C_L_as_products_lengths[24] = 
+// FIXME: this is suboptimal.
+static npy_uint8 C_L_as_products_lengths[24] =
 {
     5, 3, 4, 4, 4, 2, 5, 5, 1, 4, 4, 3, 5, 5, 4, 4, 5, 4, 5, 5, 3, 4, 2, 2
 };
 
 
-static npy_uint8 C_L_as_products_daggered[24][5] = 
+static npy_uint8 C_L_as_products_daggered[24][5] =
 {
     {1, 6, 6, 6, 1}
     , {1, 1, 1, 0, 0}
@@ -81,6 +82,7 @@ static npy_uint8 C_L_as_products_daggered[24][5] =
     , {6, 1, 0, 0, 0}
     , {1, 6, 0, 0, 0}
 };
+
 
 // This is just the readable version of the lookup table above.
 /*
@@ -1303,10 +1305,19 @@ static npy_intp two_qbit_vops_after_CZ[1152][3] =
 
 // C^\dagger Z C is one of the following matrices.
 // Index is the index of [Z, Y, X, -Z, -Y, -X].
-static npy_uint8 observable_after_vop_commute[24] = 
-{2, 0, 0, 2, 4, 0, 4, 5, 0, 5, 1, 1, 1, 2, 3, 2, 3, 4, 3, 4, 5, 3, 5, 1};
+static npy_uint8 observable_after_vop_commute[6][24] =
+{
+    {2, 0, 0, 2, 4, 0, 4, 5, 0, 5, 1, 1, 1, 2, 3, 2, 3, 4, 3, 4, 5, 3, 5, 1}
+    , {4, 2, 1, 0, 5, 4, 0, 1, 5, 0, 2, 0, 3, 1, 4, 3, 2, 2, 5, 3, 4, 1, 3, 5}
+    , {0, 4, 2, 1, 0, 5, 2, 0, 1, 4, 0, 5, 2, 3, 2, 4, 1, 3, 4, 5, 3, 5, 1, 3}
+    , {5, 3, 3, 5, 1, 3, 1, 2, 3, 2, 4, 4, 4, 5, 0, 5, 0, 1, 0, 1, 2, 0, 2, 4}
+    , {1, 5, 4, 3, 2, 1, 3, 4, 2, 3, 5, 3, 0, 4, 1, 0, 5, 5, 2, 0, 1, 4, 0, 2}
+    , {3, 1, 5, 4, 3, 2, 5, 3, 4, 1, 3, 2, 5, 0, 5, 1, 4, 0, 1, 2, 0, 2, 4, 0}
+};
 
-static npy_uint8 projected_vop[6] = 
+static npy_uint8 projected_vop[6] =
 {0, 1, 2, 7, 18, 5};
 
+static npy_uint8 daggered_vops[24] =
+{ 0, 8, 2, 10, 15, 5, 12, 13, 1, 23, 3, 11, 6, 7, 14, 4, 16, 22, 18, 19, 20, 21, 17, 9};
 #endif

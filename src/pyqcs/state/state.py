@@ -105,6 +105,7 @@ class BasicState(AbstractState):
 
         raise TypeError()
 
+
     def __matmul__(self, other):
         if(not isinstance(other, BasicState)):
             raise TypeError()
@@ -117,3 +118,43 @@ class BasicState(AbstractState):
 
     def is_normalized(self):
         return np.isclose(np.sum(np.absolute(self._qm_state)**2), 1, atol=self._length_error)
+
+    def projZ(self, m, l):
+        """
+        Applies
+
+        ..math::
+                P_{m,l} = \\frac{I + (-1)^l Z_m}{2}
+
+        to the state. ``l`` must be ``0`` or ``1``.
+
+        Returns either ``0`` (if the amplitude is below self._length_error)
+        or a new state (in any other case).
+        """
+        if l not in (0,1):
+            raise ValueError("l must be 0 or 1")
+        if(m >= self._nbits):
+            raise ValueError(f"qbit m out of range (0, ..., {self._nbits - 1})")
+
+        indices = np.arange(0, self._ndim, 1, dtype=np.int)
+
+        indices[indices & (1 << m) == 0] = 0
+        indices[indices != 0] = 1
+        indices = indices.astype(np.bool)
+
+        qm_state = self._qm_state.copy()
+        if(not l):
+            qm_state[indices] = 0
+        else:
+            qm_state[~indices] = 0
+
+        amplitude = np.linalg.norm(qm_state)
+        if(amplitude < self._length_error):
+            return 0
+
+        qm_state /= amplitude
+
+        state = self.deepcopy()
+        state._qm_state = qm_state
+
+        return state

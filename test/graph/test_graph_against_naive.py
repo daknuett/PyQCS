@@ -16,9 +16,11 @@ def do_test_q4_l10():
     naive = circuit * naive
     graph = circuit * graph
 
-    if(naive != graph.to_naive_state()):
+    if(naive @ graph.to_naive_state() != pytest.approx(1)):
         print("naive", naive)
         print("graph", graph.to_naive_state())
+        print("circuit")
+        print(circuit_to_diagram(circuit))
     assert naive == graph.to_naive_state()
 
 @pytest.mark.slow
@@ -40,17 +42,16 @@ def do_test_q10_l100():
     naive = circuit * naive
     graph = circuit * graph
 
-    if(naive != graph.to_naive_state()):
+    if(naive @ graph.to_naive_state() != pytest.approx(1)):
         print("circuit")
         print(circuit_to_diagram(circuit))
         print("naive\n", naive)
         print("graph\n", graph.to_naive_state())
     assert naive == graph.to_naive_state()
+
 @pytest.mark.slow
 def test_random_q10_l100():
     np.random.seed(1)
     for _ in range(10000):
         do_test_q10_l100()
 
-if __name__ == "__main__":
-    test_random_q10_l100()

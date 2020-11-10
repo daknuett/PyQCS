@@ -8,6 +8,7 @@
 #include <structmember.h>
 
 #include "linked_list.h"
+#include "vops.h"
 
 #define GRAPH_CLEAR_VOP_CANNOT_CLEAR_SECOND_VOP -4
 
@@ -17,8 +18,18 @@ typedef struct
     npy_intp length;
     ll_node_t ** lists;
     npy_uint8 * vops;
-    
 } RawGraphState;
+
+static inline void
+graph_unchecked_apply_vop_left(RawGraphState * self, npy_intp i, npy_uint8 vop)
+{
+    self->vops[i] = vop_lookup_table[vop][self->vops[i]];
+}
+static inline void
+graph_unchecked_apply_vop_right(RawGraphState * self, npy_intp i, npy_uint8 vop)
+{
+    self->vops[i] = vop_lookup_table[self->vops[i]][vop];
+}
 
 // Used in graph_toggle_edge.
 int
@@ -57,4 +68,7 @@ graph_update_after_measurement(RawGraphState * self
                             , npy_uint8 observable
                             , npy_intp qbit
                             , npy_intp result);
+
+int
+graph_do_apply_CZ(RawGraphState * self, npy_intp i, npy_intp j);
 #endif

@@ -140,11 +140,12 @@ RawGraphState_apply_C_L(RawGraphState * self
         return NULL;
     }
 
-    self->vops[i] = vop_lookup_table[vop][self->vops[i]];
+    graph_unchecked_apply_vop_left(self, i, vop);
 
     Py_RETURN_NONE;
 
 }
+
 
 static PyObject * 
 RawGraphState_to_lists(RawGraphState * self)
@@ -219,7 +220,7 @@ RawGraphState_measure(RawGraphState * self, PyObject * args)
         return NULL;
     }
 
-    observable = observable_after_vop_commute[self->vops[qbit]];
+    observable = observable_after_vop_commute[0][self->vops[qbit]];
     if(observable > 2)
     {
         invert_result = 1;
@@ -275,61 +276,7 @@ RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
         return NULL;
     }
 
-    if(vop_commutes_with_CZ(self->vops[i]) && vop_commutes_with_CZ(self->vops[j]))
-    {
-        // Case 1
-        result = graph_toggle_edge(self, i, j);
-        goto rs_CZ_exit;
-    }
-    // From now on Case 2.
-    if(graph_qbits_are_isolated(self, i, j))
-    {
-        // Sub-Sub-Case 2.2.1
-        result = graph_isolated_two_qbit_CZ(self, i, j);
-        goto rs_CZ_exit;
-    }
-    int cleared_i = 0;
-    int cleared_j = 0;
-    if(graph_can_clear_vop(self, i, j))
-    {
-        cleared_i = 1;
-        result = graph_clear_vop(self, i, j);
-        if(result)
-        {
-            goto rs_CZ_exit;
-        }
-    }
-    if(graph_can_clear_vop(self, j, i))
-    {
-        cleared_j = 1;
-        result = graph_clear_vop(self, j, i);
-        if(result)
-        {
-            goto rs_CZ_exit;
-        }
-    }
-    if(!cleared_i && graph_can_clear_vop(self, i, j))
-    {
-        cleared_i = 1;
-        result = graph_clear_vop(self, i, j);
-        if(result)
-        {
-            goto rs_CZ_exit;
-        }
-    }
-
-    if(cleared_i && cleared_j)
-    {
-        // Sub-Case 2.1
-        result = graph_toggle_edge(self, i, j);
-        goto rs_CZ_exit;
-    }
-
-    // Sub-Sub-Case 2.2.2
-    result = graph_isolated_two_qbit_CZ(self, i, j);
-
-
-rs_CZ_exit:
+    result = graph_do_apply_CZ(self, i, j);
 
     if(result == -2)
     {
@@ -344,11 +291,171 @@ rs_CZ_exit:
     Py_RETURN_NONE;
 }
 
+static PyObject *
+RawGraphState_mul_to(RawGraphState * self, PyObject * args)
+{
+    RawGraphState * other;
+    if(!PyArg_ParseTuple(args, "O!", &RawGraphStateType, &other))
+    {
+        return NULL;
+    }
+
+    if(self->length != other->length)
+    {
+        PyErr_SetString(PyExc_ValueError, "states must have same qbit count");
+        return NULL;
+    }
+
+    // Multiply all VOPs to the right.
+    npy_intp i, j;
+    for(i = 0; i < self->length; i++)
+    {
+        graph_unchecked_apply_vop_left(self, i, daggered_vops[other->vops[i]]);
+    }
+
+    // Multiply all CZs to the right.
+    for(i = 0; i < self->length; i++)
+    {
+        ll_iter_t * nbghd = ll_iter_t_new(other->lists[i]);
+        while(ll_iter_next(nbghd, &j))
+        {
+            // Don't apply the same gate twice.
+            if(j > i)
+            {
+                npy_intp result = graph_do_apply_CZ(self, i, j);
+
+                if(result == -2)
+                {
+                    PyErr_SetString(PyExc_ValueError, "internal error: qbit index out of range");
+                    return NULL;
+                }
+                if(result < 0)
+                {
+                    PyErr_SetString(PyExc_MemoryError, "failed to insert edge");
+                    return NULL;
+                }
+            }
+        }
+        free(nbghd);
+    }
+
+    // The state on the left is now the trivial graph state, i.e. the <+|^n state.
+    // The state we are operating on contains all the information.
+    // We will now insert projection operators on the X +1 eigenstate. We can do so
+    // because they act trivially on the state on the left. Because the projection
+    // operator is hermitian we can also let it act on the ket on the right.
+
+
+
+    npy_uint8 observable;
+    double result = 1;
+    npy_intp this_projection;
+    npy_intp invert_result = 0;
+
+    for(i = 0; i < self->length; i++)
+    {
+        this_projection = 0;
+        observable = observable_after_vop_commute[2][self->vops[i]];
+        if(observable > 2)
+        {
+            this_projection = 1;
+        }
+
+        // Projection on +/-X gives factor 1 or 0.
+        // FIXME: use ll_is_empty here.
+        if((observable == 2 || observable == 5)
+           && ll_length(self->lists[i]) == 0)
+        {
+            if(this_projection)
+            {
+                return Py_BuildValue("l", 0);
+            }
+            else
+            {
+                if(graph_update_after_measurement(self, observable - 3, i, this_projection))
+                {
+                    return NULL;
+                }
+                continue;
+            }
+        }
+
+        if(this_projection)
+        {
+            observable -= 3;
+        }
+        if(graph_update_after_measurement(self, observable, i, this_projection))
+        {
+            return NULL;
+        }
+        result *= M_SQRT1_2;
+    }
+
+
+    return Py_BuildValue("d", result);
+}
+
+static PyObject *
+RawGraphState_project_to(RawGraphState * self, PyObject * args)
+{
+    npy_intp qbit = 0, observable = 0;
+    npy_intp this_projection = 0;
+    if(!PyArg_ParseTuple(args, "ll", &qbit, &observable))
+    {
+        return NULL;
+    }
+    if(qbit > self->length)
+    {
+        PyErr_SetString(PyExc_ValueError, "qbit index out of range");
+        return NULL;
+    }
+    if((observable < 0) || (observable > 5))
+    {
+        PyErr_SetString(PyExc_ValueError, "observable must be in 0, ..., 5 (Z, Y, X, -Z, -Y, -X)");
+        return NULL;
+    }
+
+    observable = observable_after_vop_commute[observable][self->vops[qbit]];
+
+    if(observable > 2)
+    {
+        this_projection = 1;
+    }
+
+    // Projection on +/-X gives factor 1 or 0.
+    // FIXME: use ll_is_empty here.
+    if((observable == 2 || observable == 5)
+       && ll_length(self->lists[qbit]) == 0)
+    {
+        if(this_projection)
+        {
+            if(graph_update_after_measurement(self, observable, qbit, this_projection))
+            {
+                return NULL;
+            }
+            return Py_BuildValue("l", 0);
+        }
+        else
+        {
+            return Py_BuildValue("l", 1);
+        }
+    }
+
+    if(this_projection)
+    {
+        observable -= 3;
+    }
+    if(graph_update_after_measurement(self, observable, qbit, this_projection))
+    {
+        return NULL;
+    }
+    return Py_BuildValue("d", M_SQRT1_2);
+}
 
 static void
 RawGraphState_dealloc(RawGraphState * self)
 {
-    int i;
+    npy_intp i;
     for(i = 0; i < self->length; i++)
     {
         ll_recursively_delete_list(&self->lists[i]);
@@ -365,6 +472,11 @@ static PyMethodDef RawGraphState_methods[] = {
     , {"measure", (PyCFunction) RawGraphState_measure, METH_VARARGS, "measures a qbit"}
     , {"to_lists", (PyCFunction) RawGraphState_to_lists, METH_NOARGS, "converts the graph state to a python representation using lists"}
     , {"deepcopy", (PyCFunction) RawGraphState_deepcopy, METH_NOARGS, "deepcopy the graph"}
+    , {"mul_to", (PyCFunction) RawGraphState_mul_to, METH_VARARGS, "computes overlap with other graph state; modifies self"}
+    , {"project_to", (PyCFunction) RawGraphState_project_to, METH_VARARGS
+                    , "the projection operator to the qbit; first argument is the qbit, second argument is the pauli index in "
+                        "(Z, Y, X, -Z, -Y, -X)"
+                            }
     , {NULL}
 };
 
