@@ -392,7 +392,7 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
     }
 
 
-    return Py_BuildValue("d", &result);
+    return Py_BuildValue("d", result);
 }
 
 static PyObject *

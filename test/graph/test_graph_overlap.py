@@ -28,10 +28,3 @@ def test_overlap_0():
 
     assert g @ gb == 0
 
-def test_overlap_j_2():
-    gb = GraphState.new_plus_state(4)
-
-    g = S(0) * GraphState.new_plus_state(4)
-
-    assert g @ gb == pytest.approx((1 + 1j) / 2)
-

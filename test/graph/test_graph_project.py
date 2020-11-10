@@ -48,7 +48,7 @@ def test_vops_preserve_phase_singly_entangled(plus_ket3):
         if(res == 0):
             assert n.projZ(0, 0) == 0
         else:
-            assert g.to_naive_state() @ n.projZ(0, 0) == pytest.approx(1)
+            assert g.to_naive_state() == n.projZ(0, 0)
 
 @pytest.mark.slow
 def test_vops_preserve_phase_star_entangled(plus_ket3):
