@@ -92,19 +92,6 @@ class BasicState(AbstractState):
 
         raise TypeError()
 
-    def eq_with_phase(self, other):
-        if(isinstance(other, BasicState)):
-            if(self._nbits != other._nbits):
-                return False
-            if(not np.allclose(self._cl_state, other._cl_state)):
-                return False
-
-            overlap = self @ other
-            if(not np.isclose(overlap, 1)):
-                return False
-            return True
-
-        raise TypeError()
 
     def __matmul__(self, other):
         if(not isinstance(other, BasicState)):
