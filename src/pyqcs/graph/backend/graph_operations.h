@@ -18,20 +18,22 @@ typedef struct
     npy_intp length;
     ll_node_t ** lists;
     npy_uint8 * vops;
-    npy_int8 phase;
-    
+    npy_int8 phase_from_local_gates;
+    npy_int8 phase_from_SU2_gauge;
+    npy_intp phase_from_CZs;
+
 } RawGraphState;
 
 static inline void
 graph_unchecked_apply_vop_left(RawGraphState * self, npy_intp i, npy_uint8 vop)
 {
-    self->phase = (self->phase - vop_phase_lookup_table[vop][self->vops[i]]) % 8;
+    self->phase_from_SU2_gauge = (self->phase_from_SU2_gauge + vop_lookup_table[vop][self->vops[i]]) % 2;
     self->vops[i] = vop_lookup_table[vop][self->vops[i]];
 }
 static inline void
 graph_unchecked_apply_vop_right(RawGraphState * self, npy_intp i, npy_uint8 vop)
 {
-    self->phase = (self->phase - vop_phase_lookup_table[self->vops[i]][vop]) % 8;
+    self->phase_from_SU2_gauge = (self->phase_from_SU2_gauge + vop_lookup_table[self->vops[i]][vop]) % 2;
     self->vops[i] = vop_lookup_table[self->vops[i]][vop];
 }
 
@@ -75,4 +77,8 @@ graph_update_after_measurement(RawGraphState * self
 
 int
 graph_do_apply_CZ(RawGraphState * self, npy_intp i, npy_intp j);
+
+double
+graph_get_phase(RawGraphState * self);
+
 #endif

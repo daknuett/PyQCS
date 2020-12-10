@@ -25,7 +25,6 @@ def topology_to_vopfree_states(topology):
         n = CZ(*ent) * n
     return g, n
 
-@pytest.mark.selected
 def test_clear_vops_systematically_ID_neighbours():
     for topology in topologies:
         for v1, v2 in product(vops, vops):

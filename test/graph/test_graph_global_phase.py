@@ -7,7 +7,8 @@ from pyqcs.util.random_circuits import random_circuit
 from pyqcs.util.to_diagram import circuit_to_diagram
 
 
-@pytest.mark.skip(reason="debugging")
+#@pytest.mark.skip(reason="debugging")
+@pytest.mark.selected
 def test_global_phase_S():
     graph = (H(0) | X(0) | S(0)) * GraphState.new_plus_state(1)
 
@@ -18,7 +19,8 @@ def test_global_phase_S():
 
     assert result == pytest.approx(1j)
 
-@pytest.mark.skip(reason="debugging")
+#@pytest.mark.skip(reason="debugging")
+@pytest.mark.selected
 def test_global_phase_XSX():
     graph = (H(0) | X(0) | S(0) | X(0)) * GraphState.new_plus_state(1)
 

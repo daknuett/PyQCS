@@ -46,7 +46,8 @@ RawGraphState_init(RawGraphState * self
     self->lists = calloc(sizeof(ll_node_t), length);
     self->vops = malloc(sizeof(npy_uint8) * length);
     self->length = length;
-    self->phase = 0;
+    self->phase_from_local_gates = 0;
+    self->phase_from_CZs = 0;
     if(!self->lists)
     {
         free(self->vops);
@@ -92,7 +93,8 @@ RawGraphState_deepcopy(RawGraphState * self)
         return NULL;
     }
 
-    new_graph->phase = self->phase;
+    new_graph->phase_from_local_gates = self->phase_from_local_gates;
+    new_graph->phase_from_CZs = self->phase_from_CZs;
     for(i = 0; i < self->length; i++)
     {
         new_graph->vops[i] = self->vops[i];
@@ -123,8 +125,9 @@ RawGraphState_apply_C_L(RawGraphState * self
 {
     npy_uint8 vop;
     npy_intp i;
+    npy_intp daggered_phase;
 
-    if(!PyArg_ParseTuple(args, "lb", &i, &vop))
+    if(!PyArg_ParseTuple(args, "lbp", &i, &vop, &daggered_phase))
     {
         return NULL;
     }
@@ -144,6 +147,7 @@ RawGraphState_apply_C_L(RawGraphState * self
 
     graph_unchecked_apply_vop_left(self, i, vop);
 
+
     Py_RETURN_NONE;
 
 }
@@ -151,11 +155,11 @@ RawGraphState_apply_C_L(RawGraphState * self
 static PyObject *
 RawGraphState_get_phase(RawGraphState * self)
 {
-    double phase = self->phase * M_PI_4;
+    double phase = graph_get_phase(self);
     return Py_BuildValue("d", phase);
 }
 
-static PyObject * 
+static PyObject *
 RawGraphState_to_lists(RawGraphState * self)
 {
     PyObject * vop_list;
@@ -279,7 +283,8 @@ RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
 {
     npy_intp result;
     npy_intp i = 0, j = 0;
-    if(!PyArg_ParseTuple(args, "ll", &i, &j))
+    npy_intp daggered_phase;
+    if(!PyArg_ParseTuple(args, "llp", &i, &j, &daggered_phase))
     {
         return NULL;
     }
@@ -296,12 +301,23 @@ RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
         PyErr_SetString(PyExc_MemoryError, "failed to insert edge");
         return NULL;
     }
+
+    if(daggered_phase)
+    {
+        self->phase_from_CZs++;
+    }
+    else
+    {
+        self->phase_from_CZs--;
+    }
     Py_RETURN_NONE;
 }
 
 static PyObject *
 RawGraphState_mul_to(RawGraphState * self, PyObject * args)
 {
+    // FIXME
+    // Phases are not yet fixed!
     RawGraphState * other;
     if(!PyArg_ParseTuple(args, "O!", &RawGraphStateType, &other))
     {
@@ -386,7 +402,6 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
                 {
                     return NULL;
                 }
-                printf("vop[%ld] = %d -> extra phase %d\n", i, self->vops[i], extra_phase_mul_to_zero[self->vops[i]]);
                 phase += M_PI_4 * extra_phase_mul_to_zero[self->vops[i]];
                 continue;
             }
@@ -400,13 +415,14 @@ RawGraphState_mul_to(RawGraphState * self, PyObject * args)
         {
             return NULL;
         }
-        printf("vop[%ld] = %d -> extra phase %d\n", i, self->vops[i], extra_phase_mul_to_zero[self->vops[i]]);
         phase += M_PI_4 * extra_phase_mul_to_zero[self->vops[i]];
         result *= M_SQRT1_2;
     }
 
     // Phase got updated by ``graph_update_after_measurement``!
-    phase += self->phase*M_PI_4 - other->phase*M_PI_4;
+    // No I have no idea. This must be considered later!
+    // FIXME
+    phase += graph_get_phase(self) - graph_get_phase(other);
 
     Py_complex c_result;
     c_result.real = result * cos(phase);
