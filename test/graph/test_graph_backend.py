@@ -10,6 +10,7 @@ def plus_state():
      return (H(0) | H(1)) * State.new_zero_state(2)
 
 
+@pytest.mark.outdated_API
 def test_h0(plus_state):
     g = RawGraphState(2)
     g.apply_C_L(0, 0)
@@ -19,6 +20,7 @@ def test_h0(plus_state):
 
     assert converted == test_state
 
+@pytest.mark.outdated_API
 def test_h01(plus_state):
     g = RawGraphState(2)
     g.apply_C_L(0, 0)
@@ -32,6 +34,7 @@ def test_h01(plus_state):
     print("test_state", test_state)
     assert converted == test_state
 
+@pytest.mark.outdated_API
 def test_z0(plus_state):
     g = RawGraphState(2)
     g.apply_C_L(0, 5)
@@ -41,6 +44,7 @@ def test_z0(plus_state):
 
     assert converted == test_state
 
+@pytest.mark.outdated_API
 def test_z1(plus_state):
     g = RawGraphState(2)
     g.apply_C_L(1, 5)
@@ -54,6 +58,7 @@ def test_z1(plus_state):
     assert converted == test_state
 
 
+@pytest.mark.outdated_API
 def test_cz01_id(plus_state):
     g = RawGraphState(2)
     g.apply_CZ(0, 1)
@@ -67,6 +72,7 @@ def test_cz01_id(plus_state):
     assert converted == test_state
 
 
+@pytest.mark.outdated_API
 def test_graph_lists2naive_state():
     g = RawGraphState(3)
     g.apply_CZ(1, 0)

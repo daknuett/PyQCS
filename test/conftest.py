@@ -30,6 +30,7 @@ def pytest_collection_modifyitems(config, items):
     if(not config.getoption("--onlyselected")):
         skip_slow = pytest.mark.skip(reason="slow test")
         skip_deprecated = pytest.mark.skip(reason="deprecated test")
+        skip_outdated_API = pytest.mark.skip(reason="outdated API version used in this test")
         run_slow = config.getoption("--runslow")
         run_deprecated = config.getoption("--rundeprecated")
         for item in items:
@@ -39,10 +40,14 @@ def pytest_collection_modifyitems(config, items):
             if not run_deprecated:
                 if "deprecated" in item.keywords:
                     item.add_marker(skip_deprecated)
+            if("outdated_API" in item.keywords):
+                item.add_marker(skip_outdated_API)
     else:
         skip_not_selected = pytest.mark.skip(reason="not selected")
         for item in items:
             if not "selected" in item.keywords:
                 item.add_marker(skip_not_selected)
+            if("outdated_API" in item.keywords):
+                item.add_marker(skip_outdated_API)
 
 

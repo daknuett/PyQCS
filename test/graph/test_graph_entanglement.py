@@ -31,6 +31,7 @@ def naive_plus_state_10():
 
     return circuit * state
 
+@pytest.mark.outdated_API
 def test_CZ_plus_state(graph_plus_state_10):
     g = graph_plus_state_10
     g.apply_CZ(0, 1)
@@ -41,6 +42,7 @@ def test_CZ_plus_state(graph_plus_state_10):
     assert lists == ([2] * 10, [[1], [0]] + [[]]*8)
 
 
+@pytest.mark.outdated_API
 def test_many_CZ_plus_state(graph_plus_state_10, naive_plus_state_10):
     edges = [(1, 2), (2, 0), (5, 9), (8, 4), (7, 0), (5, 7), (8, 9)]
     circuit = list_to_circuit([CZ(*e) for e in edges])
@@ -52,6 +54,7 @@ def test_many_CZ_plus_state(graph_plus_state_10, naive_plus_state_10):
 
     assert converted == circuit * naive_plus_state_10
 
+@pytest.mark.outdated_API
 def test_many_CZ_plus_state(graph_plus_state_10, naive_plus_state_10):
     edges = [(1, 2), (2, 0), (5, 9), (8, 4), (7, 0), (5, 7), (8, 9)]
     circuit = list_to_circuit([CZ(*e) for e in edges])
@@ -64,6 +67,7 @@ def test_many_CZ_plus_state(graph_plus_state_10, naive_plus_state_10):
     assert converted == circuit * naive_plus_state_10
 
 
+@pytest.mark.outdated_API
 def test_few_CZ_clear_vop1(graph_zero_state_10, naive_zero_state_10):
     edges = [(1, 2)
             , (2, 0)]
@@ -75,6 +79,7 @@ def test_few_CZ_clear_vop1(graph_zero_state_10, naive_zero_state_10):
 
     assert graph_lists_to_naive_state(g.to_lists()) == state1
 
+@pytest.mark.outdated_API
 def test_few_CZ_clear_vop2(graph_zero_state_10, naive_zero_state_10):
     edges = [(1, 2)
             ]
@@ -91,6 +96,7 @@ def test_few_CZ_clear_vop2(graph_zero_state_10, naive_zero_state_10):
 
     assert graph_lists_to_naive_state(g.to_lists()) == state2
 
+@pytest.mark.outdated_API
 def test_few_CZ_clear_vop3(graph_zero_state_10, naive_zero_state_10):
     edges = [(1, 2)
             ]
@@ -108,6 +114,7 @@ def test_few_CZ_clear_vop3(graph_zero_state_10, naive_zero_state_10):
 
     assert graph_lists_to_naive_state(g.to_lists()) == state2
 
+@pytest.mark.outdated_API
 def test_few_CZ_clear_vops(graph_zero_state_10, naive_zero_state_10):
     edges = [(1, 2)
             , (2, 0)
@@ -125,6 +132,7 @@ def test_few_CZ_clear_vops(graph_zero_state_10, naive_zero_state_10):
 
     assert graph_lists_to_naive_state(g.to_lists()) == state2
 
+@pytest.mark.outdated_API
 def test_many_CZ_clear_vops(graph_zero_state_10, naive_zero_state_10):
     edges = [(1, 2)
             , (2, 0)
@@ -155,6 +163,7 @@ def test_many_CZ_clear_vops(graph_zero_state_10, naive_zero_state_10):
 
 
 
+@pytest.mark.outdated_API
 def test_many_CZ_clear_vops_precomputed():
     g = RawGraphState(3)
     s = State.new_zero_state(3)
@@ -179,6 +188,7 @@ def test_many_CZ_clear_vops_precomputed():
     assert g.to_lists() == ([2, 2, 20], [[2], [2], [0, 1]])
     assert graph_lists_to_naive_state(g.to_lists()) == s
 
+@pytest.mark.outdated_API
 def test_3qbit_CZ():
     s = (H(0) | H(1) | H(2)) * State.new_zero_state(3)
     s = (CZ(0, 1) | CZ(0, 2)) * s

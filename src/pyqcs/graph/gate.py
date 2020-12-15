@@ -24,9 +24,9 @@ class CZOperation(AbstractGraphOperation):
         return False, None
 
 class CLOperation(AbstractGraphOperation):
-    def __init__(self, act, clifford_index, dagger):
+    def __init__(self, act, clifford_index, phase):
         AbstractGraphOperation.__init__(self, act)
-        self._dagger = dagger
+        self._phase = phase
 
         if(not isinstance(clifford_index, int)):
             raise TypeError("clifford_index must be integer")
@@ -38,7 +38,7 @@ class CLOperation(AbstractGraphOperation):
         if(not isinstance(state, RawGraphState)):
             raise TypeError("state must be of type RawGraphState, but got {}".format(str(type(state))))
 
-        state.apply_C_L(self._act, self._clifford_index, self._dagger)
+        state.apply_C_L(self._act, self._clifford_index, self._phase)
         return False, None
 
 class MeasurementOperation(AbstractGraphOperation):

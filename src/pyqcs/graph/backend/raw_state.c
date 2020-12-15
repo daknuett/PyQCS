@@ -125,9 +125,9 @@ RawGraphState_apply_C_L(RawGraphState * self
 {
     npy_uint8 vop;
     npy_intp i;
-    npy_intp daggered_phase;
+    npy_intp phase;
 
-    if(!PyArg_ParseTuple(args, "lbp", &i, &vop, &daggered_phase))
+    if(!PyArg_ParseTuple(args, "lbl", &i, &vop, &phase))
     {
         return NULL;
     }
@@ -145,7 +145,14 @@ RawGraphState_apply_C_L(RawGraphState * self
         return NULL;
     }
 
+    if(phase < -8 || phase > 8)
+    {
+        PyErr_SetString(PyExc_ValueError, "phase must be in {-8, ..., 8} (is in units of pi/4)");
+        return NULL;
+    }
+
     graph_unchecked_apply_vop_left(self, i, vop);
+    self->phase_from_local_gates = (self->phase_from_local_gates + phase) % 8;
 
 
     Py_RETURN_NONE;

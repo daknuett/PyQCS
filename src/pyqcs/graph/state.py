@@ -49,12 +49,15 @@ class GraphState(AbstractGraphState):
 
     @classmethod
     def new_zero_state(cls, nbits, **kwargs):
+        # FIXME:
+        # Add a backend method for this. Doing this in the
+        # python layer is unnecessarily slow.
         if(nbits <= 0):
             raise ValueError("nbits must be greater than 0")
 
         g_state = RawGraphState(nbits)
         for i in range(nbits):
-            g_state.apply_C_L(i, 0)
+            g_state.apply_C_L(i, 0, -2)
 
         return cls(g_state, nbits, **kwargs)
 

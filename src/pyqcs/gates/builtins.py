@@ -51,7 +51,10 @@ class BuiltinGateBuilder(AbstractSingleGateCircuitBuilder):
         return self._registry[(act, *args)]
 
 def _get_graph_H_gate(act, i1, i2, dagger=False):
-    return GraphGate([CLOperation(act, 0)])
+    if(not dagger):
+        return GraphGate([CLOperation(act, 0, -2)])
+    else:
+        return GraphGate([CLOperation(act, 0, 2)])
 _H = BuiltinGateBuilder('H', _get_graph_H_gate)
 def H(act):
     if(act < 0):
@@ -59,7 +62,10 @@ def H(act):
     return _H(act, 0, 0)
 
 def _get_graph_X_gate(act, i1, i2, dagger=False):
-    return GraphGate([CLOperation(act, 14)])
+    if(not dagger):
+        return GraphGate([CLOperation(act, 14, 2)])
+    else:
+        return GraphGate([CLOperation(act, 14, -2)])
 _X = BuiltinGateBuilder('X', _get_graph_X_gate)
 def X(act):
     if(act < 0):
@@ -76,9 +82,9 @@ def M(act):
     return _M(act, 0, 0)
 
 def _get_graph_C_gate(act, control, i2, dagger=False):
-    return GraphGate([CLOperation(act, 0)
-                    , CZOperation(act, control)
-                    , CLOperation(act, 0)])
+    return GraphGate([CLOperation(act, 0, -2)
+                    , CZOperation(act, control, dagger)
+                    , CLOperation(act, 0, 2)])
 _C = BuiltinGateBuilder('C', _get_graph_C_gate, has_control=True)
 def C(act, control):
     if(act < 0):
@@ -99,7 +105,10 @@ def R(act, r):
     return _R(act, 0, r)
 
 def _get_graph_Z_gate(act, i1, i2, dagger=False):
-    return GraphGate([CLOperation(act, 5)])
+    if(not dagger):
+        return GraphGate([CLOperation(act, 5, 2)])
+    else:
+        return GraphGate([CLOperation(act, 5, -2)])
 _Z = BuiltinGateBuilder('Z', _get_graph_Z_gate)
 def Z(act):
     if(act < 0):
@@ -107,7 +116,7 @@ def Z(act):
     return _Z(act, 0, 0)
 
 def _get_graph_B_gate(act, control, i2, dagger=False):
-    return GraphGate([CZOperation(act, control)])
+    return GraphGate([CZOperation(act, control, dagger)])
 _B = BuiltinGateBuilder('B', _get_graph_B_gate, has_control=True)
 def CZ(act, control):
     if(act < 0):
@@ -118,9 +127,9 @@ def CZ(act, control):
 
 def _get_graph_S_gate(act, i1, i2, dagger=False):
     if(not dagger):
-        return GraphGate([CLOperation(act, 1)])
+        return GraphGate([CLOperation(act, 1, 1)])
     else:
-        return GraphGate([CLOperation(act, 8)])
+        return GraphGate([CLOperation(act, 8, -1)])
 
 _S = BuiltinGateBuilder('R', _get_graph_S_gate)
 def S(act):

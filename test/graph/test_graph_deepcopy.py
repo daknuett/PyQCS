@@ -10,7 +10,8 @@ def test_deepcopy_plus_state(graph_plus_state4):
     g = graph_plus_state4.deepcopy()
 
     assert g.to_naive_state() == graph_plus_state4.to_naive_state()
-    
+
+@pytest.mark.outdated_API
 def test_deepcopy_plus_state_mod(graph_plus_state4):
     g = graph_plus_state4.deepcopy()
     g._g_state.apply_C_L(0, 0)

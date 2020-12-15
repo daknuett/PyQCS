@@ -1,8 +1,11 @@
+import pytest
+
 from itertools import product
 from pyqcs.graph.backend.raw_state import RawGraphState
 from pyqcs import GenericGate, State, H
 from pyqcs.graph.util import graph_lists_to_naive_state, C_L
 
+@pytest.mark.outdated_API
 def test_h0():
     state = RawGraphState(1)
     assert state.to_lists() == ([2], [[]])
@@ -11,6 +14,7 @@ def test_h0():
 
     assert state.to_lists() == ([0], [[]])
 
+@pytest.mark.outdated_API
 def test_all_clifford_gates_single():
     for i in range(24):
         g = RawGraphState(1)
@@ -21,6 +25,7 @@ def test_all_clifford_gates_single():
 
         assert graph_lists_to_naive_state(g.to_lists()) == s
 
+@pytest.mark.outdated_API
 def test_all_clifford_gates_two():
     for c0, c1 in product(range(24), range(24)):
         g = RawGraphState(1)

@@ -1,9 +1,11 @@
+import pytest
 import numpy as np
 
 from pyqcs.graph.backend.raw_state import RawGraphState
 from pyqcs.graph.util import graph_lists_to_naive_state
 from pyqcs import H, M, State, CZ, R, list_to_circuit
 
+@pytest.mark.outdated_API
 def test_deterministic_unentangled_measurement():
     g = RawGraphState(4)
 
@@ -29,6 +31,7 @@ def test_random_z_graph_update():
         assert r == result
         assert graph_lists_to_naive_state(g.to_lists()) == s_bar
 
+@pytest.mark.outdated_API
 def test_random_z_graph_update_entangled():
     for i in range(10):
         s = (H(0) | H(1) | H(2)) * State.new_zero_state(3)
@@ -49,6 +52,7 @@ def test_random_z_graph_update_entangled():
         assert r == result
         assert graph_lists_to_naive_state(g.to_lists()) == s_bar
 
+@pytest.mark.outdated_API
 def test_random_y_graph_update():
     for i in range(10):
         s = (H(0) | H(1) ) * State.new_zero_state(2)
@@ -71,6 +75,7 @@ def test_random_y_graph_update():
         assert r == result
         assert graph_lists_to_naive_state(g.to_lists()) == s_bar
 
+@pytest.mark.outdated_API
 def test_random_y_graph_update_entangled():
     for i in range(10):
         s = (H(0) | H(1) | H(2)) * State.new_zero_state(3)
@@ -96,6 +101,7 @@ def test_random_y_graph_update_entangled():
         assert r == result
         assert graph_lists_to_naive_state(g.to_lists()) == s_bar
 
+@pytest.mark.outdated_API
 def test_random_y_graph_update_entangled2():
     for i in range(10):
         s = (H(0) | H(1) | H(2)) * State.new_zero_state(3)
@@ -122,6 +128,7 @@ def test_random_y_graph_update_entangled2():
         assert r == result
         assert graph_lists_to_naive_state(g.to_lists()) == s_bar
 
+@pytest.mark.outdated_API
 def test_bell_state():
     for i in range(10):
         s = (H(0) | H(1) | H(2)) * State.new_zero_state(3)
@@ -143,6 +150,7 @@ def test_bell_state():
         print("lists:", g.to_lists())
         assert graph_lists_to_naive_state(g.to_lists()) == s_bar
 
+@pytest.mark.outdated_API
 def test_random_x_graph_update_entangled():
     for i in range(10):
         s = (H(0) | H(1) | H(2) | H(3) | H(4)) * State.new_zero_state(5)
