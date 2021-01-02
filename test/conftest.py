@@ -1,4 +1,5 @@
 import pytest
+import ray
 
 def pytest_addoption(parser):
     parser.addoption(
@@ -44,3 +45,8 @@ def pytest_collection_modifyitems(config, items):
         for item in items:
             if not "selected" in item.keywords:
                 item.add_marker(skip_not_selected)
+
+
+@pytest.fixture(scope="session")
+def ray_setup():
+    return ray.init()
