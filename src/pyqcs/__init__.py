@@ -52,6 +52,8 @@ Imported Utilities
     Measures once. Refer to function docstring.
 ``sample``
     Samples from a state. Refer to function docstring.
+``compute_amplitudes``
+    Computes amplitudes for a measrement outcomes. Refer to function docstring.
 ``tree_amplitudes``
     Computes amplitudes from a state. Refer to function docstring.
 ``list_to_circuit``
@@ -96,6 +98,6 @@ from .state.state import BasicState as State
 from .gates.circuits import AnonymousCompoundGateCircuit, NamedCompoundGateCircuit
 
 
-from .measurement import measure, sample, tree_amplitudes
+from .measurement import measure, sample, tree_amplitudes, compute_amplitudes
 from .utils import list_to_circuit, circuitpng
 
