@@ -139,8 +139,8 @@ def compute_amplitude(state, qbits, bitstr):
 
     check_bits = sum(1 << qbit for qbit in qbits)
     bit_mask = sum(1 << bit for bit,msk in zip(qbits, bitstr) if msk)
-    if(max(qbits) > state.nqbits):
-        raise ValueError(f"qbit {max(qbits)} out of range: {state.nqbits}")
+    if(max(qbits) > state._nqbits):
+        raise ValueError(f"qbit {max(qbits)} out of range: {state._nqbits}")
 
     amplitude = 0
     for i,v in enumerate(state._qm_state):
@@ -167,8 +167,8 @@ def compute_amplitudes(state, qbits, eps=1e-8, asint=True):
         qbits = [i for i in range(qbits.bit_length()) if qbits & (1 << i)]
     if(not isinstance(qbits, (list, tuple))):
         raise TypeError("qbits must be int, list, or tuple")
-    if(max(qbits) > state.nqbits):
-        raise ValueError(f"qbit {max(qbits)} out of range: {state.nqbits}")
+    if(max(qbits) > state._nqbits):
+        raise ValueError(f"qbit {max(qbits)} out of range: {state._nqbits}")
 
     single_qbit_outcomes = [0, 1]
 
