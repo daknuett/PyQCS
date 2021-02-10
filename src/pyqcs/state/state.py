@@ -136,11 +136,11 @@ class BasicState(AbstractState):
         if(m >= self._nbits):
             raise ValueError(f"qbit m out of range (0, ..., {self._nbits - 1})")
 
-        indices = np.arange(0, self._ndim, 1, dtype=np.int)
+        indices = np.arange(0, self._ndim, 1, dtype=int)
 
         indices[indices & (1 << m) == 0] = 0
         indices[indices != 0] = 1
-        indices = indices.astype(np.bool)
+        indices = indices.astype(bool)
 
         qm_state = self._qm_state.copy()
         if(not l):
