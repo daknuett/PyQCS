@@ -174,7 +174,7 @@ def compute_amplitudes(state, qbits, eps=1e-8, asint=True):
 
     results = dict()
 
-    for outcome in product(*[single_qbit_outcomes]*3):
+    for outcome in product(*[single_qbit_outcomes]*len(qbits)):
         amplitude = compute_amplitude(state, qbits, outcome)
         if(amplitude > eps):
             if(asint):
