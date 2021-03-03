@@ -10,7 +10,7 @@ basic_gates = Extension(
                                             , "-g"
                                             , "-I%s" % numpy.get_include()]
                     )
-basic_gates = Extension(
+compute_amplitude = Extension(
                         "pyqcs.gates.implementations.compute_amplitude"
                         , sources=["src/pyqcs/gates/implementations/compute_amplitude.c"]
                         , extra_compile_args=["-fstack-protector"
@@ -38,10 +38,11 @@ generic_gate = Extension(
 
 setup(
         name="pyqcs"
-        , version="2.6.4"
+        , version="2.6.5"
         , description="A quantum computing simulator."
         , long_description = open("README.rst").read()
         , ext_modules=[basic_gates
+                        , compute_amplitude
                         , generic_gate
                         , graph_backend]
         , packages=find_packages(where="src")
