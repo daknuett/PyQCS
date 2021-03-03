@@ -1,10 +1,12 @@
-from .gates.builtins import M
-from .utils import list_to_circuit
-from .state.state import BasicState as State
 from collections import Counter, deque
 from itertools import product
 
 import numpy as np
+
+from .gates.builtins import M
+from .utils import list_to_circuit
+from .state.state import BasicState as State
+from .gates.implementations.compute_amplitude import compute_amplitude
 
 def build_measurement_circuit(bit_mask):
     if(isinstance(bit_mask, int)):
@@ -124,8 +126,12 @@ def tree_amplitudes(state, bit_mask=None, eps=1e-5):
 
     return [[outcome, prob] for prob, outcome, state in next_queue]
 
-def compute_amplitude(state, qbits, bitstr):
+def py_compute_amplitude(state, qbits, bitstr):
     """
+    This function is deprecated and will be removed in future versions.
+    The function is replaced by the generalized UFunc ``compute_amplitude``.
+
+
     ``state`` is a ``pyqcs.State`` object, ``qbits`` is a list of qbits.
     The list ``bitstr`` contains the bitstring, for which the amplitude should be computed.
     ``bitstr[i]`` corresponds to the qbit ``qbits[i]``.
@@ -162,6 +168,11 @@ def compute_amplitudes(state, qbits, eps=1e-8, asint=True):
     If ``asint == True`` the ``outcome`` is converted to an integer bit mask,
     in the other case ``outcome`` is a tuple of 0s and 1s where
     ``outcome[i]`` corresponds to ``qbits[i]``.
+
+    In previous versions this used ``py_compute_amplitude`` to compute the
+    individual amplitudes. To improve performance the UFunc
+    ``pyqcs.gates.implementations.compute_amplitude.compute_amplitude``
+    is used in newer versions.
     """
     if(isinstance(qbits, int)):
         qbits = [i for i in range(qbits.bit_length()) if qbits & (1 << i)]
@@ -175,7 +186,9 @@ def compute_amplitudes(state, qbits, eps=1e-8, asint=True):
     results = dict()
 
     for outcome in product(*[single_qbit_outcomes]*len(qbits)):
-        amplitude = compute_amplitude(state, qbits, outcome)
+        amplitude = compute_amplitude(state._qm_state
+                                    , np.array(qbits, dtype=int)
+                                    , np.array(outcome, dtype=np.uint8))
         if(amplitude > eps):
             if(asint):
                 results[sum(1 << bit for bit,msk in zip(qbits, outcome) if msk)] = amplitude

@@ -18,14 +18,21 @@ ufunc_compute_amplitude(
     npy_uint8 * bitstr_in = (npy_uint8 *)(args[2]);
     npy_double * amplitude = (npy_double *)(args[3]);
 
-    npy_intp ndims = dimensions[0];
-    npy_intp nqbits = dimensions[1];
+    npy_intp ndims = dimensions[1];
+    npy_intp nqbits = dimensions[2];
 
     npy_intp i;
     npy_uint64 check_bits = 0;
     npy_uint64 bit_mask = 0;
     for(i = 0; i < nqbits; i++)
     {
+        // This is how it is supposed to work.
+        // I don't know why it doesn't.
+        //check_bits |= 1 << *(qbits_in + i*steps[1]);
+        //if(*(bitstr_in + i*steps[2]))
+        //{
+        //    bit_mask |= 1 << *(qbits_in + i*steps[1]);
+        //}
         check_bits |= 1 << qbits_in[i];
         if(bitstr_in[i])
         {
@@ -70,12 +77,19 @@ static struct PyModuleDef moduledef = {
 };
 
 PyMODINIT_FUNC 
-PyInit_basic_gates(void)
+PyInit_compute_amplitude(void)
 {
+    char * data = "NULL";
+	import_array();
+	import_ufunc();
 	PyObject * module;
     PyObject * compute_amplitude = PyUFunc_FromFuncAndDataAndSignature(
 				ufunc_compute_amplitude_funcs // func
-				, NULL // data
+                // It seems that data must not be NULL
+                // in contrast to what https://numpy.org/devdocs/reference/c-api/ufunc.html
+                // says.
+				, (void **)&data // data
+                //, NULL
 				, ufunc_compute_amplitude_types //types
 				, 1 // ntypes
 				, 3 // nin
@@ -85,7 +99,7 @@ PyInit_basic_gates(void)
 				, "Computes the amplitude of the given bitstr on the given qbits." // doc
 				, 0 // unused
                 , "(n),(m),(m)->()"); 
-    if(!compute_amplitude)
+    if(compute_amplitude <= 0)
     {
         return NULL;
     }
@@ -95,10 +109,8 @@ PyInit_basic_gates(void)
 		return NULL;
 	}
     Py_INCREF(compute_amplitude);
-	import_array();
-	import_ufunc();
 
-    if(PyModule_AddObject(module, "compute_amplitude", compute_amplitude))
+    if(PyModule_AddObject(module, "compute_amplitude", compute_amplitude) < 0)
     {
         Py_XDECREF(compute_amplitude);
         Py_DECREF(module);
