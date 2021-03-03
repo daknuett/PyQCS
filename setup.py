@@ -10,6 +10,14 @@ basic_gates = Extension(
                                             , "-g"
                                             , "-I%s" % numpy.get_include()]
                     )
+basic_gates = Extension(
+                        "pyqcs.gates.implementations.compute_amplitude"
+                        , sources=["src/pyqcs/gates/implementations/compute_amplitude.c"]
+                        , extra_compile_args=["-fstack-protector"
+                                            , "-Wno-unused-variable"
+                                            , "-g"
+                                            , "-I%s" % numpy.get_include()]
+                    )
 graph_backend = Extension("pyqcs.graph.backend.raw_state"
                         , sources=["src/pyqcs/graph/backend/raw_state.c"
                                 , "src/pyqcs/graph/backend/linked_list.c"
