@@ -70,7 +70,7 @@ class BasicState(AbstractState):
 
     def apply_gate(self, gate, force_new_state=False):
         qm_state, cl_state, last_measured = gate(self._qm_state, self._cl_state)
-        return BasicState(qm_state
+        return self.__class__(qm_state
                         , cl_state
                         , self._nbits
                         , last_measured
