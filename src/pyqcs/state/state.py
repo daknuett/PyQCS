@@ -1,6 +1,7 @@
 from .abc import AbstractState
 import numpy as np
 
+
 class BasicState(AbstractState):
     """
     This is the basic dense state vector class. It uses NumPy Arrays to
@@ -16,6 +17,7 @@ class BasicState(AbstractState):
     """
     __slots__ = ["_nbits", "_ndim", "_qm_state", "_cl_state", "_last_measured"
             , "_length_error", "_check_normalization"]
+
     def __init__(self
                 , qm_state
                 , cl_state
@@ -71,7 +73,7 @@ class BasicState(AbstractState):
         return BasicState(qm_state
                         , cl_state
                         , self._nbits
-                        ,  last_measured
+                        , last_measured
                         , lenght_error=self._length_error
                         , check_normalization=self._check_normalization)
 
@@ -104,7 +106,6 @@ class BasicState(AbstractState):
             return True
 
         raise TypeError()
-
 
     def __matmul__(self, other):
         if(not isinstance(other, BasicState)):
