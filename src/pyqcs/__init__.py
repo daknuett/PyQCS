@@ -43,7 +43,7 @@ vector state it will not be affected. If ``state`` is a graphical state and
 
 For a given state class create new states by calling the classmethod
 ``new_zero_state`` or ``new_plus_state`` (availability depends on the used
-state class).
+state class). See also: `Imported Classes`_.
 
 Imported Utilities
 ##################
@@ -61,6 +61,22 @@ Imported Utilities
 ``circuitpng``
     Renders a PNG representation of a given circuit in a jupyter notebook.
     Quality of the output varies.
+
+Imported Classes
+################
+
+``State``
+    This is ``pyqcs.state.state.BasicState``, the state used for
+    dense vector simulations. The ``__str__`` method is somewhat
+    rudimentary but does the trick.
+``PrettyState``
+    This is ``pyqcs.state.pretty_state.PrettyState``. It is a
+    drop-in replacement for ``State`` and just comes with a fancier
+    ``__str__`` method (which can be both helpful and annoying).
+
+Graphical states are not imported, as it would lead to cyclic imports.
+If you need the graphical simulation backend import
+``pyqcs.graph.state.GraphState``.
 
 Other Modules
 #############
@@ -95,6 +111,7 @@ import numpy as np
 
 from .gates.builtins import C, H, X, R, M, Z, S, CX, CZ, GenericGate, clear_builtin_gate_cache
 from .state.state import BasicState as State
+from .state.pretty_state import PrettyState
 from .gates.circuits import AnonymousCompoundGateCircuit, NamedCompoundGateCircuit
 
 
