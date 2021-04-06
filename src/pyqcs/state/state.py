@@ -159,3 +159,9 @@ class BasicState(AbstractState):
         state._qm_state = qm_state
 
         return state
+
+    def redo_normalization(self):
+        norm = np.linalg.norm(self._qm_state)
+        if(np.isclose(norm, 0)):
+            raise ValueError("got norm close to 0, this is very bad")
+        self._qm_state /= norm

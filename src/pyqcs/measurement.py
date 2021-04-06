@@ -8,6 +8,7 @@ from .utils import list_to_circuit
 from .state.state import BasicState as State
 from .gates.implementations.compute_amplitude import compute_amplitude
 
+
 def build_measurement_circuit(bit_mask):
     if(isinstance(bit_mask, int)):
         c_list = [M(i) for i in range(bit_mask.bit_length()) if bit_mask & (1 << i)]
@@ -31,6 +32,7 @@ def measure(state, bit_mask):
     circuit = build_measurement_circuit(bit_mask)
 
     state = state.deepcopy()
+    state.redo_normalization()
     if(isinstance(state, State)):
         state._cl_state[:] = -1
     else:
@@ -50,6 +52,7 @@ def _do_sample(state, circuit, nsamples):
         else:
             yield new_state, sum([1 << i for i,v in new_state._measured.items() if v == 1])
 
+
 def sample(state, bit_mask, nsamples, keep_states=False):
     """
     Measures the qbits given in ``bit_mask`` ``nsamples`` times
@@ -64,6 +67,7 @@ def sample(state, bit_mask, nsamples, keep_states=False):
     circuit = build_measurement_circuit(bit_mask)
 
     state = state.deepcopy(force_new_state=True)
+    state.redo_normalization()
     if(isinstance(state, State)):
         state._cl_state[:] = -1
     else:
@@ -73,6 +77,7 @@ def sample(state, bit_mask, nsamples, keep_states=False):
         return Counter(_do_sample(state, circuit, nsamples))
 
     return Counter((i[1] for i in _do_sample(state, circuit, nsamples)))
+
 
 def tree_amplitudes(state, bit_mask=None, eps=1e-5):
     """
@@ -91,6 +96,7 @@ def tree_amplitudes(state, bit_mask=None, eps=1e-5):
 
     if(not isinstance(state, State)):
         raise TypeError("tree_amplitudes currently works for dense vector states only")
+    state.redo_normalization()
 
     if(bit_mask is None):
         bit_mask = list(range(state._nbits))
@@ -126,6 +132,7 @@ def tree_amplitudes(state, bit_mask=None, eps=1e-5):
 
     return [[outcome, prob] for prob, outcome, state in next_queue]
 
+
 def py_compute_amplitude(state, qbits, bitstr):
     """
     This function is deprecated and will be removed in future versions.
@@ -147,6 +154,7 @@ def py_compute_amplitude(state, qbits, bitstr):
     bit_mask = sum(1 << bit for bit,msk in zip(qbits, bitstr) if msk)
     if(max(qbits) > state._nbits):
         raise ValueError(f"qbit {max(qbits)} out of range: {state._nbits}")
+    state.redo_normalization()
 
     amplitude = 0
     for i,v in enumerate(state._qm_state):
@@ -182,6 +190,7 @@ def compute_amplitudes(state, qbits, eps=1e-8, asint=True):
         raise ValueError(f"qbit {max(qbits)} out of range: {state._nbits}")
 
     single_qbit_outcomes = [0, 1]
+    state.redo_normalization()
 
     results = dict()
 
@@ -196,4 +205,3 @@ def compute_amplitudes(state, qbits, eps=1e-8, asint=True):
                 results[outcome] = amplitude
 
     return results
-

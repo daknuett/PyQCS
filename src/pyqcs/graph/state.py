@@ -3,6 +3,7 @@ from .backend.raw_state import RawGraphState
 from .util import graph_lists_to_naive_state
 from.gate import GraphGate
 
+
 class GraphState(AbstractGraphState):
     __slots__ = ["_g_state", "_nbits", "_measured", "_force_new_state"]
     def __init__(self, g_state, nbits, force_new_state=False, measured=None):
@@ -15,7 +16,6 @@ class GraphState(AbstractGraphState):
         if(measured is None):
             self._measured = dict()
 
-
     @classmethod
     def new_plus_state(cls, nbits, **kwargs):
         if(nbits <= 0):
@@ -24,7 +24,6 @@ class GraphState(AbstractGraphState):
         g_state = RawGraphState(nbits)
 
         return cls(g_state, nbits, **kwargs)
-
 
     def deepcopy(self, **kwargs):
         key_word_arguments = {"force_new_state": self._force_new_state
@@ -92,3 +91,6 @@ class GraphState(AbstractGraphState):
         observable = observables.index(observable.upper())
 
         return self._g_state.project_to(qbit, observable)
+
+    def redo_normalization(self):
+        pass
