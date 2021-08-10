@@ -459,4 +459,23 @@ namespace rbt
             stream << "}\n";
         }
     }
+    bool RBTree::has_value(int value)
+    {
+        Node * c_node = m_root;
+        while(c_node != NULL)
+        {
+            if(c_node->m_value < value)
+            {
+                c_node = c_node->m_higher;
+                continue;
+            }
+            if(c_node->m_value > value)
+            {
+                c_node = c_node->m_lower;
+                continue;
+            }
+            return true;
+        }
+        return false;
+    }
 }
