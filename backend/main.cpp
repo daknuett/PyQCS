@@ -1,90 +1,60 @@
+#include <ll/ll.hpp>
+#include <rbt/rbt.hpp>
 #include <iostream>
-#include <dsv.hpp>
+#include <vector>
 
 int
 main(int argc, char ** argv)
 {
-    dsv::DSV vector(1);
-    dsv::DSVOpArgument arg(0);
-    std::mt19937_64 rne;
-    std::vector<std::complex<double>> v1;
+    ll::SortedList list;
 
-    vector.export_to_vector(v1);
-    for(unsigned int i = 0; i < v1.size(); i++)
-    {
-        if(std::abs(v1[i]) > 0)
-        {
-            std::cout << v1[i] << "|" << i << ">\n";
-        }
-    }
+    std::cout << "LL:\n";
+    list.print();
 
-    std::cout << "-----------------\n";
-    vector.apply_op(dsv::ops::H, arg, rne);
+    list.insert(10);
+    list.insert(1);
+    list.insert(3);
+    list.print();
+    list.insert(2);
+    list.insert(11);
+    list.insert(20);
 
-    vector.export_to_vector(v1);
-    for(unsigned int i = 0; i < v1.size(); i++)
-    {
-        if(std::abs(v1[i]) > 0)
-        {
-            std::cout << v1[i] << "|" << i << ">\n";
-        }
-    }
-    std::cout << "-----------------\n";
-    vector.apply_op(dsv::ops::H, arg, rne);
-    vector.apply_op(dsv::ops::X, arg, rne);
-    vector.apply_op(dsv::ops::H, arg, rne);
+    list.print();
 
-    vector.export_to_vector(v1);
-    for(unsigned int i = 0; i < v1.size(); i++)
-    {
-        if(std::abs(v1[i]) > 0)
-        {
-            std::cout << v1[i] << "|" << i << ">\n";
-        }
-    }
+    list.delete_value(3);
 
-    std::cout << "-----------------\n";
-    dsv::DSV vector2 = vector;
-    vector2.export_to_vector(v1);
-    for(unsigned int i = 0; i < v1.size(); i++)
-    {
-        if(std::abs(v1[i]) > 0)
-        {
-            std::cout << v1[i] << "|" << i << ">\n";
-        }
-    }
-    vector.apply_op(dsv::ops::H, arg, rne);
-    vector.apply_op(dsv::ops::X, arg, rne);
-    vector2.export_to_vector(v1);
-    for(unsigned int i = 0; i < v1.size(); i++)
-    {
-        if(std::abs(v1[i]) > 0)
-        {
-            std::cout << v1[i] << "|" << i << ">\n";
-        }
-    }
-    vector.export_to_vector(v1);
-    for(unsigned int i = 0; i < v1.size(); i++)
-    {
-        if(std::abs(v1[i]) > 0)
-        {
-            std::cout << v1[i] << "|" << i << ">\n";
-        }
-    }
+    list.print();
 
-    std::cout << "-----------------\n";
-    arg.m_phi1 = M_PI;
-    vector.apply_op(dsv::ops::X, arg, rne);
-    vector.apply_op(dsv::ops::R, arg, rne);
+    std::cout << "has 11: " << list.has_value(11) << "\n";
+    std::cout << "has 3: " << list.has_value(3) << "\n";
+    std::cout << "has 21: " << list.has_value(21) << "\n";
 
-    vector.export_to_vector(v1);
-    for(unsigned int i = 0; i < v1.size(); i++)
+    std::cout << "RBT:\n";
+
+    rbt::RBTree tree;
+    std::vector<int> vect;
+    tree.insert(10);
+    tree.insert(1);
+    tree.insert(3);
+
+    tree.export_inorder(vect);
+    std::cout << "tree contains:";
+    for(auto i: vect)
     {
-        if(std::abs(v1[i]) > 0)
-        {
-            std::cout << v1[i] << "|" << i << ">\n";
-        }
+        std::cout << ", " << i;
     }
+    std::cout << "\n";
+    tree.insert(2);
+    tree.insert(11);
+    tree.insert(20);
+    tree.export_inorder(vect);
+    std::cout << "tree contains:";
+    for(auto i: vect)
+    {
+        std::cout << ", " << i;
+    }
+    std::cout << "\n";
+
 
 
     return 0;
