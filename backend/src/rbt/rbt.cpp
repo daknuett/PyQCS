@@ -246,6 +246,7 @@ namespace rbt
             Node * C = B->m_parent; // C
             Node * greatgrandparent = C->m_parent; // C's parent
             Node * gamma = B->m_higher; // B's right child
+            bool C_was_lower_child = C->is_lower_child();
 
             C->m_lower = gamma; // (a)
             if(gamma != NULL)
@@ -260,7 +261,7 @@ namespace rbt
             }
             else
             {
-                if(C->is_lower_child())
+                if(C_was_lower_child)
                 {
                     greatgrandparent->m_lower = B; // (c)
                 }
@@ -373,6 +374,7 @@ namespace rbt
         Node * C = B->m_parent; // C
         Node * greatgrandparent = C->m_parent; // C's B
         Node * gamma = B->m_lower; // B's left child
+        bool C_was_lower_child = C->is_lower_child();
 
         C->m_higher = gamma; // (a)
         if(gamma != NULL)
@@ -387,7 +389,7 @@ namespace rbt
         }
         else
         {
-            if(C->is_lower_child())
+            if(C_was_lower_child)
             {
                 greatgrandparent->m_lower = B; // (c)
             }
