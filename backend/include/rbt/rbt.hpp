@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <iostream>
 
 namespace rbt
 {
@@ -24,6 +25,9 @@ namespace rbt
         Node(Node * parent, Node * lower, Node * higher, int value);
         void recursively_delete(void);
 
+        void dot_edges(std::ostream & stream);
+        void dot_node_descrs(std::ostream & stream);
+
         friend class RBTree;
     };
 
@@ -38,6 +42,7 @@ namespace rbt
         void delete_value(int value);
         bool has_value(int value);
         void export_inorder(std::vector<int> & vect);
+        void to_dot(std::ostream & stream);
         RBTree(void);
         ~RBTree(void);
     };

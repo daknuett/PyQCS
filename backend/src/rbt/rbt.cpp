@@ -422,4 +422,41 @@ namespace rbt
             m_root->inorder_export(vect);
         }
     }
+    void Node::dot_edges(std::ostream & stream)
+    {
+        if(m_lower != NULL)
+        {
+            m_lower->dot_edges(stream);
+            stream << "\t" << m_value << " -> " << m_lower->m_value << "\n";
+        }
+        if(m_higher != NULL)
+        {
+            m_higher->dot_edges(stream);
+            stream << "\t" << m_value << " -> " << m_higher->m_value << "\n";
+        }
+    }
+    void Node::dot_node_descrs(std::ostream & stream)
+    {
+        if(m_lower != NULL)
+        {
+            m_lower->dot_node_descrs(stream);
+        }
+        stream << "\t" << m_value << "[label=\"" << m_value << " (" << m_color <<")\" ]\n";
+        if(m_higher != NULL)
+        {
+            m_higher->dot_node_descrs(stream);
+        }
+    }
+
+    void RBTree::to_dot(std::ostream & stream)
+    {
+        if(m_root != NULL)
+        {
+            stream << "digraph g{\n";
+            m_root->dot_node_descrs(stream);
+            stream << "\n";
+            m_root->dot_edges(stream);
+            stream << "}\n";
+        }
+    }
 }
