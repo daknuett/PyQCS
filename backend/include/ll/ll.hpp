@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <vector>
 
 namespace ll
 {
@@ -26,6 +27,7 @@ namespace ll
         void delete_value(int value);
         SortedList(void);
         ~SortedList(void);
+        void export_vector(std::vector<int> & vect);
 
     };
 }

@@ -120,4 +120,14 @@ namespace ll
             c_node = t_node;
         }
     }
+    void SortedList::export_vector(std::vector<int> & vect)
+    {
+        vect.resize(0);
+        Node * c_node = m_first;
+        while(c_node != NULL)
+        {
+            vect.push_back(c_node->m_value);
+            c_node = c_node->m_next;
+        }
+    }
 }
