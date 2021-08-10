@@ -81,7 +81,7 @@ namespace ll
     void SortedList::delete_value(int value)
     {
         Node * c_node = m_first;
-        Node * p_node;
+        Node * p_node = NULL;
         while(c_node != NULL)
         {
             if(c_node->m_value < value)
