@@ -12,7 +12,8 @@ main = executable('main', 'main.cpp', link_with:[dsv, ll, rbt], include_director
 test_filenames = [['test_rbt_insert', 'tests/rbtree_insert.cpp'] 
                 , ['test_ll_insert', 'tests/ll_insert.cpp']
                 , ['test_rbt_has_value', 'tests/rbtree_has_value.cpp']
-                , ['test_ll_has_value', 'tests/ll_has_value.cpp']]
+                , ['test_ll_has_value', 'tests/ll_has_value.cpp']
+                , ['test_rbt_delete', 'tests/rbtree_delete.cpp']]
 tests = []
 foreach tfname: test_filenames
     tests += [[tfname[0], executable(tfname[0]

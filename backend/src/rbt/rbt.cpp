@@ -128,7 +128,7 @@ namespace rbt
         }
         return false;
     }
-    void RBTree::repair(Node * causing_node)
+    void RBTree::repair_after_insert(Node * causing_node)
     {
         // Root node. Repair procedure is to set it to black.
         if(causing_node->m_parent == NULL)
@@ -157,7 +157,7 @@ namespace rbt
             uncle->m_color = NODE_BLACK;
             causing_node->m_parent->m_color = NODE_BLACK;
             causing_node->m_parent->m_parent->m_color = NODE_RED;
-            repair(causing_node->m_parent->m_parent);
+            repair_after_insert(causing_node->m_parent->m_parent);
             return;
         }
 
@@ -213,67 +213,11 @@ namespace rbt
 
                 causing_node = A; // Now repair around A which was prevously the parent.
             }
-            // We have a tree like this:
-            //
-            //          (c)>|         |
-            //              C         |
-            //             / \        | 
-            //        (b)>/   \       | 
-            //           /     \      | 
-            //          B     delta   | 
-            //         / \            | 
-            //        /   \<(a)       | 
-            //       A   gamma        | 
-            //      / \               | 
-            //     /   \              | 
-            //    /     \             | 
-            //  alpha   beta          | 
-            //      
-            // Right-rotate around the parent to get to this tree:
-            //
-            //         |<(c)          |
-            //         B              |
-            //        / \             | 
-            //       /   \<(b)        | 
-            //      /     \           | 
-            //     A       C          | 
-            //    / \ (a)>/ \         | 
-            //   /   \   /   \        | 
-            // alpha | gamma |        | 
-            //     beta    delta      | 
-            //
-            Node * B = causing_node->m_parent; // B
-            Node * C = B->m_parent; // C
-            Node * greatgrandparent = C->m_parent; // C's parent
-            Node * gamma = B->m_higher; // B's right child
-            bool C_was_lower_child = C->is_lower_child();
 
-            C->m_lower = gamma; // (a)
-            if(gamma != NULL)
-            {
-                gamma->m_parent = C; // (a)
-            }
-            B->m_higher = C; // (b)
-            C->m_parent = B; // (b)
-            if(greatgrandparent == NULL)
-            {
-                m_root = B; // (c)
-            }
-            else
-            {
-                if(C_was_lower_child)
-                {
-                    greatgrandparent->m_lower = B; // (c)
-                }
-                else
-                {
-                    greatgrandparent->m_higher = B; // (c)
-                }
-            }
-            B->m_parent = greatgrandparent; //(c)
+            causing_node->m_parent->m_color = NODE_BLACK;
+            causing_node->m_parent->m_parent->m_color = NODE_RED;
+            right_rotate(causing_node->m_parent); // Look at this function to see what is going on.
 
-            B->m_color = NODE_BLACK;
-            C->m_color = NODE_RED;
             return;
         }
 
@@ -333,6 +277,98 @@ namespace rbt
             causing_node = A; // Now repair around A which was previously the parent.
         }
         
+        causing_node->m_parent->m_parent->m_color = NODE_RED;
+        causing_node->m_parent->m_color = NODE_BLACK;
+        left_rotate(causing_node->m_parent); // Look at this function to see what is going on.
+    }
+    void RBTree::insert(int value)
+    {
+        Node * n_node = do_insert(value);
+        // enable this line if you do not want a red black tree.
+        //return;
+        if(n_node != NULL)
+        {
+            repair_after_insert(n_node);
+        }
+    }
+    void RBTree::export_inorder(std::vector<int> & vect)
+    {
+        vect.resize(0);
+        if(m_root != NULL)
+        {
+            m_root->inorder_export(vect);
+        }
+    }
+    void Node::dot_edges(std::ostream & stream)
+    {
+        if(m_lower != NULL)
+        {
+            m_lower->dot_edges(stream);
+            stream << "\t" << m_value << " -> " << m_lower->m_value << "\n";
+        }
+        if(m_higher != NULL)
+        {
+            m_higher->dot_edges(stream);
+            stream << "\t" << m_value << " -> " << m_higher->m_value << "\n";
+        }
+    }
+    void Node::dot_node_descrs(std::ostream & stream)
+    {
+        if(m_lower != NULL)
+        {
+            m_lower->dot_node_descrs(stream);
+        }
+        stream << "\t" << m_value << "[label=\"" << m_value << " (" << m_color <<")\" ]\n";
+        if(m_higher != NULL)
+        {
+            m_higher->dot_node_descrs(stream);
+        }
+    }
+inline bool Node::has_red_child(void)
+{
+    if(m_lower != NULL && m_lower->m_color == NODE_RED)
+    {
+        return true;
+    }
+    if(m_higher != NULL && m_higher->m_color == NODE_RED)
+    {
+        return true;
+    }
+    return false;
+}
+
+    void RBTree::to_dot(std::ostream & stream)
+    {
+        if(m_root != NULL)
+        {
+            stream << "digraph g{\n";
+            m_root->dot_node_descrs(stream);
+            stream << "\n";
+            m_root->dot_edges(stream);
+            stream << "}\n";
+        }
+    }
+    bool RBTree::has_value(int value)
+    {
+        Node * c_node = m_root;
+        while(c_node != NULL)
+        {
+            if(c_node->m_value < value)
+            {
+                c_node = c_node->m_higher;
+                continue;
+            }
+            if(c_node->m_value > value)
+            {
+                c_node = c_node->m_lower;
+                continue;
+            }
+            return true;
+        }
+        return false;
+    }
+    inline void RBTree::left_rotate(Node * B)
+    {
         // We have a tree like this (A is the causing node)
         //
         //                                  |
@@ -370,7 +406,6 @@ namespace rbt
         //         gamma                    |
         //                                  |
         //                                  |
-        Node * B = causing_node->m_parent; // B
         Node * C = B->m_parent; // C
         Node * greatgrandparent = C->m_parent; // C's B
         Node * gamma = B->m_lower; // B's left child
@@ -399,67 +434,68 @@ namespace rbt
             }
         }
         B->m_parent = greatgrandparent; // (c)
+    }
+    inline void RBTree::right_rotate(Node * B)
+    {
+        // We have a tree like this:
+        //
+        //          (c)>|         |
+        //              C         |
+        //             / \        | 
+        //        (b)>/   \       | 
+        //           /     \      | 
+        //          B     delta   | 
+        //         / \            | 
+        //        /   \<(a)       | 
+        //       A   gamma        | 
+        //      / \               | 
+        //     /   \              | 
+        //    /     \             | 
+        //  alpha   beta          | 
+        //      
+        // Right-rotate around the parent to get to this tree:
+        //
+        //         |<(c)          |
+        //         B              |
+        //        / \             | 
+        //       /   \<(b)        | 
+        //      /     \           | 
+        //     A       C          | 
+        //    / \ (a)>/ \         | 
+        //   /   \   /   \        | 
+        // alpha | gamma |        | 
+        //     beta    delta      | 
+        //
+        Node * C = B->m_parent; // C
+        Node * greatgrandparent = C->m_parent; // C's parent
+        Node * gamma = B->m_higher; // B's right child
+        bool C_was_lower_child = C->is_lower_child();
 
-        C->m_color = NODE_RED;
-        B->m_color = NODE_BLACK;
-        
+        C->m_lower = gamma; // (a)
+        if(gamma != NULL)
+        {
+            gamma->m_parent = C; // (a)
+        }
+        B->m_higher = C; // (b)
+        C->m_parent = B; // (b)
+        if(greatgrandparent == NULL)
+        {
+            m_root = B; // (c)
+        }
+        else
+        {
+            if(C_was_lower_child)
+            {
+                greatgrandparent->m_lower = B; // (c)
+            }
+            else
+            {
+                greatgrandparent->m_higher = B; // (c)
+            }
+        }
+        B->m_parent = greatgrandparent; //(c)
     }
-    void RBTree::insert(int value)
-    {
-        Node * n_node = do_insert(value);
-        // enable this line if you do not want a red black tree.
-        //return;
-        if(n_node != NULL)
-        {
-            repair(n_node);
-        }
-    }
-    void RBTree::export_inorder(std::vector<int> & vect)
-    {
-        vect.resize(0);
-        if(m_root != NULL)
-        {
-            m_root->inorder_export(vect);
-        }
-    }
-    void Node::dot_edges(std::ostream & stream)
-    {
-        if(m_lower != NULL)
-        {
-            m_lower->dot_edges(stream);
-            stream << "\t" << m_value << " -> " << m_lower->m_value << "\n";
-        }
-        if(m_higher != NULL)
-        {
-            m_higher->dot_edges(stream);
-            stream << "\t" << m_value << " -> " << m_higher->m_value << "\n";
-        }
-    }
-    void Node::dot_node_descrs(std::ostream & stream)
-    {
-        if(m_lower != NULL)
-        {
-            m_lower->dot_node_descrs(stream);
-        }
-        stream << "\t" << m_value << "[label=\"" << m_value << " (" << m_color <<")\" ]\n";
-        if(m_higher != NULL)
-        {
-            m_higher->dot_node_descrs(stream);
-        }
-    }
-
-    void RBTree::to_dot(std::ostream & stream)
-    {
-        if(m_root != NULL)
-        {
-            stream << "digraph g{\n";
-            m_root->dot_node_descrs(stream);
-            stream << "\n";
-            m_root->dot_edges(stream);
-            stream << "}\n";
-        }
-    }
-    bool RBTree::has_value(int value)
+    void RBTree::delete_value(int value)
     {
         Node * c_node = m_root;
         while(c_node != NULL)
@@ -474,8 +510,176 @@ namespace rbt
                 c_node = c_node->m_lower;
                 continue;
             }
-            return true;
+
+            delete_this_node(c_node);
+            return;
         }
-        return false;
+        throw std::runtime_error("value not in tree, cannot be deleted.");
     }
+    inline void RBTree::delete_this_node(Node * c_node)
+    {
+        if(c_node->m_lower != NULL && c_node->m_higher != NULL)
+        {
+            Node * precessor = c_node->m_lower;
+
+            // Find the inorder precessor.
+            while(precessor->m_higher != NULL)
+            {
+                precessor = precessor->m_higher;
+            }
+
+            // Swap the values:
+            c_node->m_value = precessor->m_value;
+            // No need to update precessor, it will get deleted now.
+            c_node = precessor;
+        }
+
+        // The non-NULL child.
+        Node * replace = NULL;
+        if(c_node->m_lower != NULL)
+        {
+            replace = c_node->m_lower;
+        }
+        if(c_node->m_higher != NULL)
+        {
+            replace = c_node->m_higher;
+        }
+
+        // Replace c_node by its non-NULL child in the tree.
+        Node * sibling = NULL;
+        if(c_node->m_parent == NULL)
+        {
+            // Notify the tree.
+            m_root = replace;
+        }
+        else
+        {
+            // Notify the parent.
+            if(c_node->is_lower_child())
+            {
+                c_node->m_parent->m_lower = replace;
+                sibling = c_node->m_parent->m_higher;
+            }
+            else
+            {
+                c_node->m_parent->m_higher = replace;
+                sibling = c_node->m_parent->m_lower;
+            }
+        }
+        if(replace != NULL)
+        {
+            replace->m_parent = c_node->m_parent;
+        }
+
+        // Delete the node.
+        char color = c_node->m_color;
+        Node * parent = c_node->m_parent;
+        delete c_node;
+
+        // Check if we need to repair the RB property.
+        if(color == NODE_RED)
+        {
+            return;
+        }
+
+        // c_node was black.
+        if(replace != NULL && replace->m_color == NODE_RED)
+        {
+            replace->m_color = NODE_BLACK;
+            return;
+        }
+
+        // We need to repair (replace is double-black).  Because replace might
+        // be NULL we can't do that in an extra function.
+        c_node = replace; // Use the name c_node again for better readability.
+        while(1)
+        {
+            // No need to repair the root.
+            if(parent == NULL)
+            {
+                return;
+            }
+
+            // We have a parent.
+            Node * sibling;
+            if(parent->m_lower == c_node)
+            {
+                sibling = parent->m_higher;
+            }
+            else
+            {
+                sibling = parent->m_lower;
+            }
+
+            // Cannot happen. If the c_node is double black
+            // and its sibling is singly black and has no children we started
+            // from an invalid RBT.
+            //if(sibling == NULL)
+            //{
+            //}
+
+            if(sibling->m_color == NODE_RED)
+            {
+                if(sibling->is_lower_child())
+                {
+                    right_rotate(sibling);
+                }
+                else
+                {
+                    left_rotate(sibling);
+                }
+                sibling->m_color = NODE_BLACK;
+                parent->m_color = NODE_RED;
+
+                continue;
+            }
+
+            if(sibling->has_red_child())
+            {
+                if(sibling->is_lower_child())
+                {
+                    if(sibling->m_lower != NULL && sibling->m_lower->m_color == NODE_RED)
+                    {
+                        sibling->m_lower->m_color = NODE_BLACK;
+                        right_rotate(sibling);
+                        return;
+                    }
+                    else
+                    {
+                        sibling->m_higher->m_color = NODE_BLACK;
+                        Node * new_sibling = sibling->m_higher;
+                        left_rotate(sibling->m_higher);
+                        right_rotate(new_sibling); // This is the new sibling.
+                        return;
+                    }
+                }
+                else
+                {
+                    if(sibling->m_higher != NULL && sibling->m_higher->m_color == NODE_RED)
+                    {
+                        sibling->m_higher->m_color = NODE_BLACK;
+                        left_rotate(sibling);
+                        return;
+                    }
+                    else
+                    {
+                        sibling->m_lower->m_color = NODE_BLACK;
+                        Node * new_sibling = sibling->m_lower;
+                        right_rotate(sibling->m_lower);
+                        left_rotate(new_sibling); // This is the new sibling.
+                        return;
+                    }
+
+                }
+
+            }
+
+            // Sibling is black and has only black children.
+            sibling->m_color = NODE_RED;
+            c_node = parent;
+            parent = c_node->m_parent;
+            continue;
+        }
+    }
+
 }

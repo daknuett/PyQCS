@@ -18,6 +18,7 @@ namespace rbt
         bool m_marker;
         inline bool is_lower_child(void);
         inline bool has_uncle(void);
+        inline bool has_red_child(void);
         // WARNING: This method does NOT check for NULL pointers!
         inline Node * get_uncle(void);
         void inorder_export(std::vector<int> & vect);
@@ -36,7 +37,10 @@ namespace rbt
         private:
         Node * m_root;
         Node * do_insert(int value);
-        void repair(Node * causing_node);
+        inline void delete_this_node(Node * c_node);
+        void repair_after_insert(Node * causing_node);
+        inline void left_rotate(Node * B);
+        inline void right_rotate(Node * B);
         public:
         void insert(int value);
         void delete_value(int value);
