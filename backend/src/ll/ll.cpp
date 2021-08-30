@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <ll/ll.hpp>
 namespace ll
 {
@@ -101,10 +102,11 @@ namespace ll
                     p_node->m_next = c_node->m_next;
                 }
                 delete c_node;
-                break;
+                return;
             }
             break;
         }
+        throw std::invalid_argument("value not in list");
     }
     SortedList::SortedList(void)
     {
