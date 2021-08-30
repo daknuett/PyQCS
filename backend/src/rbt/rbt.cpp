@@ -574,7 +574,7 @@ int RBTree::rbt_pathlength(void)
             c_node = precessor;
         }
 
-        // The non-NULL child.
+        // The only non-NULL child or NULL.
         Node * replace = NULL;
         if(c_node->m_lower != NULL)
         {
@@ -608,6 +608,7 @@ int RBTree::rbt_pathlength(void)
         }
         if(replace != NULL)
         {
+            // Notify the replacement.
             replace->m_parent = c_node->m_parent;
         }
 
@@ -630,18 +631,20 @@ int RBTree::rbt_pathlength(void)
         }
 
         // We need to repair (replace is double-black).  Because replace might
-        // be NULL we can't do that in an extra function.
+        // be NULL we can't do that in an extra function.  Note that parent is
+        // known since we stored it before deleting c_node.
         c_node = replace; // Use the name c_node again for better readability.
         while(1)
         {
             // No need to repair the root.
             if(parent == NULL)
             {
+                //c_node->m_color = NODE_BLACK;
                 return;
             }
 
             // We have a parent.
-            Node * sibling;
+            Node * sibling = NULL;
             if(parent->m_lower == c_node)
             {
                 sibling = parent->m_higher;
@@ -656,6 +659,7 @@ int RBTree::rbt_pathlength(void)
             // from an invalid RBT.
             //if(sibling == NULL)
             //{
+            //    throw std::runtime_error("uncompensated double-black found");
             //}
 
             if(sibling->m_color == NODE_RED)
@@ -676,12 +680,15 @@ int RBTree::rbt_pathlength(void)
 
             if(sibling->has_red_child())
             {
+                char parent_color = parent->m_color;
+                parent->m_color = NODE_BLACK;
                 if(sibling->is_lower_child())
                 {
                     if(sibling->m_lower != NULL && sibling->m_lower->m_color == NODE_RED)
                     {
                         sibling->m_lower->m_color = NODE_BLACK;
                         right_rotate(sibling);
+                        sibling->m_color = parent_color;
                         return;
                     }
                     else
@@ -690,6 +697,7 @@ int RBTree::rbt_pathlength(void)
                         Node * new_sibling = sibling->m_higher;
                         left_rotate(sibling->m_higher);
                         right_rotate(new_sibling); // This is the new sibling.
+                        new_sibling->m_color = parent_color;
                         return;
                     }
                 }
@@ -699,6 +707,7 @@ int RBTree::rbt_pathlength(void)
                     {
                         sibling->m_higher->m_color = NODE_BLACK;
                         left_rotate(sibling);
+                        sibling->m_color = parent_color;
                         return;
                     }
                     else
@@ -707,6 +716,7 @@ int RBTree::rbt_pathlength(void)
                         Node * new_sibling = sibling->m_lower;
                         right_rotate(sibling->m_lower);
                         left_rotate(new_sibling); // This is the new sibling.
+                        new_sibling->m_color = parent_color;
                         return;
                     }
 
@@ -716,6 +726,14 @@ int RBTree::rbt_pathlength(void)
 
             // Sibling is black and has only black children.
             sibling->m_color = NODE_RED;
+            if(parent->m_color == NODE_RED)
+            {
+                // Change parent color from red to black. This
+                // fixes the RBT properties.
+                parent->m_color = NODE_BLACK;
+                return;
+            }
+            // Parent is now double-black.
             c_node = parent;
             parent = c_node->m_parent;
             continue;
