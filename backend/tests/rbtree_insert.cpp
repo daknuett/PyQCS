@@ -27,6 +27,11 @@ main(int argc, char ** argv)
         tree.insert(i);
     }
 
+    if(tree.rbt_pathlength() < 0)
+    {
+        return -1;
+    }
+
     std::vector<int> exported;
     tree.export_inorder(exported);
 

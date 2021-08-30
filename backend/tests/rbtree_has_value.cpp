@@ -42,6 +42,10 @@ main(int argc, char ** argv)
         }
     }
 
+    if(tree.rbt_pathlength() < 0)
+    {
+        return -1;
+    }
 
     return 0;
 }

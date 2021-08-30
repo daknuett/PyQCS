@@ -33,6 +33,10 @@ main(int argc, char ** argv)
         tree.delete_value(copy[i]);
         expect.push_back(copy[i + copy.size() / 2]);
     }
+    if(tree.rbt_pathlength() < 0)
+    {
+        return -1;
+    }
 
     std::sort(expect.begin(), expect.end());
 
