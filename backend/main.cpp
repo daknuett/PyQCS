@@ -3,6 +3,21 @@
 #include <iostream>
 #include <vector>
 
+/*
+* Use this file to visually test the deletion cases.  It exports the trees
+* (before and after deletion) to dot which can then be viewed and checked. This
+* is very helpful for debugging.  Note that there is one case that does not get
+* reproduced here (red nephew and red parent).
+* 
+* Use a pipeline like this:
+*
+*       meson compile -C builddir && builddir/main 12 true > tmp.dot && dot -Tpdf tmp.dot -o tmp.pdf && evince tmp.pdf
+*       meson compile -C builddir && builddir/main 12 > tmp.dot && dot -Tpdf tmp.dot -o tmp.pdf && evince tmp.pdf
+*
+* This will display the tree before deletion and the tree after deletion.
+* Replace evince with your PDF viewer.
+* */
+
 #define SIMPLE_DELETE_RED 1
 #define SIMPLE_REPLACE_RED1 2
 #define SIMPLE_REPLACE_RED2 3
