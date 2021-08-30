@@ -22,6 +22,7 @@ namespace rbt
         // WARNING: This method does NOT check for NULL pointers!
         inline Node * get_uncle(void);
         void inorder_export(std::vector<int> & vect);
+        int check_rbt_pathlength(void);
         public:
         Node(Node * parent, Node * lower, Node * higher, int value);
         void recursively_delete(void);
@@ -47,6 +48,7 @@ namespace rbt
         bool has_value(int value);
         void export_inorder(std::vector<int> & vect);
         void to_dot(std::ostream & stream);
+        int rbt_pathlength(void);
         RBTree(void);
         ~RBTree(void);
     };

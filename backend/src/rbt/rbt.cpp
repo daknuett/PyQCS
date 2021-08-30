@@ -337,6 +337,46 @@ inline bool Node::has_red_child(void)
     return false;
 }
 
+int Node::check_rbt_pathlength(void)
+{
+    int lleft = 1, lright = 1;
+    if(m_lower != NULL)
+    {
+        lleft = m_lower->check_rbt_pathlength();
+        if(lleft == -1)
+        {
+            return -1;
+        }
+    }
+    if(m_higher != NULL)
+    {
+        lright = m_higher->check_rbt_pathlength();
+        if(lright == -1)
+        {
+            return -1;
+        }
+    }
+    if(lleft != lright)
+    {
+        return -1;
+    }
+
+    if(m_color == NODE_BLACK)
+    {
+        return lleft + 1;
+    }
+    return lleft;
+}
+
+int RBTree::rbt_pathlength(void)
+{
+    if(m_root == NULL)
+    {
+        return 1;
+    }
+    return m_root->check_rbt_pathlength();
+}
+
     void RBTree::to_dot(std::ostream & stream)
     {
         if(m_root != NULL)
