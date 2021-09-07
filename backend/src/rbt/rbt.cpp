@@ -74,6 +74,8 @@ namespace rbt
     RBTree::RBTree(void)
     {
         m_root = NULL;
+        m_marker_mask = 0;
+        m_marker_sanity = 1;
     }
     RBTree::~RBTree(void)
     {
@@ -88,7 +90,7 @@ namespace rbt
         // Empty tree. Just add a (black) root node.
         if(m_root == NULL)
         {
-            m_root = new Node(NULL, NULL, NULL, value);
+            m_root = new Node(NULL, value, m_marker_mask);
             m_root->m_color = NODE_BLACK;
             return NULL;
         }
@@ -108,7 +110,7 @@ namespace rbt
                     continue;
                 }
                 // The higher node is a leaf. Replace it with the new node.
-                Node * n_node = new Node(c_node, NULL, NULL, value);
+                Node * n_node = new Node(c_node, value, m_marker_mask);
                 c_node->m_higher = n_node;
                 if(c_node->m_color == NODE_RED)
                 {
@@ -128,7 +130,7 @@ namespace rbt
                     continue;
                 }
                 // Insert the new node.
-                Node * n_node = new Node(c_node, NULL, NULL, value);
+                Node * n_node = new Node(c_node, value, m_marker_mask);
                 c_node->m_lower = n_node;
                 if(c_node->m_color == NODE_RED)
                 {
@@ -146,23 +148,16 @@ namespace rbt
 
     inline void RBTree::repair_markers_if_needed(void)
     {
-        if(this->m_parent->m_parent->m_lower != this->m_parent)
+        if(!m_marker_sanity)
         {
-            return this->m_parent->m_parent->m_lower;
+            if(m_root == NULL)
+            {
+                m_marker_sanity = 1;
+                return;
+            }
+            m_root->repair_markers(m_marker_mask);
+            m_marker_sanity = 1;
         }
-        return this->m_parent->m_parent->m_higher;
-    }
-    inline bool Node::is_lower_child(void)
-    {
-        if(this->m_parent == NULL)
-        {
-            return false;
-        }
-        if(this->m_parent->m_lower == this)
-        {
-            return true;
-        }
-        return false;
     }
 
     void RBTree::repair_after_insert(Node * causing_node)
@@ -333,7 +328,7 @@ namespace rbt
         vect.resize(0);
         if(m_root != NULL)
         {
-            m_root->inorder_export(vect);
+            m_root->recursive_inorder_export(vect);
         }
     }
     void Node::dot_edges(std::ostream & stream)
