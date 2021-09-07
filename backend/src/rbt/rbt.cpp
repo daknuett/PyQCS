@@ -18,8 +18,8 @@ namespace rbt
         }
     }
 
-    Node::Node(Node * parent, Node * lower, Node * higher, int value):
-        m_parent(parent), m_lower(lower), m_higher(higher), m_value(value)
+    Node::Node(Node * parent, int value, char marker):
+        m_parent(parent), m_value(value), m_marker(marker)
     {
         m_color = NODE_RED;
     }
@@ -108,7 +108,8 @@ namespace rbt
         // We did not find a place to insert the value. Cannot happen.
         throw std::runtime_error("failed to insert value for unknown reasons");
     }
-    inline Node * Node::get_uncle(void)
+
+    inline void RBTree::repair_markers_if_needed(void)
     {
         if(this->m_parent->m_parent->m_lower != this->m_parent)
         {
@@ -128,6 +129,7 @@ namespace rbt
         }
         return false;
     }
+
     void RBTree::repair_after_insert(Node * causing_node)
     {
         // Root node. Repair procedure is to set it to black.
@@ -291,7 +293,7 @@ namespace rbt
             repair_after_insert(n_node);
         }
     }
-    void RBTree::export_inorder(std::vector<int> & vect)
+    void RBTree::export_inorder_recursive(std::vector<int> & vect)
     {
         vect.resize(0);
         if(m_root != NULL)
@@ -740,4 +742,45 @@ int RBTree::rbt_pathlength(void)
         }
     }
 
+    void RBTree::export_inorder_iterative(std::vector<int> & vect)
+    {
+        vect.resize(0);
+        if(m_root == NULL)
+        {
+            return;
+        }
+
+        repair_markers_if_needed();
+        Node * c_node = m_root;
+        m_marker_sanity = 0;
+        while(c_node != NULL)
+        {
+            if((c_node->m_marker ^ m_marker_mask) == 0)
+            {
+                // 1st time visiting the node.
+                c_node->m_marker ^= 0b01;
+                if(c_node->m_lower != NULL)
+                {
+                    c_node = c_node->m_lower;
+                }
+                continue;
+            }
+            if((c_node->m_marker ^ m_marker_mask) == 0b01)
+            {
+                // 2nd time visiting the node.
+
+                vect.push_back(c_node->m_value);
+                c_node->m_marker ^= 0b10;
+                if(c_node->m_higher != NULL)
+                {
+                    c_node = c_node->m_higher;
+                }
+                continue;
+            }
+            c_node = c_node->m_parent;
+        }
+        m_marker_sanity = 1;
+        m_marker_mask ^= 0b11;
+        
+    }
 }

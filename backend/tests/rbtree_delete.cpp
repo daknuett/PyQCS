@@ -41,7 +41,7 @@ main(int argc, char ** argv)
     std::sort(expect.begin(), expect.end());
 
     std::vector<int> exported;
-    tree.export_inorder(exported);
+    tree.export_inorder_recursive(exported);
 
     if(exported.size() != expect.size())
     {
