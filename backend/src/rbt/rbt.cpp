@@ -34,7 +34,41 @@ namespace rbt
         vect.push_back(m_value);
         if(m_higher != NULL)
         {
-            m_higher->inorder_export(vect);
+            m_higher->recursive_inorder_export(vect);
+        }
+    }
+    inline Node * Node::get_uncle(void)
+    {
+        if(this->m_parent->m_parent->m_lower != this->m_parent)
+        {
+            return this->m_parent->m_parent->m_lower;
+        }
+        return this->m_parent->m_parent->m_higher;
+    }
+    inline bool Node::is_lower_child(void)
+    {
+        if(this->m_parent == NULL)
+        {
+            return false;
+        }
+        if(this->m_parent->m_lower == this)
+        {
+            return true;
+        }
+        return false;
+    }
+
+
+    void Node::repair_markers(char marker)
+    {
+        if(m_lower != NULL)
+        {
+            m_lower->repair_markers(marker);
+        }
+        m_marker = marker;
+        if(m_higher != NULL)
+        {
+            m_higher->repair_markers(marker);
         }
     }
     RBTree::RBTree(void)
