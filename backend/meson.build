@@ -8,6 +8,7 @@ ll = shared_library('ll', 'src/ll/ll.cpp', include_directories:incdir)
 rbt = shared_library('rbt', 'src/rbt/rbt.cpp', include_directories:incdir)
 
 main = executable('main', 'main.cpp', link_with:[dsv, ll, rbt], include_directories:incdir)
+visual_graph = executable('visual_graph_deletion', 'visual_tests/graph_deletion_cases.cpp', link_with:[rbt], include_directories:incdir)
 
 test_filenames = [['test_rbt_insert', 'tests/rbtree_insert.cpp'] 
                 , ['test_ll_insert', 'tests/ll_insert.cpp']
