@@ -22,6 +22,7 @@ namespace rbt
         m_parent(parent), m_value(value), m_marker(marker)
     {
         m_color = NODE_RED;
+        m_higher = m_lower = NULL;
     }
 
     void Node::inorder_export(std::vector<int> & vect)
