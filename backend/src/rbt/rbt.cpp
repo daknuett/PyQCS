@@ -25,11 +25,11 @@ namespace rbt
         m_higher = m_lower = NULL;
     }
 
-    void Node::inorder_export(std::vector<int> & vect)
+    void Node::recursive_inorder_export(std::vector<int> & vect)
     {
         if(m_lower != NULL)
         {
-            m_lower->inorder_export(vect);
+            m_lower->recursive_inorder_export(vect);
         }
         vect.push_back(m_value);
         if(m_higher != NULL)
