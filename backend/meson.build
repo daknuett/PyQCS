@@ -2,10 +2,14 @@ project('backend_rewrite', 'cpp')
 add_global_arguments('-O3', language:'cpp')
 
 incdir = include_directories('include/')
+rbtree_incdir = include_directories('rbtree/include/')
 
+ll = shared_library('ll', 'rbtree/src/ll/ll.cpp', include_directories:rbtree_incdir)
+rbt = shared_library('rbt', 'rbtree/src/rbt/tree.cpp', 'rbtree/src/rbt/iterator.cpp', include_directories:rbtree_incdir)
 dsv = shared_library('dsv', 'src/dsv.cpp', include_directories:incdir)
+graphical = shared_library('graphical', 'src/graphical.cpp', include_directories:[incdir, rbtree_incdir], link_with:[rbt])
 
-main = executable('main', 'main.cpp', link_with:[dsv], include_directories:incdir)
+main = executable('main', 'main.cpp', link_with:[dsv, rbt, ll, graphical], include_directories:[incdir, rbtree_incdir])
 
 test_filenames = []
 
@@ -14,7 +18,7 @@ foreach tfname: test_filenames
     tests += [[tfname[0], executable(tfname[0]
                             , tfname[1]
                             , include_directories: [incdir]
-                            , link_with: [ll, dsv, rbt]
+                            , link_with: [ll, dsv, rbt, graphical]
                             , install: false)]]
 endforeach
 
