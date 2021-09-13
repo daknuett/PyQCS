@@ -8,6 +8,7 @@ ll = shared_library('ll', 'rbtree/src/ll/ll.cpp', include_directories:rbtree_inc
 rbt = shared_library('rbt', 'rbtree/src/rbt/tree.cpp', 'rbtree/src/rbt/iterator.cpp', include_directories:rbtree_incdir)
 dsv = shared_library('dsv', 'src/dsv.cpp', include_directories:incdir)
 graphical = shared_library('graphical', 'src/graphical.cpp', include_directories:[incdir, rbtree_incdir], link_with:[rbt])
+graphical2dsv = shared_library('graphical2dsv', 'src/graphical2dsv.cpp', include_directories:[incdir, rbtree_incdir], link_with:[graphical, dsv])
 
 main = executable('main', 'main.cpp', link_with:[dsv, rbt, ll, graphical], include_directories:[incdir, rbtree_incdir])
 
@@ -18,7 +19,7 @@ foreach tfname: test_filenames
     tests += [[tfname[0], executable(tfname[0]
                             , tfname[1]
                             , include_directories: [incdir]
-                            , link_with: [ll, dsv, rbt, graphical]
+                            , link_with: [ll, dsv, rbt, graphical, graphical2dsv]
                             , install: false)]]
 endforeach
 
