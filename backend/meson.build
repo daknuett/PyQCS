@@ -12,7 +12,9 @@ graphical2dsv = shared_library('graphical2dsv', 'src/graphical2dsv.cpp', include
 
 main = executable('main', 'main.cpp', link_with:[dsv, rbt, ll, graphical], include_directories:[incdir, rbtree_incdir])
 
-test_filenames = []
+test_filenames = [['test_dsv_HZH_X', 'tests/dsv_HZH_X.cpp']
+            , ['test_dsv_S_by_R', 'tests/dsv_S_by_R.cpp']
+            ]
 
 tests = []
 foreach tfname: test_filenames
