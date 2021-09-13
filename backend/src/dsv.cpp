@@ -95,11 +95,11 @@ namespace dsv
         }
 
         std::complex<double> overlap = (*this)*(*this);
-        double scale = std::abs(overlap);
+        double scale = std::sqrt(std::abs(overlap));
 
         for(size_t i = 0; i < m_ndims; i++)
         {
-            m_vect[m_cvect][i] *= scale;
+            m_vect[m_cvect][i] /= scale;
         }
     }
 
