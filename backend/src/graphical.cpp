@@ -1,12 +1,13 @@
 #include <graphical.hpp>
 #include <stdexcept>
+#include <array>
 
 #define vop_commutes_with_CZ(v) (v == 1 || v == 2 || v == 5 || v == 8)
 
 namespace graphical
 {
 
-    static uint8_t vop_lookup_table[24][24] = 
+    static const uint8_t vop_lookup_table[24][24] = 
     {
         {2, 4, 0, 12, 1, 7, 15, 5, 10, 19, 8, 22, 3, 14, 13, 6, 23, 18, 17, 9, 21, 20, 11, 16}
         , {3, 5, 1, 13, 6, 8, 17, 9, 2, 20, 11, 23, 10, 15, 16, 0, 21, 19, 14, 4, 22, 18, 7, 12}
@@ -33,7 +34,7 @@ namespace graphical
         , {18, 12, 22, 4, 21, 15, 7, 16, 19, 10, 14, 0, 20, 8, 9, 23, 6, 2, 11, 13, 1, 3, 17, 5}
         , {19, 13, 23, 5, 22, 17, 8, 12, 20, 2, 15, 1, 18, 11, 4, 21, 0, 3, 7, 16, 6, 10, 14, 9}
     };
-    static int two_qbit_config_to_number[24][24][2] = 
+    static const int two_qbit_config_to_number[24][24][2] = 
     {
         { {0, 1}, {2, 3}, {4, 5}, {6, 7}, {8, 9}, {10, 11}, {12, 13}, {14, 15}, {16, 17}, {18, 19}, {20, 21}, {22, 23}, {24, 25}, {26, 27}, {28, 29}, {30, 31}, {32, 33}, {34, 35}, {36, 37}, {38, 39}, {40, 41}, {42, 43}, {44, 45}, {46, 47} }
         , { {48, 49}, {50, 51}, {52, 53}, {54, 55}, {56, 57}, {58, 59}, {60, 61}, {62, 63}, {64, 65}, {66, 67}, {68, 69}, {70, 71}, {72, 73}, {74, 75}, {76, 77}, {78, 79}, {80, 81}, {82, 83}, {84, 85}, {86, 87}, {88, 89}, {90, 91}, {92, 93}, {94, 95} }
@@ -62,7 +63,7 @@ namespace graphical
     };
 
 
-    static int two_qbit_config_after_CZ[1152][3] = 
+    static const int two_qbit_config_after_CZ[1152][3] = 
     {
         {0, 0, 0}
         , {2, 2, 0}
@@ -1218,6 +1219,46 @@ namespace graphical
         , {0, 8, 1}
     };
 
+    static int const VOP_H = 0;
+    static int const VOP_S = 1;
+    static int const VOP_I = 2;
+    static int const VOP_Z = 5;
+    static int const VOP_X = 14;
+
+    static int const VOP_siZ = 8;
+    static int const VOP_smiZ = 1;
+    static int const VOP_smiX = 12;
+    static int const VOP_siX = 6;
+    static int const VOP_siY = 7;
+    static int const VOP_smiY = 13;
+
+    static const std::array<std::vector<std::array<int, 2>>, 24> clear_vop_decomposition = 
+    {
+    std::vector<std::array<int, 2>>({{8, 1}, {12, 3}, {8, 1}}),
+     {{8, 3}},
+     {},
+     {{8, 1}, {12, 3}},
+     {{12, 3}, {8, 1}},
+     {{8, 2}},
+     {{12, 3}},
+     {{12, 1}, {8, 1}, {12, 1}, {8, 2}},
+     {{8, 1}},
+     {{8, 1}, {12, 1}, {8, 2}},
+     {{12, 1}, {8, 3}},
+     {{12, 1}, {8, 2}},
+     {{12, 1}},
+     {{12, 1}, {8, 1}, {12, 3}},
+     {{12, 2}},
+     {{8, 3}, {12, 1}},
+     {{8, 1}, {12, 2}},
+     {{12, 1}, {8, 1}, {12, 2}},
+     {{12, 2}, {8, 1}},
+     {{8, 2}, {12, 1}},
+     {{12, 1}, {8, 1}, {12, 1}},
+     {{12, 2}, {8, 2}},
+     {{8, 1}, {12, 1}},
+     {{12, 1}, {8, 1}}
+    };
 
 
     GraphState::GraphState(size_t nqbits):
@@ -1295,16 +1336,48 @@ namespace graphical
         {
             throw std::invalid_argument("qbit j out of range");
         }
+
+
         if(vop_commutes_with_CZ(m_vops[i]) && vop_commutes_with_CZ(m_vops[i]))
         {
+            // Case 1.
             toggle_edge(i, j);
         }
+        // From now on handle Case 2.
         if(qbits_are_isolated(i, j))
         {
+            // Sub-Sub-Case 2.2.1.
             isolated_two_qbit_CZ(i, j);
         }
 
-        // FIXME
+        bool cleared_i = false, cleared_j = false;
+
+        if(can_clear_vop(i, j))
+        {
+            cleared_i = true;
+            clear_vop(i, j);
+        }
+        if(can_clear_vop(j, i))
+        {
+            cleared_j = true;
+            clear_vop(j, i);
+        }
+        if(!cleared_i && can_clear_vop(i, j))
+        {
+            // It is possible that we can now clear the VOP on i.
+            // This is the case if i is neighbor of j.
+            cleared_i = true;
+            clear_vop(i, j);
+        }
+
+        if(cleared_i && cleared_j)
+        {
+            // Sub-Case 2.1
+            toggle_edge(i, j);
+            return;
+        }
+        // Sub-Sub-Case 2.2.2
+        isolated_two_qbit_CZ(i, j);
     }
     inline void GraphState::toggle_edge(int i, int j)
     {
@@ -1372,5 +1445,76 @@ namespace graphical
             toggle_edge(i, j);
         }
 
+    }
+    inline bool GraphState::can_clear_vop(int i, int j)
+    {
+        if(m_ngbhds[i].size() > 1)
+        {
+            // The vertex is connected to at least two other vertices.
+            // This guarantees at least one non-operand vertex. We make
+            // this check first because it has O(1) time complexity.
+            return true;
+        }
+        // Vertex i has only one neighbor. Check if it is the operand.
+        if(m_ngbhds[i].has_value(j))
+        {
+            // The only neighbor is operand.
+            return false;
+        }
+        // The only neighbor is non-operand.
+        return true;
+    }
+
+    inline void GraphState::clear_vop(int i, int j)
+    {
+        // No need to clear VOP that commites with CZ.
+        if(vop_commutes_with_CZ(i))
+        {
+            return;
+        }
+
+        uint8_t vop_to_clear = m_vops[i];
+        for(auto word: clear_vop_decomposition[vop_to_clear])
+        {
+            int generator_operator = word[0];
+            int repeat = word[1];
+
+            if(generator_operator == VOP_smiX)
+            {
+                La_transformation(i, repeat);
+                continue;
+            }
+
+            int ngb = m_ngbhds[i].get_element_excluding(j);
+            La_transformation(ngb, repeat);
+            
+        }
+    }
+    inline void GraphState::La_transformation(int i, int repeat)
+    {
+        for(int n = 0; n < repeat; n++)
+        {
+            m_vops[i] = vop_lookup_table[m_vops[i]][VOP_siX];
+        }
+        for(auto j: m_ngbhds[i])
+        {
+            for(int n = 0; n < repeat; n++)
+            {
+                m_vops[j] = vop_lookup_table[m_vops[j]][VOP_smiZ];
+            }
+
+            if(repeat % 2)
+            {
+                for(auto k: m_ngbhds[i])
+                {
+                    if(k == j) // Don't re-toggle.
+                    {
+                        break;
+                    }
+                    toggle_edge(j, k);
+
+                }
+            }
+        }
     }
 }
