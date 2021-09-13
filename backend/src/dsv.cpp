@@ -40,7 +40,7 @@ namespace dsv
     }
 
 
-    int DSV::apply_op(dsv_op op, DSVOpArgument & argument, std::mt19937_64 & rne)
+    int DSV::apply_op(dsv_op op, DSVOpArgument & argument)
     {
         if(argument.m_act > m_nqbits)
         {
@@ -55,7 +55,7 @@ namespace dsv
             throw std::invalid_argument("control > nqbits");
         }
         m_cvect ^= 1;
-        return op(m_vect[m_cvect^1], m_vect[m_cvect], m_ndims, argument, rne);
+        return op(m_vect[m_cvect^1], m_vect[m_cvect], m_ndims, argument);
     }
 
     void DSV::export_to_vector(std::vector<std::complex<double>> & vector)
@@ -96,7 +96,7 @@ namespace dsv
 
     namespace ops
     {
-        int CX(std::complex<double> * in, std::complex<double> * out, unsigned int ndims, DSVOpArgument & argument, std::mt19937_64 & rne)
+        int CX(std::complex<double> * in, std::complex<double> * out, unsigned int ndims, DSVOpArgument & argument)
         {
             for(unsigned int i = 0; i < ndims; i++)
             {
@@ -111,7 +111,7 @@ namespace dsv
             }
             return 0;
         }
-        int CZ(std::complex<double> * in, std::complex<double> * out, unsigned int ndims, DSVOpArgument & argument, std::mt19937_64 & rne)
+        int CZ(std::complex<double> * in, std::complex<double> * out, unsigned int ndims, DSVOpArgument & argument)
         {
             for(unsigned int i = 0; i < ndims; i++)
             {
@@ -126,7 +126,7 @@ namespace dsv
             }
             return 0;
         }
-        int Z(std::complex<double> * in, std::complex<double> * out, unsigned int ndims, DSVOpArgument & argument, std::mt19937_64 & rne)
+        int Z(std::complex<double> * in, std::complex<double> * out, unsigned int ndims, DSVOpArgument & argument)
         {
             for(unsigned int i = 0; i < ndims; i++)
             {
@@ -141,7 +141,23 @@ namespace dsv
             }
             return 0;
         }
-        int X(std::complex<double> * in, std::complex<double> * out, unsigned int ndims, DSVOpArgument & argument, std::mt19937_64 & rne)
+        int S(std::complex<double> * in, std::complex<double> * out, unsigned int ndims, DSVOpArgument & argument)
+        {
+            std::complex<double> j(0., 1.);
+            for(unsigned int i = 0; i < ndims; i++)
+            {
+                if(i & (1 << argument.m_act))
+                {
+                    out[i] = j*in[i];
+                }
+                else
+                {
+                    out[i] = in[i];
+                }
+            }
+            return 0;
+        }
+        int X(std::complex<double> * in, std::complex<double> * out, unsigned int ndims, DSVOpArgument & argument)
         {
             for(unsigned int i = 0; i < ndims; i++)
             {
@@ -149,7 +165,7 @@ namespace dsv
             }
             return 0;
         }
-        int H(std::complex<double> * in, std::complex<double> * out, unsigned int ndims, DSVOpArgument & argument, std::mt19937_64 & rne)
+        int H(std::complex<double> * in, std::complex<double> * out, unsigned int ndims, DSVOpArgument & argument)
         {
             for(unsigned int i = 0; i < ndims; i++)
             {
@@ -165,7 +181,7 @@ namespace dsv
             }
             return 0;
         }
-        int R(std::complex<double> * in, std::complex<double> * out, unsigned int ndims, DSVOpArgument & argument, std::mt19937_64 & rne)
+        int R(std::complex<double> * in, std::complex<double> * out, unsigned int ndims, DSVOpArgument & argument)
         {
             std::complex<double> i(0., 1.);
             std::complex<double> c = std::exp(1.*i * argument.m_phi1);
