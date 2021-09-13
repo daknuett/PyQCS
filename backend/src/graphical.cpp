@@ -1250,6 +1250,10 @@ namespace graphical
             m_ngbhds[i] = orig.m_ngbhds[i];
         }
     }
+    int GraphState::nqbits(void)
+    {
+        return m_nqbits;
+    }
 
     void GraphState::apply_CL(int i, int vop)
     {

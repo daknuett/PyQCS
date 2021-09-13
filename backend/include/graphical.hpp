@@ -31,6 +31,7 @@ namespace graphical
         int measurement_probability(int i, int pauli);
         void project_to(int i, int pauli);
         void export_to_vectors(std::vector<int> & vops, std::vector<std::vector<int>> & ngbs);
+        int nqbits(void);
 
     };
 }
