@@ -33,6 +33,8 @@ namespace dsv
         ~DSV(void);
         int apply_op(dsv_op op, DSVOpArgument & argument);
         void export_to_vector(std::vector<std::complex<double>> & vector);
+        std::complex<double> operator*(DSV & other);
+        void randomize(std::mt19937_64 & rne);
     };
 
 

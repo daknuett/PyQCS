@@ -68,6 +68,42 @@ namespace dsv
         }
     }
 
+    std::complex<double> DSV::operator*(DSV & other)
+    {
+        if(other.m_ndims != m_ndims)
+        {
+            throw std::invalid_argument("DSVs must have same dimension for operator *");
+        }
+        std::complex<double> result(0, 0);
+
+        for(size_t i = 0; i < m_ndims; i++)
+        {
+            result += m_vect[m_cvect][i] * std::conj(other.m_vect[m_cvect][i]);
+        }
+
+        return result;
+    }
+    void DSV::randomize(std::mt19937_64 & rne)
+    {
+        std::uniform_real_distribution<double> reals(0, 1);
+        std::uniform_real_distribution<double> imags(0, 1);
+
+        for(size_t i = 0; i < m_ndims; i++)
+        {
+            std::complex<double> cmplx(reals(rne), imags(rne));
+            m_vect[m_cvect][i] = cmplx;
+        }
+
+        std::complex<double> overlap = (*this)*(*this);
+        double scale = std::abs(overlap);
+
+        for(size_t i = 0; i < m_ndims; i++)
+        {
+            m_vect[m_cvect][i] *= scale;
+        }
+    }
+
+
     DSVOpArgument::DSVOpArgument(unsigned short int act)
     {
         m_act = act;
