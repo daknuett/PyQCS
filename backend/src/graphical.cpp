@@ -1314,8 +1314,8 @@ namespace graphical
     {
         vops.resize(0);
         ngbs.resize(0);
-        vops.resize(m_nqbits);
-        ngbs.resize(m_nqbits);
+        vops.reserve(m_nqbits);
+        ngbs.reserve(m_nqbits);
         
         for(int i = 0; i < m_nqbits; i++)
         {
