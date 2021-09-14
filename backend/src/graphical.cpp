@@ -1342,12 +1342,14 @@ namespace graphical
         {
             // Case 1.
             toggle_edge(i, j);
+            return;
         }
         // From now on handle Case 2.
         if(qbits_are_isolated(i, j))
         {
             // Sub-Sub-Case 2.2.1.
             isolated_two_qbit_CZ(i, j);
+            return;
         }
 
         bool cleared_i = false, cleared_j = false;
