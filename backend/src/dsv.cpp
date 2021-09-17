@@ -42,7 +42,7 @@ namespace dsv
 
     int DSV::apply_op(dsv_op op, DSVOpArgument & argument)
     {
-        if(argument.m_act > m_nqbits)
+        if(argument.m_act >= m_nqbits)
         {
             throw std::invalid_argument("act > nqbits");
         }
@@ -50,7 +50,7 @@ namespace dsv
         {
             throw std::invalid_argument("act = control");
         }
-        if(argument.m_control >= 0 && argument.m_control > m_nqbits)
+        if(argument.m_control >= 0 && argument.m_control >= m_nqbits)
         {
             throw std::invalid_argument("control > nqbits");
         }
