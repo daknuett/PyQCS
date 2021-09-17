@@ -8,6 +8,7 @@ readme="README.rst"
 requires-python=">=3.4"
 platforms="linux"
 home-page="https://github.com/daknuett/pyqcs"
+version="3.0.0a"
 
 [project.urls]
 repository="https://github.com/daknuett/pyqcs"
