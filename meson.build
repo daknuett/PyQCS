@@ -37,6 +37,7 @@ graphical2dsv = shared_library('graphical2dsv'
 
 pymod = import('python')
 python = pymod.find_installation('python3')
+pydep = dependency('python3')
 subdir('src/pyqcs')
 
 #####################################################################################
