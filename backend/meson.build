@@ -14,13 +14,16 @@ main = executable('main', 'main.cpp', link_with:[dsv, rbt, ll, graphical], inclu
 
 test_filenames = [['test_dsv_HZH_X', 'tests/dsv_HZH_X.cpp']
             , ['test_dsv_S_by_R', 'tests/dsv_S_by_R.cpp']
+            , ['test_dsv_HH_I', 'tests/dsv_HH_I.cpp']
+            , ['test_graph2dsv_selected_exports', 'tests/graph2dsv_selected_exports.cpp']
+            , ['test_graph2dsv_selected_exports_CZ', 'tests/graph2dsv_selected_exports_CZ.cpp']
             ]
 
 tests = []
 foreach tfname: test_filenames
     tests += [[tfname[0], executable(tfname[0]
                             , tfname[1]
-                            , include_directories: [incdir]
+                            , include_directories: [incdir, rbtree_incdir]
                             , link_with: [ll, dsv, rbt, graphical, graphical2dsv]
                             , install: false)]]
 endforeach
