@@ -2,9 +2,25 @@
 
 #include <rbt/rbt.hpp>
 #include <vector>
+#include <map>
 
 namespace graphical
 {
+    /**
+    * The pauli operators as used by the GraphState::project_to and
+    * GraphState::measurement_probability methods. This map is purely for exporting
+    * the symbols.
+    * */
+    static const std::map<const std::string, const uint8_t> pauli_operators = 
+    {
+        {"Z", 0 }, {"Y", 1}, {"X", 2}, {"-Z", 3}, {"-Y", 4}, {"-X", 5}
+    };
+    static uint8_t const pauli_Z = 0;
+    static uint8_t const pauli_Y = 1;
+    static uint8_t const pauli_X = 2;
+    static uint8_t const pauli_mZ = 3;
+    static uint8_t const pauli_mY = 4;
+    static uint8_t const pauli_mX = 5;
     class GraphState
     {
         private:
