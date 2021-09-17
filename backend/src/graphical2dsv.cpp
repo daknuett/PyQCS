@@ -61,13 +61,13 @@ namespace graphical2dsv
 
         for(size_t i = 0; i < ngbs.size(); i++)
         {
-            for(size_t j = 0; j < ngbs[i].size(); i++)
+            for(size_t j = 0; j < ngbs[i].size(); j++)
             {
-                if(j >= i)
+                if(ngbs[i][j] >= i)
                 {
                     break;
                 }
-                dsv::DSVOpArgument argument(i, (short int) j);
+                dsv::DSVOpArgument argument(i, (short int) ngbs[i][j]);
                 vector->apply_op(dsv::ops::CZ, argument);
             }
         }
