@@ -20,3 +20,8 @@ python.install_sources(
   pure:true,
   subdir:'pyqcs/gates'
 )
+python.install_sources(
+  'graph/abc.py',  'graph/c_l.py',  'graph/gate.py',  'graph/__init__.py',  'graph/state.py',  'graph/graph.py',
+  pure:true,
+  subdir:'pyqcs/graph'
+)
