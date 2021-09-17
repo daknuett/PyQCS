@@ -1,4 +1,4 @@
-project('pyqcs', 'cpp')
+project('pyqcs', 'cpp', version:'3.0.0a')
 
 add_global_arguments('-O3', language:'cpp')
 message(meson.source_root())
