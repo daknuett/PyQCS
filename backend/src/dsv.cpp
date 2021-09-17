@@ -104,6 +104,20 @@ namespace dsv
     }
 
 
+    void DSV::print_state(std::ostream & output)
+    {
+        double const eps = 1e-4;
+
+        for(int i = 0; i < m_ndims; i++)
+        {
+            if(std::abs(m_vect[m_cvect][i]) > eps)
+            {
+                output << "\t+" << m_vect[m_cvect][i] << " |" << i << ">" << std::endl;
+            }
+        }
+    }
+
+
     DSVOpArgument::DSVOpArgument(unsigned short int act)
     {
         m_act = act;
