@@ -25,4 +25,4 @@ python.install_sources(
   pure:true,
   subdir:'pyqcs/graph'
 )
-python.install_sources('gates/implementations/__init__.py', pure:true, subdir:'pyqcs/gates/implmenentations')
+python.install_sources('gates/implementations/__init__.py', pure:true, subdir:'pyqcs/gates/implmentations')
