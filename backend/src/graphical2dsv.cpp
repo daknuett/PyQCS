@@ -6,7 +6,7 @@ namespace graphical2dsv
 {
     const std::array<std::string, 24> C_L_decomposition_HS = 
     {
-        "H", "S", "", "SH", "HS", "Z", "SHS", "HZ", "ZS", "SHZ", "SHSH", "SHZS", "HSH", "ZH", "X", "ZSH", "SX", "ZHS", "XS", "ZSHS", "ZHZ", "XZ", "XSH", "ZSHSH"
+        "H", "S", "", "HS", "SH", "Z", "SHS", "ZH", "SZ", "ZHS", "HSHS", "SZHS", "HSH", "HZ", "X", "HSZ", "XS", "SHZ", "SX", "SHSZ", "ZHZ", "ZX", "HSX", "HSHSZ"
     };
     void apply_vop(dsv::DSV & vector, int qbit, uint8_t vop)
     {
