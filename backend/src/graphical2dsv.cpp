@@ -49,6 +49,11 @@ namespace graphical2dsv
             throw std::invalid_argument("conversion to dsv only allowed for at most 50 qbits");
         }
         dsv::DSV * vector = new dsv::DSV(state.nqbits());
+        for(size_t i = 0; i < state.nqbits(); i++)
+        {
+            dsv::DSVOpArgument argument(i);
+            vector->apply_op(dsv::ops::H, argument);
+        }
 
         std::vector<int> vops;
         std::vector<std::vector<int>> ngbs;
