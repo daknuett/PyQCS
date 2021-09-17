@@ -15,3 +15,8 @@ python.install_sources(
   pure:true,
   subdir:'pyqcs/util'
 )
+python.install_sources(
+  'gates/abc.py',  'gates/builtins.py',  'gates/circuits.py',  'gates/exceptions.py',  'gates/executor.py',  'gates/gate.py',  'gates/__init__.py',
+  pure:true,
+  subdir:'pyqcs/state'
+)
