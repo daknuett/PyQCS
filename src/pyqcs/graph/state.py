@@ -1,8 +1,9 @@
 from .abc import AbstractGraphState
-from .backend.raw_state import RawGraphState
 from .util import graph_lists_to_naive_state
 from.gate import GraphGate
 
+class RawGraphState:
+    pass
 
 class GraphState(AbstractGraphState):
     __slots__ = ["_g_state", "_nbits", "_measured", "_force_new_state"]
