@@ -28,8 +28,7 @@ namespace graphical
         int * m_vops;
         rbt::RBTree * m_ngbhds;
 
-        void do_project_to(int i, int pauli);
-        void after_vop_project_to(int i, int pauli);
+        inline void do_project_to(int i, int pauli);
         inline void toggle_edge(int i, int j);
         inline void isolated_two_qbit_CZ(int i, int j);
         inline bool can_clear_vop(int i, int j);
