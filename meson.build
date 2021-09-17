@@ -44,5 +44,6 @@ subdir('src/pyqcs')
 #####################################################################################
 
 basic_gates = python.extension_module('pyqcs.gates.implementations.basic_gates', 'src/pyqcs/gates/implementations/basic_gates.c', dependencies: pydep, install:true)
+basic_gates2 = python.extension_module('foobar', 'src/pyqcs/gates/implementations/basic_gates.c', dependencies: pydep, install:true)
 compute_amplitude = python.extension_module('pyqcs.gates.implementations.compute_amplitude', 'src/pyqcs/gates/implementations/compute_amplitude.c', dependencies: pydep, install:true)
 
