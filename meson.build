@@ -37,13 +37,12 @@ graphical2dsv = shared_library('graphical2dsv'
 
 pymod = import('python')
 python = pymod.find_installation('python3')
-pydep = dependency('python3')
 subdir('src/pyqcs')
 
 #####################################################################################
 ######## This section contains the (outdated) old backend compilation ###############
 #####################################################################################
 
-basic_gates = pymod.extension_module('pyqcs.gates.implementations.basic_gates', 'src/pyqcs/gates/implementations/basic_gates.c', dependencies: pydep)
-compute_amplitude = pymod.extension_module('pyqcs.gates.implementations.compute_amplitude', 'src/pyqcs/gates/implementations/compute_amplitude.c', dependencies: pydep)
+basic_gates = python.extension_module('pyqcs.gates.implementations.basic_gates', 'src/pyqcs/gates/implementations/basic_gates.c', dependencies: pydep)
+compute_amplitude = python.extension_module('pyqcs.gates.implementations.compute_amplitude', 'src/pyqcs/gates/implementations/compute_amplitude.c', dependencies: pydep)
 
