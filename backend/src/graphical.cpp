@@ -1219,6 +1219,18 @@ namespace graphical
         , {0, 8, 1}
     };
 
+    static const uint8_t observable_after_vop_commute[6][24] =
+    {
+        {2, 0, 0, 2, 4, 0, 4, 5, 0, 5, 1, 1, 1, 2, 3, 2, 3, 4, 3, 4, 5, 3, 5, 1}
+        , {4, 2, 1, 0, 5, 4, 0, 1, 5, 0, 2, 0, 3, 1, 4, 3, 2, 2, 5, 3, 4, 1, 3, 5}
+        , {0, 4, 2, 1, 0, 5, 2, 0, 1, 4, 0, 5, 2, 3, 2, 4, 1, 3, 4, 5, 3, 5, 1, 3}
+        , {5, 3, 3, 5, 1, 3, 1, 2, 3, 2, 4, 4, 4, 5, 0, 5, 0, 1, 0, 1, 2, 0, 2, 4}
+        , {1, 5, 4, 3, 2, 1, 3, 4, 2, 3, 5, 3, 0, 4, 1, 0, 5, 5, 2, 0, 1, 4, 0, 2}
+        , {3, 1, 5, 4, 3, 2, 5, 3, 4, 1, 3, 2, 5, 0, 5, 1, 4, 0, 1, 2, 0, 2, 4, 0}
+    };
+    static const uint8_t vop_after_projection[6] = 
+    { 0, 1, 2, 7, 18, 5 };
+
     static int const VOP_H = 0;
     static int const VOP_S = 1;
     static int const VOP_I = 2;
@@ -1519,4 +1531,168 @@ namespace graphical
             }
         }
     }
+
+    int GraphState::measurement_probability(int i, int pauli)
+    {
+        if(i < 0 || i > m_nqbits)
+        {
+            throw std::invalid_argument("qbit i out of range");
+        }
+        if(pauli < 0 || pauli > 5)
+        {
+            throw std::invalid_argument("pauli must be 0, ..., 5");
+        }
+
+        uint8_t observable = observable_after_vop_commute[pauli][m_vops[i]];
+
+        if((observable == pauli_X || observable == pauli_mX) && m_ngbhds[i].size() == 0)
+        {
+            if(observable == pauli_X)
+            {
+                return 0;
+            }
+            return -1;
+        }
+
+        return 1;
+    }
+
+    void GraphState::project_to(int i, int pauli)
+    {
+        if(measurement_probability(i, pauli) == -1)
+        {
+            throw std::runtime_error("projection to Pauli would give zero (P_sigma |psi> = 0)");
+        }
+
+        do_project_to(i, pauli);
+    }
+
+    inline void GraphState::do_project_to(int i, int pauli)
+    {
+        if((pauli == pauli_X || pauli == pauli_mX)
+            && m_ngbhds[i].size() == 0)
+        {
+            return; // State is invariant.
+        }
+
+        m_vops[i] = vop_lookup_table[m_vops[i]][vop_after_projection[pauli]];
+        switch(pauli)
+        {
+            case pauli_X:
+            case pauli_mX:
+            {
+                int ngb_b = *(m_ngbhds[i].begin()); // This element exists because m_ngbhds[i].size() != 0
+                if(pauli == pauli_X)
+                {
+                    m_vops[ngb_b] = vop_lookup_table[m_vops[ngb_b]][VOP_smiY];
+                }
+                else
+                {
+                    m_vops[ngb_b] = vop_lookup_table[m_vops[ngb_b]][VOP_siY];
+                }
+
+                for(auto c: m_ngbhds[ngb_b])
+                {
+                    if(c != i && !m_ngbhds[i].has_value(c))
+                    {
+                        m_vops[c] = vop_lookup_table[m_vops[c]][VOP_siY];
+                    }
+                }
+
+                rbt::RBTree ngbhd_i = m_ngbhds[i];
+                rbt::RBTree ngbhd_b = m_ngbhds[ngb_b];
+                for(auto c: ngbhd_b)
+                {
+                    for(auto d: ngbhd_i)
+                    {
+                        if(c != d)
+                        {
+                            toggle_edge(c, d);
+                        }
+                    }
+                }
+
+                for(auto c: ngbhd_b)
+                {
+                    for(auto d: ngbhd_b)
+                    {
+                        if(d != c && m_ngbhds[i].has_value(d))
+                        {
+                            toggle_edge(c, d);
+                        }
+                    }
+                }
+
+                for(auto d: ngbhd_i)
+                {
+                    if(d != ngb_b)
+                    {
+                        toggle_edge(d, ngb_b);
+                    }
+                }
+                break;
+            }
+
+            case pauli_Y:
+            case pauli_mY:
+            {
+                uint8_t rmultiply;
+                if(pauli == pauli_Y)
+                {
+                    rmultiply = VOP_smiZ;
+                }
+                else
+                {
+                    rmultiply = VOP_siZ;
+                }
+
+                for(auto j: m_ngbhds[i])
+                {
+                    m_vops[j] = vop_lookup_table[m_vops[j]][rmultiply];
+                }
+
+                toggle_neighbourhood(i);
+                isolate_qbit(i);
+                break;
+            }
+            case pauli_Z:
+            {
+                isolate_qbit(i);
+                break;
+            }
+            case pauli_mZ:
+            {
+                for(auto n: m_ngbhds[i])
+                {
+                    m_vops[n] = vop_lookup_table[m_vops[n]][VOP_Z];
+                }
+                isolate_qbit(i);
+                break;
+            }
+        }
+    }
+
+    inline void GraphState::toggle_neighbourhood(int i)
+    {
+        for(auto n: m_ngbhds[i])
+        {
+            for(auto m: m_ngbhds[i])
+            {
+                if(n == m)
+                {
+                    break;
+                }
+                toggle_edge(m, n);
+            }
+        }
+    }
+    inline void GraphState::isolate_qbit(int i)
+    {
+        for(auto n: m_ngbhds[i])
+        {
+            m_ngbhds[n].delete_value(i);
+        }
+        m_ngbhds[i] = rbt::RBTree();
+    }
+
 }

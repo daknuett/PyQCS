@@ -35,6 +35,8 @@ namespace graphical
         inline bool can_clear_vop(int i, int j);
         inline void clear_vop(int i, int j);
         inline void La_transformation(int i, int repeat);
+        inline void toggle_neighbourhood(int i);
+        inline void isolate_qbit(int i);
 
         /*
         * Qbits i, j are at most connected to each other.
@@ -47,6 +49,14 @@ namespace graphical
         GraphState(GraphState & orig);
         void apply_CL(int i, int vop);
         void apply_CZ(int i, int j);
+        /**
+        * Returns the probability for the measurement of Pauli observable ``pauli''.
+        * Results should be interpreted as such:
+        * 
+        * Result -1: Probablility is zero.
+        * Result 0: Probability is (1/2)^0 = 1.
+        * Result 1: Probablility is (1/2)^1 = 1/2.
+        * */
         int measurement_probability(int i, int pauli);
         void project_to(int i, int pauli);
         void export_to_vectors(std::vector<int> & vops, std::vector<std::vector<int>> & ngbs);
