@@ -78,7 +78,7 @@ namespace dsv
 
         for(size_t i = 0; i < m_ndims; i++)
         {
-            result += m_vect[m_cvect][i] * std::conj(other.m_vect[m_cvect][i]);
+            result += m_vect[m_cvect][i] * std::conj(other.m_vect[other.m_cvect][i]);
         }
 
         return result;
