@@ -1505,7 +1505,7 @@ namespace graphical
                 m_vops[j] = vop_lookup_table[m_vops[j]][VOP_smiZ];
             }
 
-            if(repeat % 2)
+            if(repeat % 2) // Toggle the neighbourhood at most once.
             {
                 for(auto k: m_ngbhds[i])
                 {
