@@ -1342,7 +1342,6 @@ namespace graphical
 
         if(vop_commutes_with_CZ(m_vops[i]) && vop_commutes_with_CZ(m_vops[j]))
         {
-            std::cerr << "both VOPs commute" << std::endl;
             // Case 1.
             toggle_edge(i, j);
             return;
@@ -1350,13 +1349,11 @@ namespace graphical
         // From now on handle Case 2.
         if(qbits_are_isolated(i, j))
         {
-            std::cerr << "isolated case" << std::endl;
             // Sub-Sub-Case 2.2.1.
             isolated_two_qbit_CZ(i, j);
             return;
         }
 
-        std::cerr << "clear VOPs case" << std::endl;
         bool cleared_i = false, cleared_j = false;
 
         if(can_clear_vop(i, j))
@@ -1441,7 +1438,6 @@ namespace graphical
         m_vops[i] = two_qbit_config_after_CZ[lookup_table_index][0];
         m_vops[j] = two_qbit_config_after_CZ[lookup_table_index][1];
         int entangled_after = two_qbit_config_after_CZ[lookup_table_index][2];
-        std::cerr << "case description: " << m_vops[i] << ", " << m_vops[j] << ", " << entangled_before << " this gives idx: " << lookup_table_index << std::endl;
 
         if(entangled_after && !entangled_before)
         {
