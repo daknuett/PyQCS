@@ -190,23 +190,29 @@ RawGraphState_measure(RawGraphState * self, PyObject * args)
     }
 
     int probability = self->state->measurement_probability(qbit, graphical::pauli_Z);
+    std::cerr << "found probability for Pauli +Z: " << probability << std::endl;
 
     if(probability == 0)
     {
+        std::cerr << "probability is (1/2) ^ 0 = 1 => returning 0 (for |0>)" << std::endl;
         return Py_BuildValue("l", 0);
     }
     if(probability == -1)
     {
+        std::cerr << "probability is 0 (from -1) => returning 1 (for |1>)" << std::endl;
         return Py_BuildValue("l", 1);
     }
 
     // Probability is now 1 => indertiministic result.
     
+    std::cerr << "randomly selecting outcome" << std::endl;
     if(random >= 0.5)
     {
+        std::cerr << "selected outcome |1>, projecting on -Z" << std::endl;
         self->state->project_to(qbit, graphical::pauli_mZ);
         return Py_BuildValue("l", 1);
     }
+    std::cerr << "selected outcome |0>, projecting on +Z" << std::endl;
     self->state->project_to(qbit, graphical::pauli_Z);
     return Py_BuildValue("l", 0);
 }
