@@ -1350,7 +1350,7 @@ namespace graphical
         }
 
 
-        if(vop_commutes_with_CZ(m_vops[i]) && vop_commutes_with_CZ(m_vops[i]))
+        if(vop_commutes_with_CZ(m_vops[i]) && vop_commutes_with_CZ(m_vops[j]))
         {
             std::cerr << "both VOPs commute" << std::endl;
             // Case 1.
