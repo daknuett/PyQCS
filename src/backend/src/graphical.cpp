@@ -1330,7 +1330,6 @@ namespace graphical
 
     void GraphState::apply_CZ(int i, int j)
     {
-        std::cerr << "CZ(" << i << ", " << j << ")" << std::endl;
         if(i < 0 || i > m_nqbits)
         {
             throw std::invalid_argument("qbit i out of range");
@@ -1357,22 +1356,18 @@ namespace graphical
 
         bool cleared_i = false, cleared_j = false;
 
-        std::cerr << "clearing vops..." << std::endl;
         if(can_clear_vop(i, j))
         {
-            std::cerr << "clearing vop i = " << i << std::endl;
             cleared_i = true;
             clear_vop(i, j);
         }
         if(can_clear_vop(j, i))
         {
-            std::cerr << "clearing vop j = " << j << std::endl;
             cleared_j = true;
             clear_vop(j, i);
         }
         if(!cleared_i && can_clear_vop(i, j))
         {
-            std::cerr << "clearing vop i = " << i << std::endl;
             // It is possible that we can now clear the VOP on i.
             // This is the case if i is neighbor of j.
             cleared_i = true;
@@ -1482,7 +1477,6 @@ namespace graphical
             return;
         }
 
-        std::cerr << "clearing vop[" << i << "] = " << i << " ignoring " << j << std::endl;
         uint8_t vop_to_clear = m_vops[i];
         for(auto word: clear_vop_decomposition[vop_to_clear])
         {
@@ -1502,7 +1496,6 @@ namespace graphical
     }
     inline void GraphState::La_transformation(int i, int repeat)
     {
-        std::cerr << "\tLa_transforming around " << i << " " << repeat << " times" << std::endl;
         for(int n = 0; n < repeat; n++)
         {
             m_vops[i] = vop_lookup_table[m_vops[i]][VOP_siX];
@@ -1522,7 +1515,6 @@ namespace graphical
                     {
                         break;
                     }
-                    std::cerr << "\ttoggling edge " << j << " <-> " << k << std::endl;
                     toggle_edge(j, k);
 
                 }
