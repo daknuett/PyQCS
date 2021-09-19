@@ -1330,6 +1330,7 @@ namespace graphical
 
     void GraphState::apply_CZ(int i, int j)
     {
+        std::cerr << "CZ(" << i << ", " << j << ")" << std::endl;
         if(i < 0 || i > m_nqbits)
         {
             throw std::invalid_argument("qbit i out of range");
