@@ -274,7 +274,7 @@ static PyModuleDef raw_statemodule = {
 };
 
 PyMODINIT_FUNC
-PyInit_raw_state(void)
+PyInit_rawstate(void)
 {
     RawGraphStateType.tp_methods = RawGraphState_methods;
     RawGraphStateType.tp_init = (initproc) RawGraphState_init;
