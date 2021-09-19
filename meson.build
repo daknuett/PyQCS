@@ -43,6 +43,6 @@ subdir('src/pyqcs')
 ######## This section contains the (outdated) old backend compilation ###############
 #####################################################################################
 
-basic_gates = python.extension_module('pyqcs.gates.implementations.basic_gates', 'src/pyqcs/gates/implementations/basic_gates.c', dependencies: pydep, install:true, subdir:'pyqcs/gates/implementations/')
-compute_amplitude = python.extension_module('pyqcs.gates.implementations.compute_amplitude', 'src/pyqcs/gates/implementations/compute_amplitude.c', dependencies: pydep, install:true, subdir:'pyqcs/gates/implementations/')
+basic_gates = python.extension_module('basic_gates', 'src/pyqcs/gates/implementations/basic_gates.c', dependencies: pydep, install:true, subdir:'pyqcs/gates/implementations/')
+compute_amplitude = python.extension_module('compute_amplitude', 'src/pyqcs/gates/implementations/compute_amplitude.c', dependencies: pydep, install:true, subdir:'pyqcs/gates/implementations/')
 
