@@ -1,6 +1,6 @@
 import pytest
 
-from pyqcs.graph.backend.raw_state import RawGraphState
+from pyqcs.graph.rawstate import RawGraphState
 from pyqcs.graph.util import graph_lists_to_naive_state
 
 from pyqcs import H, X, Z, CZ, State

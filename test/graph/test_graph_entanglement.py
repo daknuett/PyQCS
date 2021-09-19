@@ -1,7 +1,7 @@
 import pytest
 
 from pyqcs import State, H, X, Z, CZ, list_to_circuit
-from pyqcs.graph.backend.raw_state import RawGraphState
+from pyqcs.graph.rawstate import RawGraphState
 from pyqcs.graph.util import graph_lists_to_naive_state
 
 VOP_H = 0

@@ -1,6 +1,6 @@
 import numpy as np
 
-from pyqcs.graph.backend.raw_state import RawGraphState
+from pyqcs.graph.rawstate import RawGraphState
 from pyqcs.graph.util import graph_lists_to_naive_state
 from pyqcs import H, M, State, CZ, R, list_to_circuit
 

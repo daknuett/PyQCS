@@ -1,5 +1,5 @@
 from itertools import product
-from pyqcs.graph.backend.raw_state import RawGraphState
+from pyqcs.graph.rawstate import RawGraphState
 from pyqcs import GenericGate, State, H
 from pyqcs.graph.util import graph_lists_to_naive_state, C_L
 
