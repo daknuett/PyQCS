@@ -1571,6 +1571,7 @@ namespace graphical
             case pauli_X:
             {
                 int ngb_b = *(m_ngbhds[i].begin()); // This element exists because m_ngbhds[i].size() != 0
+                std::cerr << " +X projection: selected b = " << ngb_b << std::endl;
                 m_vops[ngb_b] = vop_lookup_table[m_vops[ngb_b]][VOP_smiY];
 
 
@@ -1618,6 +1619,7 @@ namespace graphical
             case pauli_mX:
             {
                 int ngb_b = *(m_ngbhds[i].begin()); // This element exists because m_ngbhds[i].size() != 0
+                std::cerr << " -X projection: selected b = " << ngb_b << std::endl;
                 m_vops[ngb_b] = vop_lookup_table[m_vops[ngb_b]][VOP_siY];
 
                 for(auto c: m_ngbhds[ngb_b])
