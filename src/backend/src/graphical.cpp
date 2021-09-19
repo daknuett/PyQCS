@@ -1569,21 +1569,60 @@ namespace graphical
         switch(pauli)
         {
             case pauli_X:
-            case pauli_mX:
             {
                 int ngb_b = *(m_ngbhds[i].begin()); // This element exists because m_ngbhds[i].size() != 0
-                if(pauli == pauli_X)
-                {
-                    m_vops[ngb_b] = vop_lookup_table[m_vops[ngb_b]][VOP_smiY];
-                }
-                else
-                {
-                    m_vops[ngb_b] = vop_lookup_table[m_vops[ngb_b]][VOP_siY];
-                }
+                m_vops[ngb_b] = vop_lookup_table[m_vops[ngb_b]][VOP_smiY];
+
 
                 for(auto c: m_ngbhds[ngb_b])
                 {
                     if(c != i && !m_ngbhds[i].has_value(c))
+                    {
+                        m_vops[c] = vop_lookup_table[m_vops[c]][VOP_siY];
+                    }
+                }
+
+                rbt::RBTree ngbhd_i = m_ngbhds[i];
+                rbt::RBTree ngbhd_b = m_ngbhds[ngb_b];
+                for(auto c: ngbhd_b)
+                {
+                    for(auto d: ngbhd_i)
+                    {
+                        if(c != d)
+                        {
+                            toggle_edge(c, d);
+                        }
+                    }
+                }
+
+                for(auto c: ngbhd_b)
+                {
+                    for(auto d: ngbhd_b)
+                    {
+                        if(d != c && m_ngbhds[i].has_value(d))
+                        {
+                            toggle_edge(c, d);
+                        }
+                    }
+                }
+
+                for(auto d: ngbhd_i)
+                {
+                    if(d != ngb_b)
+                    {
+                        toggle_edge(d, ngb_b);
+                    }
+                }
+                break;
+            }
+            case pauli_mX:
+            {
+                int ngb_b = *(m_ngbhds[i].begin()); // This element exists because m_ngbhds[i].size() != 0
+                m_vops[ngb_b] = vop_lookup_table[m_vops[ngb_b]][VOP_siY];
+
+                for(auto c: m_ngbhds[i])
+                {
+                    if(c != ngb_b && !m_ngbhds[i].has_value(c))
                     {
                         m_vops[c] = vop_lookup_table[m_vops[c]][VOP_siY];
                     }
