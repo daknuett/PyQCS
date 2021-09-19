@@ -1359,7 +1359,6 @@ namespace graphical
         // From now on handle Case 2.
         if(qbits_are_isolated(i, j))
         {
-            std::cerr << "isolated qbit case" << std::endl;
             // Sub-Sub-Case 2.2.1.
             isolated_two_qbit_CZ(i, j);
             return;
@@ -1449,6 +1448,7 @@ namespace graphical
         m_vops[i] = two_qbit_config_after_CZ[lookup_table_index][0];
         m_vops[j] = two_qbit_config_after_CZ[lookup_table_index][1];
         int entangled_after = two_qbit_config_after_CZ[lookup_table_index][2];
+        std::cerr << "case description: " << m_vops[i] << ", " << m_vops[j] << ", " << entangled_before << "this gives idx: " << lookup_table_index << std::endl;
 
         if(entangled_after && !entangled_before)
         {
