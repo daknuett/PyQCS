@@ -16,6 +16,7 @@ test_filenames = [['test_dsv_HZH_X', 'tests/dsv_HZH_X.cpp']
             , ['test_graph2dsv_selected_exports', 'tests/graph2dsv_selected_exports.cpp']
             , ['test_graph2dsv_selected_exports_CZ', 'tests/graph2dsv_selected_exports_CZ.cpp']
             , ['test_graph_specific_circuit', 'tests/graphical_specific_circuit.cpp']
+            , ['test_graph_copy', 'tests/graphical_copy.cpp']
             ]
 
 tests = []
