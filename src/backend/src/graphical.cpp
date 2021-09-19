@@ -1574,9 +1574,9 @@ namespace graphical
                 m_vops[ngb_b] = vop_lookup_table[m_vops[ngb_b]][VOP_smiY];
 
 
-                for(auto c: m_ngbhds[ngb_b])
+                for(auto c: m_ngbhds[i])
                 {
-                    if(c != i && !m_ngbhds[i].has_value(c))
+                    if(c != ngb_b && !m_ngbhds[ngb_b].has_value(c))
                     {
                         m_vops[c] = vop_lookup_table[m_vops[c]][VOP_siY];
                     }
@@ -1620,9 +1620,9 @@ namespace graphical
                 int ngb_b = *(m_ngbhds[i].begin()); // This element exists because m_ngbhds[i].size() != 0
                 m_vops[ngb_b] = vop_lookup_table[m_vops[ngb_b]][VOP_siY];
 
-                for(auto c: m_ngbhds[i])
+                for(auto c: m_ngbhds[ngb_b])
                 {
-                    if(c != ngb_b && !m_ngbhds[i].has_value(c))
+                    if(c != i && !m_ngbhds[i].has_value(c))
                     {
                         m_vops[c] = vop_lookup_table[m_vops[c]][VOP_siY];
                     }
