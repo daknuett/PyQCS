@@ -1477,7 +1477,7 @@ namespace graphical
     inline void GraphState::clear_vop(int i, int j)
     {
         // No need to clear VOP that commites with CZ.
-        if(vop_commutes_with_CZ(i))
+        if(vop_commutes_with_CZ(m_vops[i]))
         {
             return;
         }
