@@ -1,8 +1,7 @@
 from abc import abstractmethod, ABCMeta
 from numpy.random import uniform
+from .rawstate import RawGraphState
 
-class RawGraphState:
-    pass
 
 class AbstractGraphOperation(metaclass=ABCMeta):
     def __init__(self, act):
