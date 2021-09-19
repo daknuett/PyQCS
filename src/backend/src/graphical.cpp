@@ -1291,6 +1291,7 @@ namespace graphical
     {
         m_nqbits = orig.m_nqbits;
         m_vops = orig.m_vops;
+        m_ngbhds = orig.m_ngbhds;
     }
     int GraphState::nqbits(void)
     {
