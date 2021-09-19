@@ -1352,6 +1352,7 @@ namespace graphical
 
         if(vop_commutes_with_CZ(m_vops[i]) && vop_commutes_with_CZ(m_vops[i]))
         {
+            std::cerr << "both VOPs commute" << std::endl;
             // Case 1.
             toggle_edge(i, j);
             return;
@@ -1359,11 +1360,13 @@ namespace graphical
         // From now on handle Case 2.
         if(qbits_are_isolated(i, j))
         {
+            std::cerr << "isolated case" << std::endl;
             // Sub-Sub-Case 2.2.1.
             isolated_two_qbit_CZ(i, j);
             return;
         }
 
+        std::cerr << "clear VOPs case" << std::endl;
         bool cleared_i = false, cleared_j = false;
 
         if(can_clear_vop(i, j))
