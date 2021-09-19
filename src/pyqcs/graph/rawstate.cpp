@@ -24,7 +24,7 @@ static int RawGraphState_init(RawGraphState * self
     static char * kwrds[] = {(char *)"nqbits", NULL};
     int nqbits;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "l", kwrds, &nqbits))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwrds, &nqbits))
     {
         return -1;
     }
@@ -72,7 +72,7 @@ RawGraphState_apply_C_L(RawGraphState * self
     uint8_t vop;
     int i;
 
-    if(!PyArg_ParseTuple(args, "lb", &i, &vop))
+    if(!PyArg_ParseTuple(args, "ib", &i, &vop))
     {
         return NULL;
     }
@@ -90,9 +90,6 @@ RawGraphState_apply_C_L(RawGraphState * self
         return NULL;
     }
 
-    std::cerr << "applying " << (int)vop << " on qbit " << i << std::endl;
-    std::cerr << "state is: " << self->state << std::endl;
-
     self->state->apply_CL(i, vop);
     Py_RETURN_NONE;
 }
@@ -101,7 +98,7 @@ static PyObject *
 RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
 {
     int i = 0, j = 0;
-    if(!PyArg_ParseTuple(args, "ll", &i, &j))
+    if(!PyArg_ParseTuple(args, "ii", &i, &j))
     {
         return NULL;
     }
@@ -180,7 +177,7 @@ RawGraphState_measure(RawGraphState * self, PyObject * args)
     int qbit;
     double random;
 
-    if(!PyArg_ParseTuple(args, "ld", &qbit, &random))
+    if(!PyArg_ParseTuple(args, "id", &qbit, &random))
     {
         return NULL;
     }
@@ -225,7 +222,7 @@ static PyObject *
 RawGraphState_project_to(RawGraphState * self, PyObject * args)
 {
     int qbit = 0, observable = 0;
-    if(!PyArg_ParseTuple(args, "ll", &qbit, &observable))
+    if(!PyArg_ParseTuple(args, "ii", &qbit, &observable))
     {
         return NULL;
     }
