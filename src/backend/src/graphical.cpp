@@ -1554,7 +1554,7 @@ namespace graphical
             throw std::runtime_error("projection to Pauli would give zero (P_sigma |psi> = 0)");
         }
 
-        do_project_to(i, pauli);
+        do_project_to(i, observable_after_vop_commute[pauli][m_vops[i]]);
     }
 
     inline void GraphState::do_project_to(int i, int pauli)
