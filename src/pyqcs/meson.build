@@ -28,7 +28,7 @@ python.install_sources(
 python.install_sources('gates/implementations/__init__.py', pure:false, subdir:'pyqcs/gates/implementations')
 
 python.install_sources(
-  'build/abc.py',  'build/__init__.py'
+  'build/abc.py',  'build/__init__.py',
   pure:false,
   subdir:'pyqcs/build'
 )
