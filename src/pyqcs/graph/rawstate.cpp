@@ -104,6 +104,7 @@ RawGraphState_apply_CZ(RawGraphState * self, PyObject * args)
     }
 
     std::cerr << "applying CZ(" << i << ", " << j << ")" << std::endl;
+    std::cerr << "state is: " << self->state << std::endl;
 
     self->state->apply_CZ(i, j);
     std::cerr << "application done" << std::endl;
