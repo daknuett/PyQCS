@@ -1357,18 +1357,22 @@ namespace graphical
 
         bool cleared_i = false, cleared_j = false;
 
+        std::cerr << "clearing vops..." << std::endl;
         if(can_clear_vop(i, j))
         {
+            std::cerr << "clearing vop i = " << i << std::endl;
             cleared_i = true;
             clear_vop(i, j);
         }
         if(can_clear_vop(j, i))
         {
+            std::cerr << "clearing vop j = " << j << std::endl;
             cleared_j = true;
             clear_vop(j, i);
         }
         if(!cleared_i && can_clear_vop(i, j))
         {
+            std::cerr << "clearing vop i = " << i << std::endl;
             // It is possible that we can now clear the VOP on i.
             // This is the case if i is neighbor of j.
             cleared_i = true;
