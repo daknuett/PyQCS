@@ -1366,7 +1366,6 @@ namespace graphical
 
         bool cleared_i = false, cleared_j = false;
 
-        std::cerr << "clearing VOPs ..." << std::endl;
         if(can_clear_vop(i, j))
         {
             cleared_i = true;
@@ -1384,7 +1383,6 @@ namespace graphical
             cleared_i = true;
             clear_vop(i, j);
         }
-        std::cerr << "clearing vops done." << std::endl;
 
         if(cleared_i && cleared_j)
         {
@@ -1478,7 +1476,7 @@ namespace graphical
             return false;
         }
         // The only neighbor is non-operand.
-        return true;
+        return m_ngbhds[i].size() > 0;
     }
 
     inline void GraphState::clear_vop(int i, int j)
