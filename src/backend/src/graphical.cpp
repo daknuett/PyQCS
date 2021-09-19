@@ -1359,6 +1359,7 @@ namespace graphical
         // From now on handle Case 2.
         if(qbits_are_isolated(i, j))
         {
+            std::cerr << "isolated qbit case" << std::endl;
             // Sub-Sub-Case 2.2.1.
             isolated_two_qbit_CZ(i, j);
             return;

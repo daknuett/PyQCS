@@ -32,6 +32,7 @@ def test_two_qbits_isolated():
         assert graph_lists_to_naive_state(g.to_lists()) == s
 
 @pytest.mark.deprecated
+@pytest.mark.selected
 def test_two_qbits_isolated_CZ():
     for g0, g1, c0, c1 ,e in possible_input_configurations():
         g = RawGraphState(2)
@@ -47,4 +48,13 @@ def test_two_qbits_isolated_CZ():
         g.apply_CZ(0, 1)
         s = CZ(0, 1) * s
 
+        if(graph_lists_to_naive_state(g.to_lists()) != s):
+            print("got:")
+            print(graph_lists_to_naive_state(g.to_lists()))
+            print("expect:")
+            print(s)
+            print("setup was:")
+            print(c0, c1, e)
+            print("results now:")
+            print(g.to_lists())
         assert graph_lists_to_naive_state(g.to_lists()) == s
