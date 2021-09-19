@@ -16,6 +16,7 @@ ll = shared_library('ll'
 rbt = shared_library('rbt'
       , 'src/backend/rbtree/src/rbt/tree.cpp'
       , 'src/backend/rbtree/src/rbt/iterator.cpp'
+      , install:true
       , include_directories:incdir)
 dsv = shared_library('dsv'
       , 'src/backend/src/dsv.cpp'
@@ -23,6 +24,7 @@ dsv = shared_library('dsv'
 graphical = shared_library('graphical'
       , 'src/backend/src/graphical.cpp'
       , include_directories:incdir
+      , install:true
       , link_with:[rbt])
 graphical2dsv = shared_library('graphical2dsv'
       , 'src/backend/src/graphical2dsv.cpp'
