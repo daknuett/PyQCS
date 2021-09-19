@@ -33,3 +33,8 @@ python.install_sources(
   subdir:'pyqcs/build'
 )
 
+python.install_sources(
+  'experiment/gradient_decent.py',  'experiment/__init__.py',  'experiment/workflow.py',
+  pure:false,
+  subdir:'pyqcs/experiment'
+)
