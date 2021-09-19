@@ -1,6 +1,7 @@
 #include <graphical.hpp>
 #include <stdexcept>
 #include <array>
+#include <vector>
 
 #define vop_commutes_with_CZ(v) (v == 1 || v == 2 || v == 5 || v == 8)
 
@@ -1280,28 +1281,16 @@ namespace graphical
         {
             throw std::invalid_argument("nqbits must be non-zero");
         }
-        m_vops = new int[nqbits];
-        m_ngbhds = new rbt::RBTree[nqbits];
-        for(auto i = 0; i < nqbits; i++)
-        {
-            m_vops[i] = 2;
-        }
+        m_vops = std::vector<int>(nqbits, 2);
+        m_ngbhds = std::vector<rbt::RBTree>(nqbits);
     }
     GraphState::~GraphState()
     {
-        delete [] m_vops;
-        delete [] m_ngbhds;
     }
     GraphState::GraphState(GraphState & orig)
     {
         m_nqbits = orig.m_nqbits;
-        m_vops = new int[m_nqbits];
-        m_ngbhds = new rbt::RBTree[m_nqbits];
-        for(auto i = 0; i < m_nqbits; i++)
-        {
-            m_vops[i] = orig.m_vops[i];
-            m_ngbhds[i] = orig.m_ngbhds[i];
-        }
+        m_vops = orig.m_vops;
     }
     int GraphState::nqbits(void)
     {

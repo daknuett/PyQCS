@@ -25,8 +25,8 @@ namespace graphical
     {
         private:
         size_t m_nqbits;
-        int * m_vops;
-        rbt::RBTree * m_ngbhds;
+        std::vector<int> m_vops;
+        std::vector<rbt::RBTree> m_ngbhds;
 
         inline void do_project_to(int i, int pauli);
         inline void toggle_edge(int i, int j);
