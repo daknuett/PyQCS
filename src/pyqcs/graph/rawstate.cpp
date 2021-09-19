@@ -90,6 +90,8 @@ RawGraphState_apply_C_L(RawGraphState * self
         return NULL;
     }
 
+    std::cerr << "applying " << vop << " on qbit " << i << std::endl;
+
     self->state->apply_CL(i, vop);
     Py_RETURN_NONE;
 }
