@@ -1477,6 +1477,7 @@ namespace graphical
             return;
         }
 
+        std::cerr << "clearing vop[" << i << "] = " << i << " ignoring " << j << std::endl;
         uint8_t vop_to_clear = m_vops[i];
         for(auto word: clear_vop_decomposition[vop_to_clear])
         {
@@ -1496,6 +1497,7 @@ namespace graphical
     }
     inline void GraphState::La_transformation(int i, int repeat)
     {
+        std::cerr << "\tLa_transforming around " << i << " " << repeat << " times" << std::endl;
         for(int n = 0; n < repeat; n++)
         {
             m_vops[i] = vop_lookup_table[m_vops[i]][VOP_siX];
@@ -1515,6 +1517,7 @@ namespace graphical
                     {
                         break;
                     }
+                    std::cerr << "\ttoggling edge " << j << " <-> " << k << std::endl;
                     toggle_edge(j, k);
 
                 }
