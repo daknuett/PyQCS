@@ -1579,7 +1579,7 @@ namespace graphical
                 {
                     if(c != ngb_b && !m_ngbhds[ngb_b].has_value(c))
                     {
-                        m_vops[c] = vop_lookup_table[m_vops[c]][VOP_siY];
+                        m_vops[c] = vop_lookup_table[m_vops[c]][VOP_Z];
                     }
                 }
 
@@ -1626,7 +1626,7 @@ namespace graphical
                 {
                     if(c != i && !m_ngbhds[i].has_value(c))
                     {
-                        m_vops[c] = vop_lookup_table[m_vops[c]][VOP_siY];
+                        m_vops[c] = vop_lookup_table[m_vops[c]][VOP_Z];
                     }
                 }
 
