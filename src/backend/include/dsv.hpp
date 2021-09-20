@@ -36,6 +36,11 @@ namespace dsv
         std::complex<double> operator*(DSV & other);
         void randomize(std::mt19937_64 & rne);
         void print_state(std::ostream & output);
+        void normalize(void);
+        double measurement_probability(unsigned short int i);
+        void project_to(unsigned short int i, int value);
+        void statistic(std::vector<unsigned short int> & labels, std::vector<double> & probabilities, double eps);
+
     };
 
 
