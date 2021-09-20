@@ -41,13 +41,6 @@ python = pymod.find_installation('python3')
 pydep = python.dependency('python3')
 subdir('src/pyqcs')
 
-#####################################################################################
-######## This section contains the (outdated) old backend compilation ###############
-#####################################################################################
-
-basic_gates = python.extension_module('basic_gates', 'src/pyqcs/gates/implementations/basic_gates.c', dependencies: pydep, install:true, subdir:'pyqcs/gates/implementations/')
-compute_amplitude = python.extension_module('compute_amplitude', 'src/pyqcs/gates/implementations/compute_amplitude.c', dependencies: pydep, install:true, subdir:'pyqcs/gates/implementations/')
-generic_gate = python.extension_module('generic_gate', 'src/pyqcs/gates/implementations/generic_gate.c', dependencies: pydep, install:true, subdir:'pyqcs/gates/implementations/')
 
 #####################################################################################
 ###### This section contains the new backend compilation ############################
