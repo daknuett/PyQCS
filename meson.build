@@ -49,6 +49,10 @@ basic_gates = python.extension_module('basic_gates', 'src/pyqcs/gates/implementa
 compute_amplitude = python.extension_module('compute_amplitude', 'src/pyqcs/gates/implementations/compute_amplitude.c', dependencies: pydep, install:true, subdir:'pyqcs/gates/implementations/')
 generic_gate = python.extension_module('generic_gate', 'src/pyqcs/gates/implementations/generic_gate.c', dependencies: pydep, install:true, subdir:'pyqcs/gates/implementations/')
 
+#####################################################################################
+###### This section contains the new backend compilation ############################
+#####################################################################################
+
 python.extension_module(
     'rawstate'
     , ['src/pyqcs/graph/rawstate.cpp'
