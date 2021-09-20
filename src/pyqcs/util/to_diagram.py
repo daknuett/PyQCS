@@ -6,65 +6,27 @@ from tempfile import TemporaryDirectory
 
 from numpy import pi
 
-from .flatten import flatten
 
 def not_implemented(*args):
     raise NotImplementedError()
 
 
-multi_qbit_gates = ["C", "B"]
+multi_qbit_gates = ["CX", "CZ"]
 formatters = {
-    "C": lambda c, r: "X"
-    , "B": lambda c, r: "Z"
-    , "R": lambda c, r: "R_{%.2f\pi}" % (r / pi)
+    "CX": lambda c, r: "X"
+    , "CZ": lambda c, r: "Z"
+    , "R": lambda c, r: r"R_{%.2f\pi}" % (r / pi)
     , "X": lambda c, r: "X"
     , "H": lambda c, r: "H"
     , "Z": lambda c, r: "Z"
-    , "GenericGate": not_implemented
     , "M": not_implemented
 }
 
 def circuit_to_table(circuit):
-    nbits = int(circuit._uses_qbits).bit_length()
+    nbits = int(circuit._requires_qbits).bit_length()
 
-    circuits = flatten(circuit)
-
-    rows = [deque() for _ in range(nbits)]
-    last = deque()
-    for sgc in circuits:
-        if(not sgc._descr[0] in multi_qbit_gates):
-            can_insert_in_row = True
-            for l in last:
-                if(l._descr[1] == sgc._descr[1]):
-                    can_insert_in_row = False
-                    break
-
-            if(can_insert_in_row):
-                rows[sgc._descr[1]].append(sgc._descr)
-                last.append(sgc)
-            else:
-                for i,row in enumerate(rows):
-                    if(not i in [l._descr[1] for l in last]):
-                        row.append(None)
-                rows[sgc._descr[1]].append(sgc._descr)
-                last = deque([sgc])
-
-        else:
-            for i,row in enumerate(rows):
-                if(not i in [l._descr[1] for l in last]):
-                    row.append(None)
-            rows[sgc._descr[1]].append(sgc._descr)
-            for i,row in enumerate(rows):
-                if(i != sgc._descr[1]):
-                    row.append(None)
-            last = deque()
-
-    if(last):
-        for i,row in enumerate(rows):
-            if(not i in [l._descr[1] for l in last]):
-                row.append(None)
-
-    return [list(r) for r in rows]
+    gates = circuit._gate_list
+    raise NotImplementedError()
 
 
 def circuit_to_diagram(circuit):
@@ -145,6 +107,3 @@ class CircuitPNGFormatter(object):
         '''
 
         return header + self.tex + bottom
-
-
-

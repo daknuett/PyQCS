@@ -109,7 +109,7 @@ See https://github.com/daknuett/PyQCS/tree/master/examples.
 
 import numpy as np
 
-from .gates.builtins import C, H, X, R, M, Z, S, CX, CZ, GenericGate, clear_builtin_gate_cache
+from .gates.builtins import C, H, X, R, M, Z, S, CX, CZ
 from .state.state import BasicState as State
 from .state.pretty_state import PrettyState
 from .gates.circuits import AnonymousCompoundGateCircuit, NamedCompoundGateCircuit
