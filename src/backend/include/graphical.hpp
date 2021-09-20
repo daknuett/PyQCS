@@ -46,6 +46,7 @@ namespace graphical
         GraphState(size_t nqbits);
         ~GraphState();
         GraphState(GraphState & orig);
+        GraphState(GraphState const & orig);
         void apply_CL(int i, int vop);
         void apply_CZ(int i, int j);
         /**
@@ -61,5 +62,13 @@ namespace graphical
         void export_to_vectors(std::vector<int> & vops, std::vector<std::vector<int>> & ngbs);
         int nqbits(void);
 
+        /*
+        * Returns the overlap of the graphical states ``this'' and ``other''.
+        * The return format is similar to ``measurement_probability'':
+        *
+        * Result k >= 0: Overlap is (1/srqrt(2)) ^ k
+        * Result k = -1: Overlap is 0.
+        * */
+        int operator*(GraphState & other);
     };
 }

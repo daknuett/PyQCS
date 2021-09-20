@@ -1231,7 +1231,8 @@ namespace graphical
     };
     static const uint8_t vop_after_projection[6] = 
     { 0, 1, 2, 7, 18, 5 };
-
+    static const uint8_t daggered_vops[24] =
+    { 0, 8, 2, 10, 15, 5, 12, 13, 1, 23, 3, 11, 6, 7, 14, 4, 16, 22, 18, 19, 20, 21, 17, 9};
     static int const VOP_H = 0;
     static int const VOP_S = 1;
     static int const VOP_I = 2;
@@ -1288,6 +1289,12 @@ namespace graphical
     {
     }
     GraphState::GraphState(GraphState & orig)
+    {
+        m_nqbits = orig.m_nqbits;
+        m_vops = orig.m_vops;
+        m_ngbhds = orig.m_ngbhds;
+    }
+    GraphState::GraphState(GraphState const & orig)
     {
         m_nqbits = orig.m_nqbits;
         m_vops = orig.m_vops;
@@ -1724,4 +1731,63 @@ namespace graphical
         m_ngbhds[i] = rbt::RBTree();
     }
 
+    int GraphState::operator*(GraphState & other)
+    {
+        if(other.m_nqbits != m_nqbits)
+        {
+            throw std::invalid_argument("compute overlap: states must have same number of qbits");
+        }
+        GraphState copy(*this);
+
+        for(size_t i = 0; i < m_nqbits; i++)
+        {
+            copy.apply_CL(i, daggered_vops[other.m_vops[i]]);
+        }
+
+        for(size_t i = 0; i < m_nqbits; i++)
+        {
+            for(auto j: other.m_ngbhds[i])
+            {
+                if(j > i)
+                {
+                    copy.apply_CZ(i, j);
+                }
+            }
+        }
+
+        // Recall that other has the form 
+        //
+        // U_local U_nonlocal |+>
+        //
+        // We just multiplied the two unitaries onto the state copy.  This leaves
+        //
+        // <other|copy> = <+|copy'>. 
+        //
+        // The state |+> is stabilized by the Pauli
+        // X operator. Therefore, it is invariant under P_X (projection onto Pauli
+        // +X). We now insert projection operators in the product:
+        //
+        // <+|P_X|copy'>
+        //
+        // We know that the product must be invariant and observe the action of the
+        // projection on |copy'>. This gives the overlap.
+
+        int amplitude = 0;
+        for(size_t i = 0; i < m_nqbits; i++)
+        {
+            // measurement_probability gives the probability to get a +1
+            // eigenstate of the given Pauli operator. This is either 0 (result = -1),
+            // 1 (result = 0), or 1/2 (result = 1). 
+            int result = copy.measurement_probability(i, pauli_X);
+            if(result < 0)
+            {
+                return -1; // We have an element with zero overlap.
+            }
+            amplitude += result;
+            // Apply the projection.
+            copy.project_to(i, pauli_X);
+        }
+
+        return amplitude;
+    }
 }

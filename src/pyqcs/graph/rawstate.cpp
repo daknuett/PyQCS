@@ -252,6 +252,34 @@ RawGraphState_project_to(RawGraphState * self, PyObject * args)
     return Py_BuildValue("d", M_SQRT1_2);
 }
 
+static PyObject *
+RawGraphState_mul_to(RawGraphState * self, PyObject * args)
+{
+    RawGraphState * other;
+    if(!PyArg_ParseTuple(args, "O!", &RawGraphStateType, &other))
+    {
+        return NULL;
+    }
+
+    if(self->state->nqbits() != other->state->nqbits())
+    {
+        PyErr_SetString(PyExc_ValueError, "states must have same qbit count");
+        return NULL;
+    }
+
+    int result = (*self->state) * (*other->state);
+
+    if(result < 0)
+    {
+        return Py_BuildValue("i", 0);
+    }
+    if(result == 0)
+    {
+        return Py_BuildValue("i", 1);
+    }
+    return Py_BuildValue("d", std::pow(M_SQRT1_2, result));
+}
+
 static PyMemberDef RawGraphState_members[] = {{NULL}};
 static PyMethodDef RawGraphState_methods[] = {
     {"apply_C_L", (PyCFunction) RawGraphState_apply_C_L, METH_VARARGS, "applies a C_L operator"}
@@ -259,7 +287,7 @@ static PyMethodDef RawGraphState_methods[] = {
     , {"measure", (PyCFunction) RawGraphState_measure, METH_VARARGS, "measures a qbit"}
     , {"to_lists", (PyCFunction) RawGraphState_to_lists, METH_NOARGS, "converts the graph state to a python representation using lists"}
     , {"deepcopy", (PyCFunction) RawGraphState_deepcopy, METH_NOARGS, "deepcopy the graph"}
-    //, {"mul_to", (PyCFunction) RawGraphState_mul_to, METH_VARARGS, "computes overlap with other graph state; modifies self"}
+    , {"mul_to", (PyCFunction) RawGraphState_mul_to, METH_VARARGS, "computes overlap with other graph state; internally copies self."}
     , {"project_to", (PyCFunction) RawGraphState_project_to, METH_VARARGS
                     , "the projection operator to the qbit; first argument is the qbit, second argument is the pauli index in "
                         "(Z, Y, X, -Z, -Y, -X)"
