@@ -208,6 +208,16 @@ namespace dsv
         }
     }
 
+    size_t DSV::export_to_array(std::complex<double> ** array)
+    {
+        *array = new std::complex<double>[m_ndims];
+
+        for(size_t i = 0; i < m_ndims; i++)
+        {
+            (*array)[i] = m_vect[m_cvect][i];
+        }
+        return m_ndims;
+    }
 
     DSVOpArgument::DSVOpArgument(unsigned short int act)
     {
