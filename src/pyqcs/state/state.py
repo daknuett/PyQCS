@@ -83,6 +83,7 @@ class DSVState(object):
         for gate in other._gate_list:
             executor = self._gate_executors[gate._name]
             executor(gate)
+        return self
 
     def __apply_simple_gate(self, gate: Gate):
         self._backend_state.apply_simple_gate(gate._act, gate._name)
