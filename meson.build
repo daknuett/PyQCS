@@ -46,6 +46,10 @@ subdir('src/pyqcs')
 ###### This section contains the new backend compilation ############################
 #####################################################################################
 
+# From: https://pavcreations.com/python-interpreter-with-numpy-support-for-c-embedding/
+numpy_cmd = run_command('python3', ['-c', 'import numpy; print(numpy.get_include())'], check : true )
+numpy_dep = declare_dependency(include_directories : include_directories(numpy_cmd.stdout().strip()))
+
 python.extension_module(
     'rawstate'
     , ['src/pyqcs/graph/rawstate.cpp'
@@ -55,4 +59,13 @@ python.extension_module(
     , dependencies: pydep
     , install:true
     , subdir: 'pyqcs/graph'
+    , include_directories: incdir)
+
+python.extension_module(
+    'dsv'
+    , ['src/pyqcs/state/dsv.cpp'
+      , 'src/backend/src/dsv.cpp']
+    , dependencies: [pydep, numpy_dep]
+    , install:true
+    , subdir: 'pyqcs/state'
     , include_directories: incdir)
