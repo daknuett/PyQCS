@@ -297,7 +297,7 @@ static PyMethodDef RawGraphState_methods[] = {
 
 static PyModuleDef raw_statemodule = {
     PyModuleDef_HEAD_INIT,
-    .m_name = "raw_state",
+    .m_name = "rawstate",
     .m_doc = "module containing the graph state class",
     .m_size = -1,
 };
