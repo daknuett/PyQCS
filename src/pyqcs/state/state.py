@@ -1,7 +1,7 @@
 import numpy.random
 from .dsv import RawDSVState
-from ..gates.circuits import Circuit, Gate
-from ..gates.gate import Capabilities
+from ..gates.circuits import Circuit
+from ..gates.gate import Capabilities, Gate
 
 _simple_gates = ["H", "Z", "X", "S"]
 _parametric_gates = ["R"]
