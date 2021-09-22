@@ -1,5 +1,3 @@
-message(meson.source_root())
-
 python.install_sources(
   '__init__.py', 'measurement.py', 'utils.py',
   pure:false,
