@@ -21,6 +21,11 @@ class Capabilities(object):
         return (f"[capabilities: {', '.join(self._capability_names)}"
                 f", level: {self._bitmask}]")
 
+    def __le__(self, other):
+        if(not isinstance(other, Capabilities)):
+            raise TypeError()
+        return self._bitmask <= other._bitmask
+
 
 def max_capabilities(c1, c2):
     if(not (isinstance(c1, Capabilities) and isinstance(c2, Capabilities))):
