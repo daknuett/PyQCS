@@ -65,7 +65,7 @@ class DSVState(object):
         return type(self)(backend, cl_state, nqbits, self._rne)
 
     def check_capabilities(self, circuit):
-        return circuit._requires_capabilities <= self._capabilities
+        return circuit._requires_capabilities <= type(self)._capabilities
 
     def __rmul__(self, other):
         if(not isinstance(other, Circuit)):
