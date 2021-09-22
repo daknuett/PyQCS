@@ -1,4 +1,4 @@
-import numpy.random.uniform
+import numpy.random
 from .dsv import RawDSVState
 from ..gates.circuits import Circuit, Gate
 from ..gates.gate import Capabilities
