@@ -28,6 +28,7 @@ namespace dsv
         unsigned int m_cvect;
         std::complex<double> *m_vect[2];
         public:
+        unsigned short int nqbits(void);
         DSV(unsigned short int nqbits);
         DSV(const DSV & copy);
         ~DSV(void);

@@ -39,6 +39,10 @@ namespace dsv
         delete [] m_vect[1];
     }
 
+    unsigned short int DSV::nqbits(void)
+    {
+        return m_nqbits;
+    }
 
     int DSV::apply_op(dsv_op op, DSVOpArgument & argument)
     {
