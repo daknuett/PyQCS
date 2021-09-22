@@ -1,12 +1,10 @@
 from collections import Counter, deque
-from itertools import product
 
 import numpy as np
 
 from .gates.builtins import M
 from .utils import list_to_circuit
-from .state.state import BasicState as State
-from .gates.implementations.compute_amplitude import compute_amplitude
+from .state.state import DSVState
 
 
 def build_measurement_circuit(bit_mask):
@@ -33,12 +31,12 @@ def measure(state, bit_mask):
 
     state = state.deepcopy()
     state.redo_normalization()
-    if(isinstance(state, State)):
+    if(isinstance(state, DSVState)):
         state._cl_state[:] = -1
     else:
         state._measured = dict()
     new_state = circuit * state
-    if(isinstance(state, State)):
+    if(isinstance(state, DSVState)):
         return new_state, sum([1 << i for i,v in enumerate(new_state._cl_state) if v == 1])
     else:
         return new_state, sum([1 << i for i,v in new_state._measured.items() if v == 1])
@@ -47,7 +45,7 @@ def measure(state, bit_mask):
 def _do_sample(state, circuit, nsamples):
     for _ in range(nsamples):
         new_state = circuit * state
-        if(isinstance(new_state, State)):
+        if(isinstance(new_state, DSVState)):
             yield new_state, sum([1 << i for i,v in enumerate(new_state._cl_state) if v == 1])
         else:
             yield new_state, sum([1 << i for i,v in new_state._measured.items() if v == 1])
@@ -68,7 +66,7 @@ def sample(state, bit_mask, nsamples, keep_states=False):
 
     state = state.deepcopy(force_new_state=True)
     state.redo_normalization()
-    if(isinstance(state, State)):
+    if(isinstance(state, DSVState)):
         state._cl_state[:] = -1
     else:
         state._measured = dict()
@@ -94,7 +92,7 @@ def tree_amplitudes(state, bit_mask=None, eps=1e-5):
     is used.
     """
 
-    if(not isinstance(state, State)):
+    if(not isinstance(state, DSVState)):
         raise TypeError("tree_amplitudes currently works for dense vector states only")
     state.redo_normalization()
 
