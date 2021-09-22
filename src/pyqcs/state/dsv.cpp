@@ -89,7 +89,7 @@ static PyObject * RawDSVState_apply_simple_gate(RawDSVState * self, PyObject * a
 
     int i = 0;
     char * gate_name = nullptr;
-    if(!PyArg_ParseTuple(args, "is", &i, gate_name))
+    if(!PyArg_ParseTuple(args, "is", &i, &gate_name))
     {
         return NULL;
     }
@@ -121,7 +121,7 @@ static PyObject * RawDSVState_apply_two_qbit_gate(RawDSVState * self, PyObject *
 
     int i = 0, j = 0;
     char * gate_name = nullptr;
-    if(!PyArg_ParseTuple(args, "iis", &i, &j, gate_name))
+    if(!PyArg_ParseTuple(args, "iis", &i, &j, &gate_name))
     {
         return NULL;
     }
@@ -155,7 +155,7 @@ static PyObject * RawDSVState_apply_parametric_gate(RawDSVState * self, PyObject
     int i = 0;
     double phi;
     char * gate_name = nullptr;
-    if(!PyArg_ParseTuple(args, "ids", &i, &phi, gate_name))
+    if(!PyArg_ParseTuple(args, "ids", &i, &phi, &gate_name))
     {
         return NULL;
     }
