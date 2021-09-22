@@ -20,4 +20,4 @@ build-backend = "mesonpep517.buildapi"
 
 [tool.mesonpep517.metadata]
 summary = "A quantum computing simulator"
-
+meson-python-option-name = "python3"
