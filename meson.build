@@ -45,7 +45,6 @@ subdir('src/pyqcs')
 ###### This section contains the new backend compilation ############################
 #####################################################################################
 
-# From: https://pavcreations.com/python-interpreter-with-numpy-support-for-c-embedding/
 numpy_cmd = run_command(python, ['-c', 'import numpy; print(numpy.get_include())'], check : true )
 message(numpy_cmd.stdout().strip())
 message('include_directories(numpy_cmd.stdout().strip())')
