@@ -40,7 +40,7 @@ namespace dsv
         void normalize(void);
         double measurement_probability(unsigned short int i);
         void project_to(unsigned short int i, int value);
-        void statistic(std::vector<unsigned short int> & labels, std::vector<double> & probabilities, double eps);
+        void statistic(std::vector<unsigned int> & labels, std::vector<double> & probabilities, double eps);
         /**
          * This method exports the vector to a C array.
          * We need this for inter-operability with numpy (to allow

@@ -180,7 +180,7 @@ namespace dsv
 
         m_cvect ^= 1;
     }
-    void DSV::statistic(std::vector<unsigned short int> & labels, std::vector<double> & probabilities, double eps)
+    void DSV::statistic(std::vector<unsigned int> & labels, std::vector<double> & probabilities, double eps)
     {
         labels.resize(0);
         probabilities.resize(0);
