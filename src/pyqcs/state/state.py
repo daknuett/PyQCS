@@ -15,7 +15,7 @@ class DSVState(object):
     extnsion backend for faster simulation.
     """
     __slots__ = ["_backend_state", "_cl_state", "_nqbits"
-                , "_has_capabilities", "_rne", "_gate_executors"]
+                , "_rne", "_gate_executors"]
     _has_capabilities = Capabilities.universal()
 
     def __init__(self, backend_state, cl_state, nqbits, rne=None):
