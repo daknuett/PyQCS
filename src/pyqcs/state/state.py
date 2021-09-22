@@ -85,13 +85,15 @@ class DSVState(object):
             executor(gate)
 
     def __apply_simple_gate(self, gate: Gate):
-        self._backend_state.apply_simple_gate(gate._act)
+        self._backend_state.apply_simple_gate(gate._act, gate._name)
 
     def __apply_parametric_gate(self, gate: Gate):
-        self._backend_state.apply_parametric_gate(gate._act, gate._phi)
+        self._backend_state.apply_parametric_gate(gate._act
+                , gate._phi, gate._name)
 
     def __apply_two_qbit_gate(self, gate: Gate):
-        self._backend_state.apply_two_qbit_gate(gate._act, gate._control)
+        self._backend_state.apply_two_qbit_gate(gate._act
+                , gate._control, gate._name)
 
     def __do_measure(self, gate:Gate):
         result = self._backend_state.measure(gate._act, self._rne())
