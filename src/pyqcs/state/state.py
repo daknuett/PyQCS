@@ -108,4 +108,4 @@ class DSVState(object):
                 if(abs(v) < eps):
                     continue
                 yield f"{v}*|{bin(i)}>"
-        return " + ".join(*fmt_elements(data, 1e-3))
+        return " + ".join(fmt_elements(data, 1e-3))
