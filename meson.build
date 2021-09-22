@@ -49,7 +49,6 @@ numpy_cmd = run_command(python, ['-c', 'import numpy; print(numpy.get_include())
 message(numpy_cmd.stdout().strip())
 message('include_directories(numpy_cmd.stdout().strip())')
 numpy_incdir = include_directories(numpy_cmd.stdout().strip())
-message(numpy_incdir)
 numpy_dep = declare_dependency(include_directories: numpy_incdir)
 
 python.extension_module(
