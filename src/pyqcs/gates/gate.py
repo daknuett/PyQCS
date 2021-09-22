@@ -12,9 +12,14 @@ class Capabilities(object):
     @classmethod
     def clifford(cls):
         return cls(["clifford"], 0b01)
+
     @classmethod
     def universal(cls):
         return cls(["clifford", "universal"], 0b11)
+
+    def __str__(self):
+        return (f"[capabilities: {', '.join(self._capability_names)}"
+                f", level: {self._bitmask}]")
 
 
 def max_capabilities(c1, c2):
@@ -55,4 +60,3 @@ class Gate(object):
         if(self._is_Z2):
             return [self]
         return self._adjoint_recipe(self)
-        
