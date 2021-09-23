@@ -15,13 +15,14 @@ class DSVState(object):
     extnsion backend for faster simulation.
     """
     __slots__ = ["_backend_state", "_cl_state", "_nqbits"
-                , "_rne", "_gate_executors"]
+                , "_rne", "_gate_executors", "_copy"]
     _has_capabilities = Capabilities.universal()
 
-    def __init__(self, backend_state, cl_state, nqbits, rne=None):
+    def __init__(self, backend_state, cl_state, nqbits, rne=None, copy=True):
         self._nqbits = nqbits
         self._cl_state = cl_state
         self._backend_state = backend_state
+        self._copy = copy
 
         if(rne is None):
             self._rne = lambda: numpy.random.uniform(0, 1)
@@ -42,7 +43,7 @@ class DSVState(object):
         })
 
     @classmethod
-    def new_zero_state(cls, nqbits):
+    def new_zero_state(cls, nqbits, rne=None, copy=False):
         if(not isinstance(nqbits, int)):
             raise TypeError("nqbits must be int > 0")
         if(nqbits <= 0):
@@ -53,16 +54,18 @@ class DSVState(object):
 
         backend = RawDSVState(nqbits)
         cl_state = [-1]*nqbits
-        return cls(backend, cl_state, nqbits)
+        return cls(backend, cl_state, nqbits, rne, copy)
 
     def check_qbits(self, circuit):
         return circuit._requires_qbits < (1 << self._nqbits)
 
-    def deepcopy(self):
+    def deepcopy(self, **kwargs):
         nqbits = self._nqbits
         cl_state = self._cl_state.copy()
         backend = self._backend_state.deepcopy()
-        return type(self)(backend, cl_state, nqbits, self._rne)
+        kwa = {"rne": self._rne, "copy": self._copy}
+        kwa.update(kwargs)
+        return type(self)(backend, cl_state, nqbits, **kwa)
 
     def check_capabilities(self, circuit):
         return circuit._requires_capabilities <= type(self)._has_capabilities
@@ -80,10 +83,14 @@ class DSVState(object):
                             f"{other._requires_qbits.bit_length()}"
                             f", got:{self._nqbits})")
 
+        state = self
+        if(self._copy):
+            state = self.deepcopy()
+
         for gate in other._gate_list:
-            executor = self._gate_executors[gate._name]
+            executor = state._gate_executors[gate._name]
             executor(gate)
-        return self
+        return state
 
     def __apply_simple_gate(self, gate: Gate):
         self._backend_state.apply_simple_gate(gate._act, gate._name)
