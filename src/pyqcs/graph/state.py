@@ -32,6 +32,7 @@ class GraphState(AbstractGraphState):
         return GraphState(self._g_state.deepcopy(), self._nbits, **key_word_arguments)
 
     def to_naive_state(self):
+        # FIXME: use the backend method for that.
         return graph_lists_to_naive_state(self._g_state.to_lists())
 
     def __str__(self):
