@@ -77,8 +77,7 @@ class GraphState(AbstractGraphState):
             raise TypeError()
         if(not self._nbits == other._nbits):
             raise ValueError("cannot compute overlap of states with different qbit count")
-        cmp_state = other._g_state.deepcopy()
-        return cmp_state.mul_to(self._g_state)
+        return other.mul_to(self._g_state)
 
     def project_to(self, qbit, observable):
         """
