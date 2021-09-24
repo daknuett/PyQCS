@@ -15,7 +15,7 @@ class Circuit(object):
     def __or__(self, other):
         if(not isinstance(other, Circuit)):
             raise TypeError()
-        qbits = self._requires_capabilities | other._requires_qbits
+        qbits = self._requires_qbits | other._requires_qbits
         capabilities = max_capabilities(self._requires_capabilities
                                         , other._requires_capabilities)
         gates = self._gate_list + other._gate_list
