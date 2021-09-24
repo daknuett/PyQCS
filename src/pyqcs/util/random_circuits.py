@@ -1,11 +1,12 @@
 import numpy as np
-from .. import X, H, R, C, list_to_circuit
+from .. import X, H, R, CX, list_to_circuit
 
 
 """
 Generate random circuits. Refer to ``random_circuit`` for details.
 ``random_circuit_XHRC`` uses ``M1=X``, ``M2=H``, ``M3=R``, ``M4=CX``.
 """
+
 
 def random_basis_values(nqbits, ngates):
     """
@@ -16,6 +17,7 @@ def random_basis_values(nqbits, ngates):
     phi = np.random.uniform(low=0.0, high=(2 * np.pi), size=ngates)
 
     return (gate_index, entanglement_index, phi)
+
 
 def _random_gates(nqbits, ngates, M1, M2, M3, M4):
     for i, k, x in zip(*random_basis_values(nqbits, ngates)):
@@ -31,6 +33,7 @@ def _random_gates(nqbits, ngates, M1, M2, M3, M4):
                 k -= 1
             yield M4(i - 3*nqbits - 1, k)
 
+
 def random_circuit(nqbits, ngates, M1, M2, M3, M4):
     """
     Sample ngates gates from (M1, M2, M3, M4) where Mi act on one of the nqbit
@@ -42,6 +45,6 @@ def random_circuit(nqbits, ngates, M1, M2, M3, M4):
     """
     return list_to_circuit(list(_random_gates(nqbits, ngates, M1, M2, M3, M4)))
 
-def random_circuit_XHRC(nqbits, ngates):
-    return random_circuit(nqbits, ngates, X, H, R, C)
 
+def random_circuit_XHRC(nqbits, ngates):
+    return random_circuit(nqbits, ngates, X, H, R, CX)
