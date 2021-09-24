@@ -23,7 +23,7 @@ class DummyGate(object):
             self._control = args[1]
 
 
-class GraphicalState(object):
+class GraphState(object):
     __slots__ = ["_g_state", "_nbits", "_measured", "_copy", "_rne"]
     _has_capabilities = Capabilities.clifford()
 
@@ -126,7 +126,7 @@ class GraphicalState(object):
         return True
 
     def __matmul__(self, other):
-        if(not isinstance(other, GraphicalState)):
+        if(not isinstance(other, GraphState)):
             raise TypeError()
         if(not self._nbits == other._nbits):
             raise ValueError("cannot compute overlap of states with different qbit count")
