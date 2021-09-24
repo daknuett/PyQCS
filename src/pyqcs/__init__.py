@@ -110,6 +110,7 @@ See https://github.com/daknuett/PyQCS/tree/master/examples.
 import numpy as np
 
 from .gates.builtins import H, X, R, M, Z, S, CX, CZ
+from .state.state import DSVState as State
 
 
 from .measurement import measure, sample, tree_amplitudes
