@@ -1,18 +1,43 @@
-from .abc import AbstractGraphState
-from .util import graph_lists_to_naive_state
-from .gate import GraphGate
+import numpy.random
+
 from .rawstate import RawGraphState
+from .util import graph_lists_to_naive_state
+from ..gates.circuits import Circuit
+from ..gates.gate import Capabilities
+
+_local_clifford_gates = ["H", "S", "X", "Z"]
+_CZ_gates = ["CZ"]
+_decomposable_gates = ["CX"]
+_measurement_gates = ["M"]
+
+_local_clifford_gate_vop = {"H": 0, "S": 1, "X": 14, "Z": 5}
+_gate_decompositions = {"CX": (("H", 0), ("CZ", 0, 1), ("H", 0))}
 
 
-class GraphState(AbstractGraphState):
-    __slots__ = ["_g_state", "_nbits", "_measured", "_force_new_state"]
-    def __init__(self, g_state, nbits, force_new_state=False, measured=None):
-        AbstractGraphState.__init__(self)
+class DummyGate(object):
+    def __init__(self, name, *args):
+        self._name = name
+        self._act = args[0]
+        self._control = None
+        if(len(args) > 1):
+            self._control = args[1]
+
+
+class GraphicalState(object):
+    __slots__ = ["_g_state", "_nbits", "_measured", "_copy", "_rne"]
+    _has_capabilities = Capabilities.clifford()
+
+    def __init__(self, g_state, nbits, copy=False, measured=None, rne=None):
         self._is_graph = True
         self._g_state = g_state
         self._nbits = nbits
-        self._force_new_state = force_new_state
+        self._copy = copy
         self._measured = measured
+
+        if(rne is None):
+            self._rne = lambda : numpy.random.uniform()
+        else:
+            self._rne = rne
         if(measured is None):
             self._measured = dict()
 
@@ -26,10 +51,11 @@ class GraphState(AbstractGraphState):
         return cls(g_state, nbits, **kwargs)
 
     def deepcopy(self, **kwargs):
-        key_word_arguments = {"force_new_state": self._force_new_state
-                            , "measured": self._measured}
+        key_word_arguments = {"copy": self._copy
+                            , "measured": self._measured
+                            , "rne": self._rne}
         key_word_arguments.update(kwargs)
-        return GraphState(self._g_state.deepcopy(), self._nbits, **key_word_arguments)
+        return type(self)(self._g_state.deepcopy(), self._nbits, **key_word_arguments)
 
     def to_naive_state(self):
         # FIXME: use the backend method for that.
@@ -38,10 +64,11 @@ class GraphState(AbstractGraphState):
     def __str__(self):
         return str(self.to_naive_state())
 
-    def check_qbits(self, gate_circuit):
-        if(gate_circuit._uses_qbits < (1 << self._nbits)):
-            return True
-        return False
+    def check_capabilities(self, circuit):
+        return circuit._requires_capabilities <= type(self)._has_capabilities
+
+    def check_qbits(self, circuit):
+        return circuit._requires_qbits < (1 << self._nqbits)
 
     @classmethod
     def new_zero_state(cls, nbits, **kwargs):
@@ -54,26 +81,52 @@ class GraphState(AbstractGraphState):
 
         return cls(g_state, nbits, **kwargs)
 
-    def apply_gate(self, gate, force_new_state=False):
-        if(not isinstance(gate, GraphGate)):
-            raise TypeError("gate must be a GraphGate but got {}".format(str(type(gate))))
+    def __rmul__(self, other):
+        if(not isinstance(other, Circuit)):
+            raise TypeError()
+        if(not self.check_capabilities(other)):
+            raise ValueError(f"capabilities insuffient (required:"
+                            f"{other._requires_capabilities},"
+                            f" got: {self._has_capabilities})")
+        if(not self.check_qbits(other)):
+            raise ValueError(f"insufficient qbits (required: "
+                            f"{other._requires_qbits.bit_length()}"
+                            f", got:{self._nqbits})")
 
         state = self
-        if(force_new_state or self._force_new_state):
+        if(self._copy):
             state = self.deepcopy()
 
-        for op in gate._operation_list:
-            has_measured, result = op.apply_to_raw_state(state._g_state)
-            if(has_measured):
-                state._measured[result[0]] = result[1]
+        for gate in other._gate_list:
+            state.__apply_gate(gate)
 
         return state
+
+    def __apply_gate(self, gate):
+        if(gate._name in _local_clifford_gates):
+            self._g_state.apply_C_L(gate._act, _local_clifford_gate_vop[gate._name])
+            return
+        if(gate._name in _CZ_gates):
+            self._g_state.apply_CZ(gate._act, gate._control)
+            return
+        if(gate._name in _measurement_gates):
+            result = self._g_state.measure(gate._act, self._rne())
+            self._measured[gate._act] = result
+            return
+        if(gate._name in _decomposable_gates):
+            args = (gate._act, gate._control)
+            for word in _gate_decompositions[gate._name]:
+                if(len(word) == 2):
+                    dummy = DummyGate(gate._name, args[word[1]])
+                else:
+                    dummy = DummyGate(gate._name, args[word[1]], args[word[2]])
+                self.__apply_gate(dummy)
 
     def is_normalized(self):
         return True
 
     def __matmul__(self, other):
-        if(not isinstance(other, GraphState)):
+        if(not isinstance(other, GraphicalState)):
             raise TypeError()
         if(not self._nbits == other._nbits):
             raise ValueError("cannot compute overlap of states with different qbit count")
