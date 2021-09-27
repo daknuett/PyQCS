@@ -161,3 +161,6 @@ class DSVState(object):
 
     def __hash__(self):
         return hash((tuple(self._qm_state), tuple(self._cl_state)))
+
+    def randomize(self):
+        self._backend_state.randomize()
