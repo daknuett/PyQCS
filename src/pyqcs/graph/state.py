@@ -28,7 +28,6 @@ class GraphState(object):
     _has_capabilities = Capabilities.clifford()
 
     def __init__(self, g_state, nbits, copy=False, measured=None, rne=None):
-        self._is_graph = True
         self._g_state = g_state
         self._nbits = nbits
         self._copy = copy
