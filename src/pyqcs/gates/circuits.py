@@ -22,6 +22,8 @@ class Circuit(object):
         return Circuit(capabilities, gates, qbits)
 
     def get_dagger(self):
-        gates = [g for g in gate.get_dagger()
-                        for gate in reversed(self._gate_list)]
-        return Circuit(self._requires_capabilities, gates, self._requires_qbits)
+        gates = [g for gate in reversed(self._gate_list)
+                    for g in gate.get_dagger()]
+        return Circuit(self._requires_capabilities
+                        , gates
+                        , self._requires_qbits)
