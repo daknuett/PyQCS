@@ -155,4 +155,4 @@ class DSVState(object):
         self._backend_state.redo_normalization()
 
     def __hash__(self):
-        hash((tuple(self._qm_state), tuple(self._cl_stat)))
+        hash((tuple(self._qm_state), tuple(self._cl_state)))
