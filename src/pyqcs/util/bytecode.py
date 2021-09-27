@@ -1,6 +1,8 @@
 import struct
 from collections import deque
 
+from ..gates.gate import Capabilities
+
 _local_clifford_gates = ["H", "S", "X", "Z"]
 _CZ_gates = ["CZ"]
 _decomposable_gates = ["CX"]
@@ -82,7 +84,7 @@ def decomposable2i(gate):
 
 
 def circuit_to_byte_code(header, circuit, add_header=True):
-    if(not circuit._has_graph):
+    if(Capabilities.clifford() <= circuit._requires_capabilities):
         raise TypeError("Circuit must be applicable to graph.")
     if(circuit._uses_qbits >= (1 << header._nqbits)):
         raise ValueError("Circuit requires more qbits.")
