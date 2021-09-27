@@ -64,7 +64,7 @@ def sample(state, bit_mask, nsamples, keep_states=False):
     """
     circuit = build_measurement_circuit(bit_mask)
 
-    state = state.deepcopy(force_new_state=True)
+    state = state.deepcopy(copy=True)
     state.redo_normalization()
     if(isinstance(state, DSVState)):
         state._cl_state[:] = -1
