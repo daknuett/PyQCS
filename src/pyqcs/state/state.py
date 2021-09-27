@@ -44,7 +44,7 @@ class DSVState(object):
         })
 
     @classmethod
-    def new_zero_state(cls, nqbits, rne=None, copy=False):
+    def new_zero_state(cls, nqbits, rne=None, copy=True):
         if(not isinstance(nqbits, int)):
             raise TypeError("nqbits must be int > 0")
         if(nqbits <= 0):
