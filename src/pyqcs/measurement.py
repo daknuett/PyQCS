@@ -81,14 +81,14 @@ def tree_amplitudes(state, bit_mask=None, eps=1e-5):
     """
     Compute the probability amplitudes for all (eps-)possible
     outcomes. ``bit_mask`` is either ``None`` or a permutation
-    of ``list(range(state._nbits))``.
+    of ``list(range(state._nqbits))``.
 
     Only available for dense vector states.
 
     The original state is unchanged.
 
     Amplitudes (and collapsed states) are computed in the order given
-    by ``bit_mask``. If ``bit_mask is None``, ``list(range(state._nbits))``
+    by ``bit_mask``. If ``bit_mask is None``, ``list(range(state._nqbits))``
     is used.
     """
 
@@ -97,13 +97,13 @@ def tree_amplitudes(state, bit_mask=None, eps=1e-5):
     state.redo_normalization()
 
     if(bit_mask is None):
-        bit_mask = list(range(state._nbits))
+        bit_mask = list(range(state._nqbits))
 
-    if(list(sorted(bit_mask)) != list(range(state._nbits))):
-        raise ValueError("bit_mask must be either None or a permutation of list(range(state._nbits)))")
+    if(list(sorted(bit_mask)) != list(range(state._nqbits))):
+        raise ValueError("bit_mask must be either None or a permutation of list(range(state._nqbits)))")
 
     next_queue = [(1, 0, state.deepcopy()._qm_state)]
-    qbit_mapping = np.arange(0, 2**state._nbits, 1, dtype=int)
+    qbit_mapping = np.arange(0, 2**state._nqbits, 1, dtype=int)
 
     for qbit in bit_mask:
         this_queue = next_queue
