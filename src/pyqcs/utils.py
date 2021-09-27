@@ -4,6 +4,8 @@ from .util.to_diagram import CircuitPNGFormatter
 
 def list_to_circuit(list_of_circuits):
     gates = [g for c in list_of_circuits for g in c._gate_list]
+    print(list_of_circuits)
+    print([c._requires_capabilities for c in list_of_circuits])
     capabilities = max((c._requires_capabilities for c in list_of_circuits)
                         , key=lambda x: x._bitmask)
     qbits = 0
