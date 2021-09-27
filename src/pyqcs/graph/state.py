@@ -116,9 +116,9 @@ class GraphState(object):
             args = (gate._act, gate._control)
             for word in _gate_decompositions[gate._name]:
                 if(len(word) == 2):
-                    dummy = DummyGate(gate._name, args[word[1]])
+                    dummy = DummyGate(word[0], args[word[1]])
                 else:
-                    dummy = DummyGate(gate._name, args[word[1]], args[word[2]])
+                    dummy = DummyGate(word[0], args[word[1]], args[word[2]])
                 self.__apply_gate(dummy)
 
     def is_normalized(self):
