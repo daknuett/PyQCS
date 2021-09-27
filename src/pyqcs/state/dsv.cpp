@@ -224,7 +224,7 @@ static PyObject * RawDSVState_measure(RawDSVState * self, PyObject * args)
 
     double probability = self->state->measurement_probability(i);
 
-    if(probability < random)
+    if(probability > random)
     {
         self->state->project_to(i, 1);
         return Py_BuildValue("i", 1);
