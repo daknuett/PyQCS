@@ -154,11 +154,11 @@ namespace dsv
             {
                 if(j & (1 << i))
                 {
-                    m_vect[m_cvect^1][i] = m_vect[m_cvect][i] / normalization;
+                    m_vect[m_cvect^1][j] = m_vect[m_cvect][j] / normalization;
                 }
                 else
                 {
-                    m_vect[m_cvect^1][i] = 0;
+                    m_vect[m_cvect^1][j] = 0;
                 }
             }
         }
@@ -169,11 +169,11 @@ namespace dsv
             {
                 if(j & (1 << i))
                 {
-                    m_vect[m_cvect^1][i] = 0;
+                    m_vect[m_cvect^1][j] = 0;
                 }
                 else
                 {
-                    m_vect[m_cvect^1][i] = m_vect[m_cvect][i] / normalization;
+                    m_vect[m_cvect^1][j] = m_vect[m_cvect][j] / normalization;
                 }
             }
         }
