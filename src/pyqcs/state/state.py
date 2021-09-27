@@ -105,7 +105,9 @@ class DSVState(object):
                 , gate._control, gate._name)
 
     def __do_measure(self, gate:Gate):
+        print("measuring qbit", gate._act)
         result = self._backend_state.measure(gate._act, self._rne())
+        print("got result:", result)
         self._cl_state[gate._act] = result
 
     def get_statistic(self):
