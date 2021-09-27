@@ -296,6 +296,12 @@ static PyObject * RawDSVState_overlap(RawDSVState * self, PyObject * args)
 
 }
 
+static PyObject * RawDSVState_redo_normalization(RawDSVState * self)
+{
+    self->state->normalize();
+    Py_RETURN_NONE;
+}
+
 struct PyMemberDef RawDSVState_members[] = {{NULL}};
 static PyMethodDef RawDSVState_methods[] = {
     {"deepcopy", (PyCFunction) RawDSVState_deepcopy, METH_NOARGS, "deepcopies the state"}
@@ -307,6 +313,7 @@ static PyMethodDef RawDSVState_methods[] = {
     , {"measure", (PyCFunction) RawDSVState_measure, METH_VARARGS, "performs a measurement in computational basis; takes a random double [0, 1) and returns the result (0 or 1); collapses the state"}
     , {"statistic", (PyCFunction) RawDSVState_statistic, METH_VARARGS, "computes the probabilities for measure outcomes in computational bases and returns them in two numpy arrays (labels, probabilities); probabilities smaller than the double parameter are ignored"}
     , {"overlap", (PyCFunction) RawDSVState_overlap, METH_VARARGS, "computes the overlap between two RawDSVStates"}
+    , {"redo_normalization", (PyCFunction) RawDSVState_redo_normalization, METH_NOARGS, "normalizes the state vector to 1"}
     , {NULL}
 };
 

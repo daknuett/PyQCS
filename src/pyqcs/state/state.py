@@ -149,3 +149,6 @@ class DSVState(object):
             raise TypeError()
 
         return self._backend_state.overlap(other._backend_state)
+
+    def redo_normalization(self):
+        self._backend_state.redo_normalization()
