@@ -53,7 +53,7 @@ class DSVState(object):
                             "use a HPC simulator for larger states")
 
         backend = RawDSVState(nqbits)
-        cl_state = [-1]*nqbits
+        cl_state = numpy.ones(nqbits, dtype=int)
         return cls(backend, cl_state, nqbits, rne, copy)
 
     def check_qbits(self, circuit):
