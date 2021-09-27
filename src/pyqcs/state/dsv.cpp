@@ -302,6 +302,41 @@ static PyObject * RawDSVState_redo_normalization(RawDSVState * self)
     Py_RETURN_NONE;
 }
 
+static PyObject * RawDSVState_project_Z(RawDSVState * self, PyObject * args)
+{
+    int i = 0, l = 0;
+    double eps = 0;
+    if(!PyArg_ParseTuple(args, "iid", &i, &l, &eps))
+    {
+        return NULL;
+    }
+
+    if(i >= self->state->nqbits())
+    {
+        PyErr_SetString(PyExc_ValueError, "qbit out of range");
+        return NULL;
+    }
+    if(!(l == 1 || l == 0))
+    {
+        PyErr_SetString(PyExc_ValueError, "l must be 0 or 1");
+        return NULL;
+    }
+
+    double amplitude_1 = self->state->measurement_probability(i);
+
+    if(l == 0 && (1 - amplitude_1) > eps)
+    {
+        Py_RETURN_FALSE;
+    }
+    if(l == 1 && amplitude_1 > eps)
+    {
+        Py_RETURN_FALSE;
+    }
+
+    self->state->project_to(i, l);
+    Py_RETURN_TRUE;
+}
+
 struct PyMemberDef RawDSVState_members[] = {{NULL}};
 static PyMethodDef RawDSVState_methods[] = {
     {"deepcopy", (PyCFunction) RawDSVState_deepcopy, METH_NOARGS, "deepcopies the state"}
@@ -314,6 +349,7 @@ static PyMethodDef RawDSVState_methods[] = {
     , {"statistic", (PyCFunction) RawDSVState_statistic, METH_VARARGS, "computes the probabilities for measure outcomes in computational bases and returns them in two numpy arrays (labels, probabilities); probabilities smaller than the double parameter are ignored"}
     , {"overlap", (PyCFunction) RawDSVState_overlap, METH_VARARGS, "computes the overlap between two RawDSVStates"}
     , {"redo_normalization", (PyCFunction) RawDSVState_redo_normalization, METH_NOARGS, "normalizes the state vector to 1"}
+    , {"project_Z", (PyCFunction) RawDSVState_project_Z, METH_VARARGS, "project_Z(i, l, eps): project qbit i to value l, raise an error if the remaining amplitude is smaller than eps"}
     , {NULL}
 };
 

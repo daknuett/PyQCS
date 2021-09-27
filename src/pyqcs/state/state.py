@@ -164,3 +164,19 @@ class DSVState(object):
 
     def randomize(self):
         self._backend_state.randomize(int(self._rne() * ((1 << 24) - 1)))
+
+    def project_Z(self, i, l):
+        """
+        Applies
+        ..math::
+                P_{m,l} = \\frac{I + (-1)^l Z_m}{2}
+        to the state. ``l`` must be ``0`` or ``1``.
+        Returns either ``0`` (if the amplitude is below self._length_error)
+        or a new state (in any other case).
+        """
+
+        state = self.deepcopy()
+        result = state._backend_state.project_Z(i, l, self._projection_eps)
+        if(result):
+            return state
+        return 0
