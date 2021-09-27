@@ -32,7 +32,7 @@ decompositions = ['H',
 
 def vop_factorization_circuit(i, vop):
     gates = {"H": H, "S": S, "X": X, "Z": Z}
-    lst = [gates[word](i) for word in decompositions[vop]]
+    lst = [reversed((gates[word](i) for word in decompositions[vop]))]
     return list_to_circuit(lst)
 
 
