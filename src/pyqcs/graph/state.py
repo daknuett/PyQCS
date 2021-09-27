@@ -24,12 +24,12 @@ class DummyGate(object):
 
 
 class GraphState(object):
-    __slots__ = ["_g_state", "_nbits", "_measured", "_copy", "_rne"]
+    __slots__ = ["_g_state", "_nqbits", "_measured", "_copy", "_rne"]
     _has_capabilities = Capabilities.clifford()
 
     def __init__(self, g_state, nbits, copy=False, measured=None, rne=None):
         self._g_state = g_state
-        self._nbits = nbits
+        self._nqbits = nbits
         self._copy = copy
         self._measured = measured
 
@@ -54,7 +54,7 @@ class GraphState(object):
                             , "measured": self._measured
                             , "rne": self._rne}
         key_word_arguments.update(kwargs)
-        return type(self)(self._g_state.deepcopy(), self._nbits, **key_word_arguments)
+        return type(self)(self._g_state.deepcopy(), self._nqbits, **key_word_arguments)
 
     def to_naive_state(self):
         # FIXME: use the backend method for that.
@@ -127,7 +127,7 @@ class GraphState(object):
     def __matmul__(self, other):
         if(not isinstance(other, GraphState)):
             raise TypeError()
-        if(not self._nbits == other._nbits):
+        if(not self._nqbits == other._nqbits):
             raise ValueError("cannot compute overlap of states with different qbit count")
         return other.mul_to(self._g_state)
 
