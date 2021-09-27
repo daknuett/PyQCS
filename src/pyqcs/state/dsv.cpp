@@ -273,6 +273,29 @@ static PyObject * RawDSVState_statistic(RawDSVState * self, PyObject * args)
     return PyTuple_Pack(2, labels_array, probabilities_array);
 }
 
+static PyObject * RawDSVState_overlap(RawDSVState * self, PyObject * args)
+{
+    RawDSVState * other;
+    if(!PyArg_ParseTuple(args, "O!", &RawDSVStateType, &other))
+    {
+        return NULL;
+    }
+
+    if(self->state->nqbits() != other->state->nqbits())
+    {
+        PyErr_SetString(PyExc_ValueError, "states must have same qbit count");
+        return NULL;
+    }
+
+    std::complex<double> result = (*self->state) * (*other->state);
+    Py_complex * result_pc = (Py_complex *) calloc(1, sizeof(*result_pc));
+    result_pc->real = result.real();
+    result_pc->imag = result.imag();
+
+    return Py_BuildValue("D", result_pc);
+
+}
+
 struct PyMemberDef RawDSVState_members[] = {{NULL}};
 static PyMethodDef RawDSVState_methods[] = {
     {"deepcopy", (PyCFunction) RawDSVState_deepcopy, METH_NOARGS, "deepcopies the state"}
@@ -283,6 +306,7 @@ static PyMethodDef RawDSVState_methods[] = {
     , {"export_numpy", (PyCFunction) RawDSVState_export_numpy, METH_NOARGS, "exports the state to a numpy array; the data is copied"}
     , {"measure", (PyCFunction) RawDSVState_measure, METH_VARARGS, "performs a measurement in computational basis; takes a random double [0, 1) and returns the result (0 or 1); collapses the state"}
     , {"statistic", (PyCFunction) RawDSVState_statistic, METH_VARARGS, "computes the probabilities for measure outcomes in computational bases and returns them in two numpy arrays (labels, probabilities); probabilities smaller than the double parameter are ignored"}
+    , {"overlap", (PyCFunction) RawDSVState_overlap, METH_VARARGS, "computes the overlap between two RawDSVStates"}
     , {NULL}
 };
 

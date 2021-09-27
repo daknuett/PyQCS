@@ -136,3 +136,10 @@ class DSVState(object):
     @property
     def _qm_state(self):
         return self._backend_state.export_numpy()
+
+    def __eq__(self, other):
+        if(not isinstance(other, DSVState)):
+            raise TypeError()
+
+        overlap = self._backend_state.overlap(other._backend_state)
+        return numpy.allclose(abs(overlap), 1)
