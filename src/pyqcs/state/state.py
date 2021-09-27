@@ -143,3 +143,9 @@ class DSVState(object):
 
         overlap = self._backend_state.overlap(other._backend_state)
         return numpy.allclose(abs(overlap), 1)
+
+    def __matmul__(self, other):
+        if(not isinstance(other, DSVState)):
+            raise TypeError()
+
+        return self._backend_state.overlap(other._backend_state)
