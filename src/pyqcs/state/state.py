@@ -18,6 +18,7 @@ class DSVState(object):
     __slots__ = ["_backend_state", "_cl_state", "_nqbits"
                 , "_rne", "_gate_executors", "_copy"]
     _has_capabilities = Capabilities.universal()
+    _projection_eps = 1e-7
 
     def __init__(self, backend_state, cl_state, nqbits, rne=None, copy=True):
         self._nqbits = nqbits
