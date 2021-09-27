@@ -89,8 +89,7 @@ def circuit_to_byte_code(header, circuit, add_header=True):
     if(circuit._requires_qbits >= (1 << header._nqbits)):
         raise ValueError("Circuit requires more qbits.")
 
-    executor = circuit._executor(circuit.get_child_executors(graph=True))
-    gates = executor.to_gate_list()
+    gates = executor._gate_list
 
     o2i = {"CZ": cz2i, "M": measure2i, "CX": decomposable2i}
     o2i.update({gn: clifford2i for gn in _local_clifford_gates})
