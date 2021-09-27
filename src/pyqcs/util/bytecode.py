@@ -86,7 +86,7 @@ def decomposable2i(gate):
 def circuit_to_byte_code(header, circuit, add_header=True):
     if(not (circuit._requires_capabilities <= Capabilities.clifford())):
         raise TypeError("Circuit must be applicable to graph.")
-    if(circuit._uses_qbits >= (1 << header._nqbits)):
+    if(circuit._requires_qbits >= (1 << header._nqbits)):
         raise ValueError("Circuit requires more qbits.")
 
     executor = circuit._executor(circuit.get_child_executors(graph=True))
