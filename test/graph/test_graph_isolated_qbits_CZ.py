@@ -1,16 +1,15 @@
 import pytest
 from itertools import product
 
-from pyqcs import State, H, X, Z, CZ, list_to_circuit
+from pyqcs import State, H, CZ
 from pyqcs.graph.rawstate import RawGraphState
-from pyqcs.graph.util import graph_lists_to_naive_state, C_L
-from pyqcs import GenericGate
+from pyqcs.graph.util import graph_lists_to_naive_state, vop_factorization_circuit
 
 
 def possible_input_configurations():
     for c0, c1, e in product(range(24), range(24), (True, False)):
-        g0 = GenericGate(0, C_L[c0])
-        g1 = GenericGate(1, C_L[c1])
+        g0 = vop_factorization_circuit(0, c0)
+        g1 = vop_factorization_circuit(1, c1)
 
         yield(g0, g1, c0, c1, e)
 
@@ -28,8 +27,8 @@ def test_two_qbits_isolated():
         s = g0 * s
         s = g1 * s
 
-
         assert graph_lists_to_naive_state(g.to_lists()) == s
+
 
 @pytest.mark.deprecated
 def test_two_qbits_isolated_CZ():
