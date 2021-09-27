@@ -163,4 +163,4 @@ class DSVState(object):
         return hash((tuple(self._qm_state), tuple(self._cl_state)))
 
     def randomize(self):
-        self._backend_state.randomize(int(self._rne() * ((1 << 32) - 1)))
+        self._backend_state.randomize(int(self._rne() * ((1 << 24) - 1)))
