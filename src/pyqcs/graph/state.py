@@ -129,7 +129,7 @@ class GraphState(object):
             raise TypeError()
         if(not self._nqbits == other._nqbits):
             raise ValueError("cannot compute overlap of states with different qbit count")
-        return other.mul_to(self._g_state)
+        return other._g_state.mul_to(self._g_state)
 
     def project_to(self, qbit, observable):
         """
