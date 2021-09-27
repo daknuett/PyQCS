@@ -129,3 +129,10 @@ class DSVState(object):
                     continue
                 yield f"{v}*|{bin(i)}>"
         return " + ".join(fmt_elements(data, 1e-3))
+
+    def export_numpy(self):
+        return self._backend_state.export_numpy()
+
+    @property
+    def _qm_state(self):
+        return self._backend_state.export_numpy()
