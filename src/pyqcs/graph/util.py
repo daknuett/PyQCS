@@ -4,7 +4,8 @@ from ..state.state import DSVState
 
 decompositions = ['H',
                  'S',
-                 '',
+                 'ZZ',   # For technical reasons we
+                         # require a non-empty string here.
                  'SH',
                  'HS',
                  'Z',
