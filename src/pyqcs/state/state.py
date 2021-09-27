@@ -141,6 +141,11 @@ class DSVState(object):
     def __eq__(self, other):
         if(not isinstance(other, DSVState)):
             raise TypeError()
+        if(self._nqbits != other._nqbits):
+            raise ValueError("states must have same number of qbits")
+
+        if(self._cl_state != other._cl_state):
+            return False
 
         overlap = self._backend_state.overlap(other._backend_state)
         return numpy.allclose(abs(overlap), 1)
