@@ -18,7 +18,7 @@ class DSVState(object):
     __slots__ = ["_backend_state", "_cl_state", "_nqbits"
                 , "_rne", "_gate_executors", "_copy"]
     _has_capabilities = Capabilities.universal()
-    _projection_eps = 1e-7
+    _projection_eps = 1e-8
 
     def __init__(self, backend_state, cl_state, nqbits, rne=None, copy=True):
         self._nqbits = nqbits
@@ -172,7 +172,7 @@ class DSVState(object):
         ..math::
                 P_{m,l} = \\frac{I + (-1)^l Z_m}{2}
         to the state. ``l`` must be ``0`` or ``1``.
-        Returns either ``0`` (if the amplitude is below self._length_error)
+        Returns either ``0`` (if the amplitude is below DSVState._projection_eps)
         or a new state (in any other case).
         """
 
