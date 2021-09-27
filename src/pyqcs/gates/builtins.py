@@ -22,8 +22,11 @@ def X(act):
 
 
 def R(act, phi):
+    def get_R_dagger(gate):
+        return [Gate(act, None, -phi, "R", Capabilities.universal())]
     return Circuit(Capabilities.universal()
-                    , [Gate(act, None, phi, "R", Capabilities.universal())]
+                    , [Gate(act, None, phi, "R", Capabilities.universal()
+                            , get_R_dagger)]
                     , 1 << act)
 
 
@@ -53,5 +56,6 @@ def M(act):
     def get_M_dagger(gate):
         raise UnitarityError("M is not unitary, cannot be daggered")
     return Circuit(Capabilities.clifford()
-                    , [Gate(act, None, None, "M", Capabilities.clifford())]
+                    , [Gate(act, None, None, "M", Capabilities.clifford()
+                            , get_M_dagger)]
                     , 1 << act)
