@@ -324,11 +324,11 @@ static PyObject * RawDSVState_project_Z(RawDSVState * self, PyObject * args)
 
     double amplitude_1 = self->state->measurement_probability(i);
 
-    if(l == 0 && (1 - amplitude_1) > eps)
+    if(l == 0 && (1 - amplitude_1) < eps)
     {
         Py_RETURN_FALSE;
     }
-    if(l == 1 && amplitude_1 > eps)
+    if(l == 1 && amplitude_1 < eps)
     {
         Py_RETURN_FALSE;
     }
