@@ -1,33 +1,7 @@
 from ..utils import list_to_circuit
 from ..gates.builtins import H, Z, X, S, CZ
 from ..state.state import DSVState
-
-decompositions = ['H',
-                 'S',
-                 'ZZ',   # For technical reasons we
-                         # require a non-empty string here.
-                 'SH',
-                 'HS',
-                 'Z',
-                 'SHS',
-                 'HZ',
-                 'ZS',
-                 'SHZ',
-                 'SHSH',
-                 'SHZS',
-                 'HSH',
-                 'ZH',
-                 'X',
-                 'ZSH',
-                 'SX',
-                 'ZHS',
-                 'XS',
-                 'ZSHS',
-                 'ZHZ',
-                 'XZ',
-                 'XSH',
-                 'ZSHSH'
- ]
+from .c_l import C_L as decompositions
 
 
 def vop_factorization_circuit(i, vop):
