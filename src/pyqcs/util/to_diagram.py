@@ -19,6 +19,7 @@ formatters = {
     , "X": lambda r: "X"
     , "H": lambda r: "H"
     , "Z": lambda r: "Z"
+    , "S": lambda r: "S"
     , "M": not_implemented
 }
 
