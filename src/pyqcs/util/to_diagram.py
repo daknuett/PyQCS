@@ -90,11 +90,17 @@ class CircuitPNGFormatter(object):
         with TemporaryDirectory() as tmpdirname:
             with open(tmpdirname + "/main.tex", "w") as fout:
                 fout.write(self.get_tex_file_content())
-            subprocess.run([self.pdflatex] + self.pdflatex_args, cwd=tmpdirname)
+            subprocess.run([self.pdflatex] + self.pdflatex_args
+                            , cwd=tmpdirname
+                            , stdout=subprocess.PIPE
+                            , stderr=subprocess.PIPE
+            )
             if(not os.path.isfile(tmpdirname + "/main.pdf")):
                 raise OSError(f"pdflatex ({self.pdflatex}) did not produce a pdf file")
             subprocess.run([self.convert] + self.convert_args
-                            , cwd=tmpdirname)
+                            , cwd=tmpdirname
+                            , stdout=subprocess.PIPE
+                            , stderr=subprocess.PIPE)
             if(not os.path.isfile(tmpdirname + "/main.png")):
                 raise OSError(f"imagemagick ({self.convert}) did not produce a png file")
             with open(tmpdirname + "/main.png", "rb") as fin:
