@@ -13,37 +13,42 @@ def not_implemented(*args):
 
 multi_qbit_gates = ["CX", "CZ"]
 formatters = {
-    "CX": lambda c, r: "X"
-    , "CZ": lambda c, r: "Z"
-    , "R": lambda c, r: r"R_{%.2f\pi}" % (r / pi)
-    , "X": lambda c, r: "X"
-    , "H": lambda c, r: "H"
-    , "Z": lambda c, r: "Z"
+    "CX": lambda r: "X"
+    , "CZ": lambda r: "Z"
+    , "R": lambda r: r"R_{%.2f\pi}" % (r / pi)
+    , "X": lambda r: "X"
+    , "H": lambda r: "H"
+    , "Z": lambda r: "Z"
     , "M": not_implemented
 }
 
-def circuit_to_table(circuit):
-    nbits = int(circuit._requires_qbits).bit_length()
-
-    gates = circuit._gate_list
-    raise NotImplementedError()
-
 
 def circuit_to_diagram(circuit):
-    table = circuit_to_table(circuit)
+    table = [deque() for _ in range(circuit._requires_qbits.bit_length())]
 
-    for i,row in enumerate(table):
-        for j,format_descriptor in enumerate(row):
-            if(format_descriptor is None and table[i][j] is None):
-                table[i][j] = r"& \qw"
-            if(isinstance(format_descriptor, tuple)):
-                if(format_descriptor[0] in multi_qbit_gates):
-                    table[format_descriptor[2]][j] = r"& \ctrl{" + str(i - format_descriptor[2]) + r"}"
-                table[i][j] = r"& \gate{" + formatters[format_descriptor[0]](*format_descriptor[2:]) + r"}"
+    for gate in circuit._gate_list:
+        if(gate._name in multi_qbit_gates):
+            # fill the table with qwires so we get the same
+            # width for control and act.
+            if(len(table[gate._act]) < len(table[gate._control])):
+                table[gate._act].extend(
+                    [r"& \qw"] * (len(table[gate._control])
+                                    - len(table[gate._act]))
+                )
+            if(len(table[gate._act]) > len(table[gate._control])):
+                table[gate._control].extend(
+                    [r"& \qw"] * (len(table[gate._act])
+                                   - len(table[gate._control]))
+                )
+            table[gate._control].append(
+                r"& \ctrl{%d}"
+                % (gate._act - gate._control)
+            )
 
-    for row in table:
-        row.append(r"&\qw")
-        row.append(r"\\")
+        table[gate._act].append(
+            r"& \gate{%s}"
+            % formatters[gate._name](gate._phi)
+        )
 
     inner_tex = "\n".join((" ".join(row) for row in table))
     tex = (r"\Qcircuit @C=1em @R=.7em {" + "\n"
@@ -51,6 +56,7 @@ def circuit_to_diagram(circuit):
             + r"}")
 
     return tex
+
 
 class CircuitPNGFormatter(object):
     def __init__(self, circuit
