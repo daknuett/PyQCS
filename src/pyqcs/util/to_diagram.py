@@ -50,6 +50,12 @@ def circuit_to_diagram(circuit):
             % formatters[gate._name](gate._phi)
         )
 
+    maxlen = max((len(row) for row in table))
+    for row in table:
+        if(len(row) < maxlen):
+            row.extend([r"& \qw"] * (maxlen - len(row)))
+        row.append(r"& \qw \\")
+
     inner_tex = "\n".join((" ".join(row) for row in table))
     tex = (r"\Qcircuit @C=1em @R=.7em {" + "\n"
             + inner_tex + "\n"
