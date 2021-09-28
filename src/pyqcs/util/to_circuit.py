@@ -38,7 +38,10 @@ def graph_state_to_circuit(state):
 
     vop_circuit = list_to_circuit([vop_to_circuit(i, vop) for i,vop in enumerate(vops)])
 
-    return prepare | entanglements | vop_circuit
+    if(entanglements):
+        return prepare | entanglements | vop_circuit
+    else:
+        return prepare | vop_circuit
 
 
 def vop_to_circuit(act, vop):
