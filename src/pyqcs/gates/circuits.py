@@ -10,7 +10,7 @@ class Circuit(object):
     def __init__(self, capabilities, gates, required_qbits):
         self._requires_capabilities = capabilities
         self._gate_list = gates
-        self._requires_qbits = required_qbits
+        self._requires_qbits = int(required_qbits)
 
     def __or__(self, other):
         if(not isinstance(other, Circuit)):
