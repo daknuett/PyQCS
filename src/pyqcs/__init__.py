@@ -109,12 +109,10 @@ See https://github.com/daknuett/PyQCS/tree/master/examples.
 
 import numpy as np
 
-from .gates.builtins import C, H, X, R, M, Z, S, CX, CZ, GenericGate, clear_builtin_gate_cache
-from .state.state import BasicState as State
-from .state.pretty_state import PrettyState
-from .gates.circuits import AnonymousCompoundGateCircuit, NamedCompoundGateCircuit
+from .gates.builtins import H, X, R, M, Z, S, CX, CZ
+from .state.state import DSVState as State
 
 
-from .measurement import measure, sample, tree_amplitudes, compute_amplitudes
+from .measurement import measure, sample, tree_amplitudes
 from .utils import list_to_circuit, circuitpng
 

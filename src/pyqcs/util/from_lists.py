@@ -1,6 +1,7 @@
 from ..graph.state import GraphState
 from .. import CZ
 
+
 def graph_lists_to_graph_state(lists, **kwargs):
     vops, entanglements = lists
 
@@ -19,4 +20,3 @@ def graph_lists_to_graph_state(lists, **kwargs):
         state._g_state.apply_C_L(i, vop)
 
     return state
-

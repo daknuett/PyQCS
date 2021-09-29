@@ -22,14 +22,15 @@ def test_vops_preserve_phase_unentangled(plus_ket3):
 
         print("vops:", v1)
         res = g.project_to(0, "Z")
-        print(g._g_state.to_lists())
-        print(g.to_naive_state())
-        print(n.projZ(0, 0))
+        print("lists: ", g._g_state.to_lists())
+        print("graph: ", g.to_naive_state())
+        print("dsv before projection: ", n)
+        print("dsv after projection: ", n.project_Z(0, 0))
 
         if(res == 0):
-            assert n.projZ(0, 0) == 0
+            assert n.project_Z(0, 0) == 0
         else:
-            assert np.abs(g.to_naive_state() @ n.projZ(0, 0)) == pytest.approx(1)
+            assert np.abs(g.to_naive_state() @ n.project_Z(0, 0)) == pytest.approx(1)
 
 @pytest.mark.slow
 def test_vops_preserve_phase_singly_entangled(plus_ket3):
@@ -46,9 +47,9 @@ def test_vops_preserve_phase_singly_entangled(plus_ket3):
         print(g._g_state.to_lists())
 
         if(res == 0):
-            assert n.projZ(0, 0) == 0
+            assert n.project_Z(0, 0) == 0
         else:
-            assert g.to_naive_state() == n.projZ(0, 0)
+            assert g.to_naive_state() == n.project_Z(0, 0)
 
 @pytest.mark.slow
 def test_vops_preserve_phase_star_entangled(plus_ket3):
@@ -67,9 +68,9 @@ def test_vops_preserve_phase_star_entangled(plus_ket3):
         print(g._g_state.to_lists())
 
         if(res == 0):
-            assert n.projZ(0, 0) == 0
+            assert n.project_Z(0, 0) == 0
         else:
-            assert np.abs(g.to_naive_state() @ n.projZ(0, 0)) == pytest.approx(1)
+            assert np.abs(g.to_naive_state() @ n.project_Z(0, 0)) == pytest.approx(1)
 
 @pytest.mark.slow
 def test_vops_preserve_phase_loop_entangled(plus_ket3):
@@ -88,6 +89,6 @@ def test_vops_preserve_phase_loop_entangled(plus_ket3):
         print(g._g_state.to_lists())
 
         if(res == 0):
-            assert n.projZ(0, 0) == 0
+            assert n.project_Z(0, 0) == 0
         else:
-            assert np.abs(g.to_naive_state() @ n.projZ(0, 0)) == pytest.approx(1)
+            assert np.abs(g.to_naive_state() @ n.project_Z(0, 0)) == pytest.approx(1)

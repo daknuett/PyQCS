@@ -39,6 +39,10 @@ namespace dsv
         delete [] m_vect[1];
     }
 
+    unsigned short int DSV::nqbits(void)
+    {
+        return m_nqbits;
+    }
 
     int DSV::apply_op(dsv_op op, DSVOpArgument & argument)
     {
@@ -103,6 +107,93 @@ namespace dsv
         }
     }
 
+    void DSV::normalize(void)
+    {
+        double amplitude = std::abs((*this) * (*this));
+        double normalization = std::sqrt(amplitude);
+
+        for(size_t i = 0; i < m_ndims; i++)
+        {
+            m_vect[m_cvect][i] /= normalization;
+        }
+    }
+    double DSV::measurement_probability(unsigned short int i)
+    {
+        if(i >= m_nqbits)
+        {
+            throw std::invalid_argument("qbit out of range");
+        }
+
+        double amplitude_1 = 0, amplitude_0 = 0;
+        for(size_t j = 0; j < m_ndims; j++)
+        {
+            if(j & (1 << i))
+            {
+                amplitude_1 += std::abs(m_vect[m_cvect][j]);
+            }
+            else
+            {
+                amplitude_0 += std::abs(m_vect[m_cvect][j]);
+            }
+        }
+
+        // Try to account for numerical errors that happen when adding small and
+        // large elements.
+        amplitude_1 -= (amplitude_1 + amplitude_0) / 2 - 0.5;
+    
+        return amplitude_1;
+    }
+
+    void DSV::project_to(unsigned short int i, int value)
+    {
+        double amplitude_1 = measurement_probability(i);
+        if(value)
+        {
+            double normalization = std::sqrt(amplitude_1);
+            for(size_t j = 0; j < m_ndims; j++)
+            {
+                if(j & (1 << i))
+                {
+                    m_vect[m_cvect^1][j] = m_vect[m_cvect][j] / normalization;
+                }
+                else
+                {
+                    m_vect[m_cvect^1][j] = 0;
+                }
+            }
+        }
+        else
+        {
+            double normalization = std::sqrt(1 - amplitude_1);
+            for(size_t j = 0; j < m_ndims; j++)
+            {
+                if(j & (1 << i))
+                {
+                    m_vect[m_cvect^1][j] = 0;
+                }
+                else
+                {
+                    m_vect[m_cvect^1][j] = m_vect[m_cvect][j] / normalization;
+                }
+            }
+        }
+
+        m_cvect ^= 1;
+    }
+    void DSV::statistic(std::vector<unsigned int> & labels, std::vector<double> & probabilities, double eps)
+    {
+        labels.resize(0);
+        probabilities.resize(0);
+
+        for(size_t i = 0; i < m_ndims; i++)
+        {
+            if(std::abs(m_vect[m_cvect][i]) > eps)
+            {
+                labels.push_back(i);
+                probabilities.push_back(std::abs(m_vect[m_cvect][i]));
+            }
+        }
+    }
 
     void DSV::print_state(std::ostream & output)
     {
@@ -117,6 +208,16 @@ namespace dsv
         }
     }
 
+    size_t DSV::export_to_array(std::complex<double> ** array)
+    {
+        *array = new std::complex<double>[m_ndims];
+
+        for(size_t i = 0; i < m_ndims; i++)
+        {
+            (*array)[i] = m_vect[m_cvect][i];
+        }
+        return m_ndims;
+    }
 
     DSVOpArgument::DSVOpArgument(unsigned short int act)
     {

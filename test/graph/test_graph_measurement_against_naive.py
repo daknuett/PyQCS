@@ -10,7 +10,7 @@ def S_with_extra_arg(act, i):
 
 def do_test_q4_l10():
     naive = State.new_zero_state(4)
-    graph = GraphState.new_zero_state(4, force_new_state=True)
+    graph = GraphState.new_zero_state(4, copy=True)
     circuit = random_circuit(4, 10, X, H, S_with_extra_arg, CZ)
 
     naive = circuit * naive
@@ -63,7 +63,7 @@ def test_random_q4_l10_m0():
 
 def do_test_q5_l100():
     naive = State.new_zero_state(5)
-    graph = GraphState.new_zero_state(5, force_new_state=True)
+    graph = GraphState.new_zero_state(5, copy=True)
     circuit = random_circuit(5, 100, X, H, S_with_extra_arg, CZ)
 
     naive = circuit * naive

@@ -1,54 +1,67 @@
-import numpy
 
-from .abc import AbstractGate
-from .implementations.basic_gates import BasicGate
-from .implementations.generic_gate import GenericGate as _GenericGate
+class Capabilities(object):
+    __slots__ = [
+        "_capability_names"
+        , "_bitmask"
+    ]
+
+    def __init__(self, names, bitmask):
+        self._capability_names = names
+        self._bitmask = bitmask
+
+    @classmethod
+    def clifford(cls):
+        return cls(["clifford"], 0b01)
+
+    @classmethod
+    def universal(cls):
+        return cls(["clifford", "universal"], 0b11)
+
+    def __str__(self):
+        return (f"[capabilities: {', '.join(self._capability_names)}"
+                f", level: {self._bitmask}]")
+
+    def __le__(self, other):
+        if(not isinstance(other, Capabilities)):
+            raise TypeError()
+        return self._bitmask <= other._bitmask
 
 
-class BaseGate(AbstractGate):
-    def __init__(self, impl):
-        self._impl = impl
+def max_capabilities(c1, c2):
+    if(not (isinstance(c1, Capabilities) and isinstance(c2, Capabilities))):
+        raise TypeError("max_capabilities only supported for class Capabilities")
 
-    def __call__(self, qm_state, cl_state):
-        return self._impl(qm_state, cl_state)
-    def is_inplace(self):
-        return False
+    if(c1._bitmask > c2._bitmask):
+        return c1
+    return c2
+
+
+class Gate(object):
+    __slots__ = [
+        "_act"
+        , "_control"
+        , "_phi"
+        , "_name"
+        , "_requires_capabilities"
+        , "_is_Z2"
+        , "_adjoint_recipe"
+    ]
+
+    def __init__(self, act, control, phi, name, requires_capabilities, adjoint_recipe=None):
+        self._act = act
+        self._control = control
+        self._phi = phi
+        self._name = name
+        self._requires_capabilities = requires_capabilities
+
+        if(adjoint_recipe is None):
+            self._is_Z2 = True
+            self._adjoint_recipe = None
+        else:
+            self._is_Z2 = False
+            self._adjoint_recipe = adjoint_recipe
 
     def get_dagger(self):
-        return BaseGate(self._impl.get_dagger())
-
-class BuiltinGate(BaseGate):
-    def __init__(self, type_, act, control, r):
-        BaseGate.__init__(self, BasicGate(type_, act, control, r, numpy.random.uniform))
-
-class GenericGate(BaseGate):
-    """
-    This is the Wrapper for the GenericGate C object.
-    """
-    def __init__(self, act, arr):
-        if(not isinstance(arr, numpy.ndarray)):
-            raise TypeError("matrices must be numpy ndarrays")
-        if(len(arr.shape) != 2):
-            raise ValueError("matrices must be of dimension NxN")
-        if(arr.shape[0] != arr.shape[1]):
-            raise ValueError("matrices must be of dimension NxN")
-
-        test = arr.dot(arr.conj().T)
-        if(not numpy.isclose(test, numpy.identity(arr.shape[0])).all()):
-            raise ValueError("matrices must be unitary")
-
-        #if(not numpy.isclose(numpy.linalg.det(arr), 1).all()):
-        #    print(numpy.linalg.det(arr))
-        #    print(numpy.isclose(numpy.linalg.det(arr), 1))
-        #    raise ValueError("matrices must be in SU(N)")
-
-        if(arr.shape[0] != 2):
-            raise ValueError("matrices must be in SU(2)")
-
-        arr = arr.astype(numpy.cdouble)
-
-        BaseGate.__init__(self, _GenericGate(act, arr[0,0], arr[1,1], arr[0,1], arr[1,0]))
-        self._array = arr
-
-    def get_dagger(self):
-        return GenericGate(self._act, self._array.transpose().conjugate())
+        if(self._is_Z2):
+            return [self]
+        return self._adjoint_recipe(self)

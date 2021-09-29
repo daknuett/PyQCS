@@ -1,12 +1,10 @@
 from collections import Counter, deque
-from itertools import product
 
 import numpy as np
 
 from .gates.builtins import M
 from .utils import list_to_circuit
-from .state.state import BasicState as State
-from .gates.implementations.compute_amplitude import compute_amplitude
+from .state.state import DSVState
 
 
 def build_measurement_circuit(bit_mask):
@@ -33,12 +31,12 @@ def measure(state, bit_mask):
 
     state = state.deepcopy()
     state.redo_normalization()
-    if(isinstance(state, State)):
+    if(isinstance(state, DSVState)):
         state._cl_state[:] = -1
     else:
         state._measured = dict()
     new_state = circuit * state
-    if(isinstance(state, State)):
+    if(isinstance(state, DSVState)):
         return new_state, sum([1 << i for i,v in enumerate(new_state._cl_state) if v == 1])
     else:
         return new_state, sum([1 << i for i,v in new_state._measured.items() if v == 1])
@@ -47,7 +45,7 @@ def measure(state, bit_mask):
 def _do_sample(state, circuit, nsamples):
     for _ in range(nsamples):
         new_state = circuit * state
-        if(isinstance(new_state, State)):
+        if(isinstance(new_state, DSVState)):
             yield new_state, sum([1 << i for i,v in enumerate(new_state._cl_state) if v == 1])
         else:
             yield new_state, sum([1 << i for i,v in new_state._measured.items() if v == 1])
@@ -66,9 +64,9 @@ def sample(state, bit_mask, nsamples, keep_states=False):
     """
     circuit = build_measurement_circuit(bit_mask)
 
-    state = state.deepcopy(force_new_state=True)
+    state = state.deepcopy(copy=True)
     state.redo_normalization()
-    if(isinstance(state, State)):
+    if(isinstance(state, DSVState)):
         state._cl_state[:] = -1
     else:
         state._measured = dict()
@@ -83,29 +81,29 @@ def tree_amplitudes(state, bit_mask=None, eps=1e-5):
     """
     Compute the probability amplitudes for all (eps-)possible
     outcomes. ``bit_mask`` is either ``None`` or a permutation
-    of ``list(range(state._nbits))``.
+    of ``list(range(state._nqbits))``.
 
     Only available for dense vector states.
 
     The original state is unchanged.
 
     Amplitudes (and collapsed states) are computed in the order given
-    by ``bit_mask``. If ``bit_mask is None``, ``list(range(state._nbits))``
+    by ``bit_mask``. If ``bit_mask is None``, ``list(range(state._nqbits))``
     is used.
     """
 
-    if(not isinstance(state, State)):
+    if(not isinstance(state, DSVState)):
         raise TypeError("tree_amplitudes currently works for dense vector states only")
     state.redo_normalization()
 
     if(bit_mask is None):
-        bit_mask = list(range(state._nbits))
+        bit_mask = list(range(state._nqbits))
 
-    if(list(sorted(bit_mask)) != list(range(state._nbits))):
-        raise ValueError("bit_mask must be either None or a permutation of list(range(state._nbits)))")
+    if(list(sorted(bit_mask)) != list(range(state._nqbits))):
+        raise ValueError("bit_mask must be either None or a permutation of list(range(state._nqbits)))")
 
     next_queue = [(1, 0, state.deepcopy()._qm_state)]
-    qbit_mapping = np.arange(0, 2**state._nbits, 1, dtype=int)
+    qbit_mapping = np.arange(0, 2**state._nqbits, 1, dtype=int)
 
     for qbit in bit_mask:
         this_queue = next_queue
@@ -131,77 +129,3 @@ def tree_amplitudes(state, bit_mask=None, eps=1e-5):
                 next_queue.append((prob * amplitude_down, prev_outcome, handle_next))
 
     return [[outcome, prob] for prob, outcome, state in next_queue]
-
-
-def py_compute_amplitude(state, qbits, bitstr):
-    """
-    This function is deprecated and will be removed in future versions.
-    The function is replaced by the generalized UFunc ``compute_amplitude``.
-
-
-    ``state`` is a ``pyqcs.State`` object, ``qbits`` is a list of qbits.
-    The list ``bitstr`` contains the bitstring, for which the amplitude should be computed.
-    ``bitstr[i]`` corresponds to the qbit ``qbits[i]``.
-
-    Use ``compute_amplitudes`` instead of this function.
-    """
-    if(not isinstance(qbits, (list, tuple))):
-        raise TypeError("qbits must be list, or tuple")
-    if(not isinstance(bitstr, (list, tuple))):
-        raise TypeError("bitstr must be list, or tuple")
-
-    check_bits = sum(1 << qbit for qbit in qbits)
-    bit_mask = sum(1 << bit for bit,msk in zip(qbits, bitstr) if msk)
-    if(max(qbits) > state._nbits):
-        raise ValueError(f"qbit {max(qbits)} out of range: {state._nbits}")
-    state.redo_normalization()
-
-    amplitude = 0
-    for i,v in enumerate(state._qm_state):
-        bits_that_matter = i & check_bits
-        if(bits_that_matter ^ bit_mask == 0):
-            amplitude += (v*v.conj()).real
-    return amplitude
-
-
-def compute_amplitudes(state, qbits, eps=1e-8, asint=True):
-    """
-    ``state`` must be a ``pyqcs.State`` object and remains unchanged.
-
-    Computes the amplitudes for all at-least-eps-probable measurement
-    coutcomes for the ``qbits`` given either as an integer bit mask or
-    a list of qbit indices.
-
-    Returns a dict ``{outcome: probability}``.
-    If ``asint == True`` the ``outcome`` is converted to an integer bit mask,
-    in the other case ``outcome`` is a tuple of 0s and 1s where
-    ``outcome[i]`` corresponds to ``qbits[i]``.
-
-    In previous versions this used ``py_compute_amplitude`` to compute the
-    individual amplitudes. To improve performance the UFunc
-    ``pyqcs.gates.implementations.compute_amplitude.compute_amplitude``
-    is used in newer versions.
-    """
-    if(isinstance(qbits, int)):
-        qbits = [i for i in range(qbits.bit_length()) if qbits & (1 << i)]
-    if(not isinstance(qbits, (list, tuple))):
-        raise TypeError("qbits must be int, list, or tuple")
-    if(max(qbits) > state._nbits):
-        raise ValueError(f"qbit {max(qbits)} out of range: {state._nbits}")
-
-    single_qbit_outcomes = [0, 1]
-    state.redo_normalization()
-
-    results = dict()
-
-    for outcome in product(*[single_qbit_outcomes]*len(qbits)):
-        amplitude = compute_amplitude(state._qm_state
-                                    , np.array(qbits, dtype=int)
-                                    , np.array(outcome, dtype=np.uint8))
-        if(amplitude > eps):
-            if(asint):
-                results[sum(1 << bit for bit,msk in zip(qbits, outcome) if msk)] = amplitude
-            else:
-                results[outcome] = amplitude
-
-    return results

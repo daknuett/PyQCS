@@ -28,6 +28,7 @@ namespace dsv
         unsigned int m_cvect;
         std::complex<double> *m_vect[2];
         public:
+        unsigned short int nqbits(void);
         DSV(unsigned short int nqbits);
         DSV(const DSV & copy);
         ~DSV(void);
@@ -36,6 +37,22 @@ namespace dsv
         std::complex<double> operator*(DSV & other);
         void randomize(std::mt19937_64 & rne);
         void print_state(std::ostream & output);
+        void normalize(void);
+        double measurement_probability(unsigned short int i);
+        void project_to(unsigned short int i, int value);
+        void statistic(std::vector<unsigned int> & labels, std::vector<double> & probabilities, double eps);
+        /**
+         * This method exports the vector to a C array.
+         * We need this for inter-operability with numpy (to allow
+         * numpy to free the memory when an ndarray is deleted).
+         *
+         * One should not use this for anything else, use the ``export_to_vector''
+         * method instead.
+         *
+         * Returns the length of ``*array''.
+         * */
+        size_t export_to_array(std::complex<double> ** array);
+
     };
 
 

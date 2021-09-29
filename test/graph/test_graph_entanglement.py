@@ -89,6 +89,7 @@ def test_few_CZ_clear_vop2(graph_zero_state_10, naive_zero_state_10):
 
     state2 = (X(2) | CZ(2, 0)) * state1
 
+    print(g.to_lists())
     assert graph_lists_to_naive_state(g.to_lists()) == state2
 
 def test_few_CZ_clear_vop3(graph_zero_state_10, naive_zero_state_10):

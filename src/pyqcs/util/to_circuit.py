@@ -3,6 +3,7 @@ from ..gates.builtins import H, S, CZ, Z, X
 from ..graph.state import GraphState
 from ..graph.c_l import C_L
 
+
 def graph_state_to_circuit(state):
     """
     This function basically converts a graph state to a circuit
@@ -10,7 +11,7 @@ def graph_state_to_circuit(state):
 
     In particular for some graph state g::
 
-        graph_state_to_circuit(g) * GraphState.new_zero_state(g._nbits)
+        graph_state_to_circuit(g) * GraphState.new_zero_state(g._nqbits)
 
     will copy g.
     """
@@ -18,7 +19,7 @@ def graph_state_to_circuit(state):
     if(not isinstance(state, GraphState)):
         raise TypeError(f"GraphState is required, but got {type(state)}")
 
-    prepare = list_to_circuit([H(i) for i in range(state._nbits)])
+    prepare = list_to_circuit([H(i) for i in range(state._nqbits)])
 
     vops, edges = state._g_state.to_lists()
 
@@ -37,7 +38,11 @@ def graph_state_to_circuit(state):
 
     vop_circuit = list_to_circuit([vop_to_circuit(i, vop) for i,vop in enumerate(vops)])
 
-    return prepare | entanglements | vop_circuit
+    if(entanglements):
+        return prepare | entanglements | vop_circuit
+    else:
+        return prepare | vop_circuit
+
 
 def vop_to_circuit(act, vop):
     s2m = {"H": H, "S": S, "X": X, "Z": Z}
