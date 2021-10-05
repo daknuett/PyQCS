@@ -33,13 +33,50 @@ namespace dsv
         DSV(const DSV & copy);
         ~DSV(void);
         int apply_op(dsv_op op, DSVOpArgument & argument);
+        /**
+         * Exports the current dsv data to ``vector''. This makes a copy.
+         * */
         void export_to_vector(std::vector<std::complex<double>> & vector);
+        /**
+         * Computes the overlap of ``this'' and ``other''.
+         * */
         std::complex<double> operator*(DSV & other);
+        /**
+         * Randomizes the state where each amplitude is drawn from a uniform
+         * distribution.
+         * */
         void randomize(std::mt19937_64 & rne);
         void print_state(std::ostream & output);
+        /**
+         * Explicitly normalize the state to 1. This can be used when some
+         * operation might have broken the normalization (for instance
+         * randomization or execution of many gates).
+         * */
         void normalize(void);
+        /**
+         * Compute the probability to measure ``|1>'' on qbit ``i''. 
+         * (i.e. the overlap squared of ``|(1 << i)>''). Result is between
+         * 0 and 1.
+         * */
         double measurement_probability(unsigned short int i);
+        /**
+         * Projects the ``i'' th qbit to ``value'' (= 0, 1) in computational
+         * (Pauli Z) basis. The resulting state is normalized to 1.
+         *
+         * FIXME: currently the implementation has a bug where the resulting
+         * states are not always normalized. We fixed this by calling
+         * ``normalize'' but this should be avoided for performance reasons.
+         *
+         * */
         void project_to(unsigned short int i, int value);
+        /**
+         * This method exports two vectors (of same length) of the possible
+         * measuring outcomes and the respective probabilities. Only outcomes
+         * that have a likelyhood above ``eps'' are included.
+         *
+         * The outcomes are stored in ``labels'' and are the bitstrings. The
+         * probabilities are stored in ``probabilities''.
+         * */
         void statistic(std::vector<unsigned int> & labels, std::vector<double> & probabilities, double eps);
         /**
          * This method exports the vector to a C array.
