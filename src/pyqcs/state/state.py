@@ -19,7 +19,7 @@ class DSVState(object):
     classmethod ``DSVState.new_zero_state`` instead::
 
         state = DSVState.new_zero_state(nqbits)
-    
+
     One can compute the overlap between DSV states by using the matmul
     method::
 
