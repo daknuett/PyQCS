@@ -13,7 +13,36 @@ _measurement_gates = ["M"]
 class DSVState(object):
     """
     The Dense State Vector simmulator's state class. Uses a C
-    extnsion backend for faster simulation.
+    extension backend for faster simulation.
+
+    Do not use the ``__init__`` function to create states. Use the
+    classmethod ``DSVState.new_zero_state`` instead::
+
+        state = DSVState.new_zero_state(nqbits)
+    
+    One can compute the overlap between DSV states by using the matmul
+    method::
+
+        overlap = state1 @ state2
+
+    Apply circuits to the state using regular multiplication::
+
+        new_state = circuit * state
+
+    Note that one can fine-tune the copy behaviour in this case using the
+    keyword argument ``copy'' in both ``new_zero_state`` and ``deepcopy``.
+    Right now the state gets copied by default (this is compatible with the
+    behaviour of versions < 3).
+
+    The method ``randomize`` randomizes the state (see the documentation
+    for ``dsv::DSV::randomize`` for more info).
+
+    The method ``project_Z`` projects the state to
+
+    .. math::
+        P = I + (-1)^l Z_i.
+
+    The method ``export_numpy`` exports the state to a numpy array.
     """
     __slots__ = ["_backend_state", "_cl_state", "_nqbits"
                 , "_rne", "_gate_executors", "_copy"]
@@ -46,6 +75,28 @@ class DSVState(object):
 
     @classmethod
     def new_zero_state(cls, nqbits, rne=None, copy=True):
+        """
+        Return a new state in the form
+
+        ..math::
+
+            |0>^{\otimes n}
+
+        where ``n = nqbits``. If ``rne is None`` the random number engine used
+        for measurements defaults to ``numpy.random.uniform()``. If you want to
+        specify ``rne`` it should be a callable taking no arguments returning
+        a float between 0 and 1.
+
+        Note that ``rne`` does not affect the random number engine used in
+        ``randomize`` but only the seed used for ``randomize``. For performance
+        and security reasons we use a ``std::mt19937_64`` in the ``C++``
+        backend which cannot be changed.
+
+        The keyword argument ``copy`` specifies whether the state will be
+        copied before applying a circuit (thus leaving the old state
+        invariant). It defaults to true because we estimate that this
+        is the more intuitive behaviour and is compatible to versions < 3.
+        """
         if(not isinstance(nqbits, int)):
             raise TypeError("nqbits must be int > 0")
         if(nqbits <= 0):
@@ -62,6 +113,10 @@ class DSVState(object):
         return circuit._requires_qbits < (1 << self._nqbits)
 
     def deepcopy(self, **kwargs):
+        """
+        Makes a deepcopy of the state. The ``kwargs`` are the same as for
+        ``new_zero_state``.
+        """
         nqbits = self._nqbits
         cl_state = self._cl_state.copy()
         backend = self._backend_state.deepcopy()
@@ -110,6 +165,15 @@ class DSVState(object):
         self._cl_state[gate._act] = result
 
     def get_statistic(self, eps=None):
+        """
+        Returns two numpy arrays ``(labels, probabilities)`` where the
+        ``labels`` contain the possible bit strings and ``probabilities``
+        contain the corresponding probabilities.
+
+        If ``eps is None`` the precision defaults to
+        ``DSVState._projection_eps`` which is a reasonable choice. All
+        probabilities smaller than ``eps`` will be ignored.
+        """
         if(eps is None):
             return self._backend_state.statistic(self._projection_eps)
         return self._backend_state.statistic(eps)
