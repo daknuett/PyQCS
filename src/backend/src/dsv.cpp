@@ -178,8 +178,8 @@ namespace dsv
             }
         }
 
-        normalize();
         m_cvect ^= 1;
+        normalize();
     }
     void DSV::statistic(std::vector<unsigned int> & labels, std::vector<double> & probabilities, double eps)
     {
