@@ -109,8 +109,10 @@ class DSVState(object):
         result = self._backend_state.measure(gate._act, self._rne())
         self._cl_state[gate._act] = result
 
-    def get_statistic(self):
-        return self._backend_state.statistic()
+    def get_statistic(self, eps=None):
+        if(eps in None):
+            return self._backend_state.statistic(self._projection_eps)
+        return self._backend_state.statistic(eps)
 
     def __str__(self):
         data = self._backend_state.export_numpy()
