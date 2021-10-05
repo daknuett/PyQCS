@@ -189,14 +189,7 @@ class DSVState(object):
         return " + ".join(fmt_elements(data, 1e-3))
 
     def __repr__(self):
-        data = self._backend_state.export_numpy()
-
-        def fmt_elements(data, eps):
-            for i, v in enumerate(data):
-                if(abs(v) < eps):
-                    continue
-                yield f"{v}*|{bin(i)}>"
-        return " + ".join(fmt_elements(data, 1e-3))
+        return str(self)
 
     def export_numpy(self):
         return self._backend_state.export_numpy()
