@@ -34,7 +34,7 @@ class GraphState(object):
         self._measured = measured
 
         if(rne is None):
-            self._rne = lambda : numpy.random.uniform()
+            self._rne = lambda : numpy.random.uniform(0, 1)
         else:
             self._rne = rne
         if(measured is None):
