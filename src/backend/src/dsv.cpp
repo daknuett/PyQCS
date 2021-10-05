@@ -179,6 +179,11 @@ namespace dsv
         }
 
         m_cvect ^= 1;
+        // FIXME: XXX:
+        // This should not be necessary. The routine above should give
+        // a normalized state but for some reason there are cases where the
+        // resulting state is not normalized.  We should fix the routine above
+        // and remove the extra normalization.
         normalize();
     }
     void DSV::statistic(std::vector<unsigned int> & labels, std::vector<double> & probabilities, double eps)
