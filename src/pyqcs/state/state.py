@@ -110,7 +110,7 @@ class DSVState(object):
         self._cl_state[gate._act] = result
 
     def get_statistic(self, eps=None):
-        if(eps in None):
+        if(eps is None):
             return self._backend_state.statistic(self._projection_eps)
         return self._backend_state.statistic(eps)
 
