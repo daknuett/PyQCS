@@ -1,4 +1,4 @@
-from pyqcs import State, S, Z, X, H, CX, CZ, R
+from pyqcs import State, S, Z, X, H, CX, CZ, R, list_to_circuit
 import numpy as np
 
 
