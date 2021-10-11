@@ -15,7 +15,7 @@ dependencies=['numpy']
 repository="https://github.com/daknuett/pyqcs"
 
 [build-system]
-requires = ["meson", "toml", "mesonpep517", "numpy"]
+requires = ["meson", "toml", "mesonpep517", "numpy", "ninja"]
 build-backend = "mesonpep517.buildapi"
 
 [tool.mesonpep517.metadata]
