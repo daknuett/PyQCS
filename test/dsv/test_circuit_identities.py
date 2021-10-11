@@ -126,7 +126,8 @@ def test_R_additivity():
     angles = np.random.uniform(-1, 1, 10)
     total_angle = np.sum(angles)
 
-    state1 = list_to_circuit(R(1, i) for i in angles) * State.new_zero_state(2)
+    state1 = (list_to_circuit([R(1, i) for i in angles])
+                * State.new_zero_state(2))
     state2 = R(1, total_angle) * State.new_zero_state(2)
 
     assert state1 == state2
