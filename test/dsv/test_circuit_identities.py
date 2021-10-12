@@ -131,3 +131,35 @@ def test_R_additivity():
     state2 = R(1, total_angle) * State.new_zero_state(2)
 
     assert state1 == state2
+
+
+def test_R_S():
+    s = State.new_zero_state(2)
+    s.randomize()
+
+    s1 = R(0, np.pi / 2) * s
+    s2 = S(0) * s
+
+    assert s1 == s2
+
+
+def test_R_mphi():
+    s = State.new_zero_state(2)
+    s.randomize()
+
+    for phi in np.arange(0, np.pi * 2, 0.1):
+        s1 = (R(0, phi) | R(0, -phi)) * s
+        s2 = s
+
+        assert s1 == s2
+
+
+def test_R_dagger():
+    s = State.new_zero_state(2)
+    s.randomize()
+
+    for phi in np.arange(0, np.pi * 2, 0.1):
+        s1 = (R(0, phi) | R(0, phi).get_dagger()) * s
+        s2 = s
+
+        assert s1 == s2
