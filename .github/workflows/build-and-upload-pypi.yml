@@ -26,6 +26,8 @@ jobs:
         uses: ./.github/actions/test-tox-slow
       - name: run build
         run: python -m build --sdist --wheel --outdir dist/ .
+      - name: clean up pollution
+        run: rm -r dist/*.dist-info
       - name: upload packages
         uses: pypa/gh-action-pypi-publish@master
         with:
