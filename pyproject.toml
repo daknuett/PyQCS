@@ -2,14 +2,8 @@
 authors = [
     {name="Daniel Knüttel", email="daniel.knuettel@daknuett.eu"}
 ]
-
 description = "A quantum computing simulator."
-readme="README.rst"
 requires-python=">=3.4"
-platforms="linux"
-home-page="https://github.com/daknuett/pyqcs"
-version="3.0.0a"
-dependencies=['numpy']
 
 [project.urls]
 repository="https://github.com/daknuett/pyqcs"
@@ -19,5 +13,10 @@ requires = ["meson", "toml", "mesonpep517", "numpy", "ninja"]
 build-backend = "mesonpep517.buildapi"
 
 [tool.mesonpep517.metadata]
-summary = "A quantum computing simulator"
 meson-python-option-name = "python3"
+
+readme="README.rst"
+platforms="linux"
+home-page="https://github.com/daknuett/pyqcs"
+version="3.0.0a"
+dependencies=['numpy']
