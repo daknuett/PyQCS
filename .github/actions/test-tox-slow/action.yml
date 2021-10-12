@@ -3,9 +3,6 @@ description: Test the package using Tox with --runslow passed to pytest
 runs:
     using: "composite"
     steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: recursive
       - name: setup python
         uses: actions/setup-python@v2
         with:

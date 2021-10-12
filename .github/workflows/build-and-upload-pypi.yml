@@ -23,7 +23,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install build
       - name: test package
-        uses: ./.github/actions/test-tox-slow.yml
+        uses: ./.github/actions/test-tox-slow
       - name: run build
         run: python -m build --sdist --wheel --outdir dist/ .
       - name: upload packages
