@@ -29,8 +29,7 @@ overhead compared to other simulators. Note that any implementation using dense
 state vectors shows exponential growth in the number of qbits. Therefore this
 simulator backend is limited to qbit numbers  below 30 for reasonable
 performance. For simulations requiring more qbits we recommend a high
-performance framework, such as `GPT's QIS module
-<https://github.com/lehner/gpt>`_.
+performance framework, such as `GPT's QIS module <https://github.com/lehner/gpt>`_.
 
 The second backend uses a graphical state representation (see for instance
 `arXiv:quant-ph/0504117 <https://arxiv.org/abs/quant-ph/0504117v2>`_) which
@@ -89,7 +88,7 @@ PyQCS currently has the following gates built-in:
 	Pauli-X or NOT gate. Flips the respective qbit.
 ``H``
 	Hadamard gate. 
-``C = CX``
+``CX``
 	CNOT (controlled NOT) gate. Flips the act-qbit, if the control-qbit is set.
 ``R``
 	R, Rz or R_phi, the rotation gate. Rotates the respective qbit around a given angle.
@@ -98,20 +97,19 @@ PyQCS currently has the following gates built-in:
 	and storing the result in the classical part of the state.
 ``Z``
 	Pauli-Z gate.
-``B = CZ``
+``S``
+	Clifford-S gate.
+``CZ``
 	Controlled Z gate.
 
 
 TODOs
 =====
 
-- Add a subclass of ``pyqcs.state.state.BasicState`` that has an improved ``__str__`` method.
+- Add pretty printers for states.
 - Write lot's of documentation.
 - Add more tests.
-- Add a ``NoisyGateListExecutor`` that allows to implement a noise model.
-- Allow graphical states to be multiplied with each other to compute the overlap.
-- Add a way to use graphical states as basis states for compression.
-- Add a fast dense state vector simulator.
+- Add a noise model.
 - Add a way to export circuits to GPT's QIS module.
 
 
