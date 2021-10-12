@@ -1,0 +1,18 @@
+name: test-tox-slow
+description: Test the package using Tox with --runslow passed to pytest
+runs:
+    using: "composite"
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest tox
+      - name: run tox
+        run: tox -e py -- --runslow
