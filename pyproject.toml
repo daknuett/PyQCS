@@ -7,6 +7,10 @@ requires-python=">=3.4"
 readme="README.rst"
 dependencies=['numpy']
 
+platforms="linux"
+home-page="https://github.com/daknuett/pyqcs"
+version="3.0.0a"
+
 [project.urls]
 repository="https://github.com/daknuett/pyqcs"
 
@@ -16,7 +20,4 @@ build-backend = "mesonpep517.buildapi"
 
 [tool.mesonpep517.metadata]
 meson-python-option-name = "python3"
-
-platforms="linux"
-home-page="https://github.com/daknuett/pyqcs"
-version="3.0.0a"
+summary = "A quantum computing simulator."
