@@ -15,7 +15,7 @@ version="3.0.0a"
 repository="https://github.com/daknuett/pyqcs"
 
 [build-system]
-requires = ["meson", "toml", "numpy", "ninja", "mesonpep517 @ https://gitlab.com/thiblahute/mesonpep517/-/archive/master/mesonpep517-master.zip"]
+requires = ["meson", "toml", "numpy", "ninja", "mesonpep517"]
 build-backend = "mesonpep517.buildapi"
 
 [tool.mesonpep517.metadata]
