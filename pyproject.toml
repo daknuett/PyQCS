@@ -4,6 +4,7 @@ authors = [
 ]
 description = "A quantum computing simulator."
 requires-python=">=3.4"
+readme="README.rst"
 
 [project.urls]
 repository="https://github.com/daknuett/pyqcs"
@@ -15,7 +16,6 @@ build-backend = "mesonpep517.buildapi"
 [tool.mesonpep517.metadata]
 meson-python-option-name = "python3"
 
-readme="README.rst"
 platforms="linux"
 home-page="https://github.com/daknuett/pyqcs"
 version="3.0.0a"
