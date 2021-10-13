@@ -1,4 +1,0 @@
-global-include *.txt *.rst *.pyx *.pxd *.c *.h
-include install-sqc.sh
-
-
