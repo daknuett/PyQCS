@@ -24,13 +24,11 @@ two simulator backends for different purposes, and a way to construct circuits
 in a relatively readable manner.
 
 By default PyQCS employs a relatively slow simulator backend using dense state
-vectors stored in NumPy arrays. The gates are implemented as NumPy ufuncs.
-Because the states are implemented as NumPy arrays there is a significant
-overhead compared to other simulators. Note that any implementation using dense
-state vectors shows exponential growth in the number of qbits. Therefore this
-simulator backend is limited to qbit numbers  below 30 for reasonable
-performance. For simulations requiring more qbits we recommend a high
-performance framework, such as `GPT's QIS module <https://github.com/lehner/gpt>`_.
+vectors. Note that any implementation using dense state vectors shows
+exponential growth in the number of qbits. Therefore this simulator backend is
+limited to qbit numbers  below 30 for reasonable performance. For simulations
+requiring more qbits we recommend using a high performance framework, such as
+`GPT's QIS module <https://github.com/lehner/gpt>`_.
 
 The second backend uses a graphical state representation (see for instance
 `arXiv:quant-ph/0504117 <https://arxiv.org/abs/quant-ph/0504117v2>`_) which
@@ -42,7 +40,7 @@ growth in the number of qbits. The graphical states are available as
 Unlike other simulators PyQCS focuses on the state: Users start from a state, modify
 the state (using circuits) and then either look at the state or sample from the state.
 This direct access to the state is useful when debugging circuits or when considering
-physical problems. However, it slows down compuations.
+physical problems. However, it can slow down compuations.
 
 Using PyQCS
 ===========
