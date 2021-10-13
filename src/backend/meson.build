@@ -4,11 +4,22 @@ add_global_arguments('-O3', language:'cpp')
 incdir = include_directories('include/')
 rbtree_incdir = include_directories('rbtree/include/')
 
-ll = shared_library('ll', 'rbtree/src/ll/ll.cpp', include_directories:rbtree_incdir)
-rbt = shared_library('rbt', 'rbtree/src/rbt/tree.cpp', 'rbtree/src/rbt/iterator.cpp', include_directories:rbtree_incdir)
-dsv = shared_library('dsv', 'src/dsv.cpp', include_directories:incdir)
-graphical = shared_library('graphical', 'src/graphical.cpp', include_directories:[incdir, rbtree_incdir], link_with:[rbt])
-graphical2dsv = shared_library('graphical2dsv', 'src/graphical2dsv.cpp', include_directories:[incdir, rbtree_incdir], link_with:[graphical, dsv])
+ll = shared_library('ll', 'rbtree/src/ll/ll.cpp', include_directories:rbtree_incdir, install:true)
+rbt = shared_library('rbt', 'rbtree/src/rbt/tree.cpp', 'rbtree/src/rbt/iterator.cpp', include_directories:rbtree_incdir, install:true)
+dsv = shared_library('dsv', 'src/dsv.cpp', include_directories:incdir, install:true)
+graphical = shared_library('graphical', 'src/graphical.cpp', include_directories:[incdir, rbtree_incdir], link_with:[rbt], install:true)
+graphical2dsv = shared_library('graphical2dsv', 'src/graphical2dsv.cpp', include_directories:[incdir, rbtree_incdir], link_with:[graphical, dsv], install:true)
+
+pkgcfg = import('pkgconfig')
+pkgcfg.generate(ll)
+pkgcfg.generate(rbt)
+pkgcfg.generate(dsv)
+pkgcfg.generate(graphical)
+pkgcfg.generate(graphical2dsv)
+install_headers(['include/dsv.hpp',  'include/graphical2dsv.hpp',
+                'include/graphical.hpp',  'include/time_m.hpp'])
+install_headers(['rbtree/include/ll/ll.hpp'],subdir: 'll')
+install_headers(['rbtree/include/rbt/rbt.hpp'], subdir: 'rbt')
 
 test_filenames = [['test_dsv_HZH_X', 'tests/dsv_HZH_X.cpp']
             , ['test_dsv_S_by_R', 'tests/dsv_S_by_R.cpp']
