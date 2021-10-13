@@ -104,6 +104,22 @@ PyQCS currently has the following gates built-in:
 	Controlled Z gate.
 
 
+Using the C++ Backend
+=====================
+
+Starting from version 3.0.0 PyQCS has a pure C++ backend omitting the
+previously used numpy arrays. The python package uses handwritten adapters to
+this backend.
+
+The backend can be used as a stand-alone library. It can be built and installed
+using the ``src/backend/meson.build`` file. Its usage is a bit different from
+what one would usually expect from a simulator: Operations like measurement are
+not implemented explicitly but should be implemented by the user using a random
+number generator and the provided ``compute_amplitude`` methods.
+
+Besides that the code should be pretty much self-explaining. See the adapter
+code for some ideas how to use the backend.
+
 TODOs
 =====
 
