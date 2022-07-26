@@ -1,4 +1,5 @@
 [project]
+name="pyqcs"
 authors = [
     {name="Daniel Knüttel", email="daniel.knuettel@daknuett.eu"}
 ]
