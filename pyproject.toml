@@ -8,12 +8,11 @@ requires-python=">=3.4"
 readme="README.rst"
 dependencies=['numpy']
 
-platforms="linux"
-home-page="https://github.com/daknuett/pyqcs"
 version="3.0.0a"
 
 [project.urls]
 repository="https://github.com/daknuett/pyqcs"
+homepage="https://github.com/daknuett/pyqcs"
 
 [build-system]
 requires = ["meson", "toml", "numpy", "ninja", "mesonpep517"]
