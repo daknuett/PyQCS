@@ -15,8 +15,8 @@ repository="https://github.com/daknuett/pyqcs"
 homepage="https://github.com/daknuett/pyqcs"
 
 [build-system]
-requires = ["meson", "toml", "numpy", "ninja", "mesonpep517"]
-build-backend = "mesonpep517.buildapi"
+requires = ["meson", "toml", "numpy", "ninja", "meson-python"]
+build-backend = 'mesonpy'
 
 [tool.mesonpep517.metadata]
 meson-python-option-name = "python3"
