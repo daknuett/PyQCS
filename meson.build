@@ -1,4 +1,4 @@
-project('pyqcs', 'cpp', 'c', version:'3.0.0a')
+project('pyqcs', 'cpp', 'c', version:'3.0.0')
 
 add_global_arguments('-O3', language:'cpp')
 #####################################################################################
