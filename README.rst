@@ -6,6 +6,8 @@ PyQCS -- A quantum computing simulator
 .. image:: https://api.codacy.com/project/badge/Grade/a6ca800c070a46f297216d03f9351129
     :target: https://www.codacy.com/manual/daknuett_2/PyQCS?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=daknuett/PyQCS&amp;utm_campaign=Badge_Grade
 .. image:: https://github.com/daknuett/pyqcs/actions/workflows/test-tox-fast.yml/badge.svg
+.. image:: https://zenodo.org/badge/201236636.svg
+   :target: https://zenodo.org/badge/latestdoi/201236636
 
 .. contents::
 
